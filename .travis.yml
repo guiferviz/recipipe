@@ -1,0 +1,23 @@
+
+language: python
+
+python:
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+
+cache: pip
+
+# Command to install test dependencies.
+install:
+  - pip install -r requirements_test.txt
+
+# Command to run tests
+script:
+  - python setup.py nosetests --with-coverage --cover-package=recipipe
+
+# Upload coverage results.
+# CODECOV_TOKEN env var should be defined.
+after_success:
+ - codecov
