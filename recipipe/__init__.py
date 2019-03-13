@@ -6,6 +6,7 @@ Recipipe sort description.
 from ._version import __version__
 from .core import Recipipe
 from .core import SelectTransformer
+from .core import DropTransformer
 from .core import SklearnScaler
 from .core import OneHotEncoder
 from .core import SklearnCreator
@@ -24,6 +25,7 @@ def greet():
 # Aliases to make it easy to use.
 recipipe = Recipipe
 select = SelectTransformer
+drop = DropTransformer
 scale = SklearnScaler
 from_sklearn = SklearnCreator
 onehot = from_sklearn(OneHotEncoder(sparse=False, handle_unknown="ignore"))

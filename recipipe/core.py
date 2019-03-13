@@ -95,6 +95,19 @@ class SelectTransformer(RecipipeTransformer):
         return df[cols]
 
 
+class DropTransformer(RecipipeTransformer):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(cols=args, **kwargs)
+
+    def fit(self, df, y=None):
+        super().fit(df)
+
+    def transform(self, df):
+        cols = self.get_cols()
+        return df.drop(cols, axis=1)
+
+
 class ColumnTransformer(RecipipeTransformer):
 
     __metaclass__ = abc.ABCMeta

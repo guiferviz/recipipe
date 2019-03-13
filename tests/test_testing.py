@@ -49,10 +49,10 @@ class RecipipeTest(TestCase):
 
 class SelectTest(TestCase):
 
-    def _create_transform(self, *args, **kwargs):
-        df1 = create_df_all()
+    def _create_fit_transform(self, *args, **kwargs):
+        df = create_df_all()
         t = r.recipipe() + r.select(*args, **kwargs)
-        return t.fit_transform(df1)
+        return t.fit_transform(df)
 
     def test_select_one_column(self):
         df = self._create_transform("color")
@@ -61,8 +61,30 @@ class SelectTest(TestCase):
         self.assertEqual(columns, expected)
 
     def test_select_two_columns(self):
-        df = self._create_transform("color", "amount")
+        df = self._create_fit_transform("color", "amount")
         expected = ["color", "amount"]
+        columns = list(df.columns)
+        self.assertEqual(columns, expected)
+
+
+class DropTest(TestCase):
+
+    def _create_fit_transform(self, *args, **kwargs):
+        df = create_df_all()
+        t = r.recipipe() + r.drop(*args, **kwargs)
+        return t.fit_transform(df)
+
+    def test_select_one_column(self):
+        """Test if drop can remove one column.
+
+        We do not need more test for drop because it uses the
+        same method of fitting column names as all recipipe
+        transforms.
+        In this test we also check that the order of the remaining
+        columns is the same after droping.
+        """
+        df = self._create_fit_transform("color")
+        expected = ["price", "amount"]
         columns = list(df.columns)
         self.assertEqual(columns, expected)
 
@@ -161,6 +183,7 @@ class OneHotTest(TestCase):
         self.assertTrue(expected.equals(df2))
 
     def test_onehot_two_columns_two_steps(self):
+        """Apply onehot to two columns, once at a time. """
         df1 = create_df_cat2()
         t = r.recipipe() + r.onehot(["color"]) + r.onehot(["gender"])
         df2 = t.fit_transform(df1)
