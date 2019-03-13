@@ -1,4 +1,6 @@
 
+import abc
+
 import pandas as pd
 
 from sklearn.pipeline import Pipeline
@@ -95,6 +97,8 @@ class SelectTransformer(RecipipeTransformer):
 
 class ColumnTransformer(RecipipeTransformer):
 
+    __metaclass__ = abc.ABCMeta
+
     def __init__(self, cols=None):
         super().__init__(cols)
 
@@ -104,13 +108,23 @@ class ColumnTransformer(RecipipeTransformer):
             self._fit_column(df, i)
         return self
 
+    @abc.abstractmethod
+    def _fit_column(self, df, column_name):
+        pass
+
     def transform(self, df):
         for i in self.get_cols():
             df[i] = self._transform_column(df, i)
         return df
 
+    @abc.abstractmethod
+    def _transform_column(self, df, column_name):
+        pass
+
 
 class ColumnsTransformer(RecipipeTransformer):
+
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -121,10 +135,18 @@ class ColumnsTransformer(RecipipeTransformer):
         self._fit_columns(df, c)
         return self
 
+    @abc.abstractmethod
+    def _fit_columns(self, df, column_name):
+        pass
+
     def transform(self, df):
         c = self.get_cols()
         df[c] = self._transform_columns(df, c)
         return df
+
+    @abc.abstractmethod
+    def _transform_columns(self, df, column_name):
+        pass
 
 
 class SklearnScaler(ColumnsTransformer):
