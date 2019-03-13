@@ -5,20 +5,25 @@ Recipipe sort description.
 
 from ._version import __version__
 from .core import Recipipe
-from .core import SScaler
-from .core import SklearnCreator
+from .core import SelectTransformer
+from .core import SklearnScaler
 from .core import OneHotEncoder
+from .core import SklearnCreator
+from .core import fun
 
 
 __author__ = "guiferviz"
 
 
 def greet():
-    """Print a silly sentence. """
-    print("An algorithm implemented is worth two in pseudocode.")
+    """Print a famous quote of my friend Albert. """
+    print('"If I had my life to live over again, I\'d be a plumber."'
+          ' - Albert Einstein')
 
 
+# Aliases to make it easy to use.
 recipipe = Recipipe
-scale = SScaler
-sklearn = SklearnCreator
-onehot = sklearn(OneHotEncoder(sparse=False, handle_unknown="ignore"))
+select = SelectTransformer
+scale = SklearnScaler
+from_sklearn = SklearnCreator
+onehot = from_sklearn(OneHotEncoder(sparse=False, handle_unknown="ignore"))

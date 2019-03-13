@@ -5,9 +5,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import FunctionTransformer
 
 
-class Recipipe(object):
+class Recipipe(TransformerMixin):
 
     def __init__(self):
         self.pipeline = None
@@ -33,12 +34,16 @@ class Recipipe(object):
             d[name] = o
         return d
 
+    def get_step(self, name):
+        return self.get_step_dict()[name]
+
     def get_pipeline(self):
         return self.pipeline
 
     def fit(self, df):
         self.pipeline = self._create_pipeline()
         self.pipeline.fit(df)
+        return self
 
     def transform(self, df):
         return self.pipeline.transform(df)
@@ -46,17 +51,26 @@ class Recipipe(object):
 
 class RecipipeTransformer(BaseEstimator, TransformerMixin):
 
-    def __init__(self, cols, name=None):
-        self._cols = cols
+    def __init__(self, cols=None, dtype=None, name=None):
+        # Or cols or dtype, but not both.
+        assert not(cols is not None and dtype is not None)
+        # Set values.
+        self._cols = list(cols)
+        self._dtype = dtype
         self._cols_fitted = None
         self.name = name
 
     def fit_cols(self, df):
-        if type(self._cols) == list:
+        if self._cols is not None:
             self._cols_fitted = self._cols
+        elif self._dtype is not None:
+            # Get columns or given dtype.
+            self._cols_fitted = list(df.select_dtypes(self._dtype).columns)
         else:
-            self._cols_fitted = df.select_dtypes(self._cols).columns
-        
+            # If not cols or dtype given use all the columns names
+            # of the fitted dataframe.
+            self._cols_fitted = list(df.columns)
+
     def get_cols(self):
         if self._cols_fitted is None:
             raise Exception("Columns not fitted, call fit_cols before")
@@ -66,17 +80,28 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
         self.fit_cols(df)
 
 
+class SelectTransformer(RecipipeTransformer):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(cols=args, **kwargs)
+
+    def fit(self, df, y=None):
+        super().fit(df)
+
+    def transform(self, df):
+        cols = self.get_cols()
+        return df[cols]
+
+
 class ColumnTransformer(RecipipeTransformer):
 
-    def __init__(self, cols):
+    def __init__(self, cols=None):
         super().__init__(cols)
 
     def fit(self, df, y=None):
         super().fit(df)
-        self.fit_cols(df)
         for i in self.get_cols():
             self._fit_column(df, i)
-        print("end fit!")
         return self
 
     def transform(self, df):
@@ -102,7 +127,7 @@ class ColumnsTransformer(RecipipeTransformer):
         return df
 
 
-class SScaler(ColumnsTransformer):
+class SklearnScaler(ColumnsTransformer):
 
     def __init__(self, cols, name=None):
         super().__init__(cols, name=name)
@@ -115,7 +140,8 @@ class SScaler(ColumnsTransformer):
         return self.ss.transform(df[c].values)
 
 
-class Scaler(ColumnTransformer):
+class PandasScaler(ColumnTransformer):
+    """Standard scaler implemented with pandas operations. """
 
     def __init__(self, cols="number", **kwargs):
         super().__init__(cols, **kwargs)
@@ -131,19 +157,20 @@ class Scaler(ColumnTransformer):
 
 
 class SklearnCreator(object):
+
     def __init__(self, sklearn_transformer):
-        self.st = sklearn_transformer
+        self.trans = sklearn_transformer
 
     def __call__(self, *args, **kwargs):
-        return SklearnWrapper(self.st, *args, **kwargs)
+        return SklearnWrapper(self.trans, *args, **kwargs)
 
 
 class SklearnWrapper(RecipipeTransformer):
 
-    def __init__(self, sklearn_transformer, cols):
+    def __init__(self, sklearn_transformer, cols=None):
         super().__init__(cols)
         self.sklearn_transformer = sklearn_transformer
-        self.new_columns = None
+        self.new_cols = None
 
     def fit(self, df, y=None):
         super().fit(df)
@@ -161,3 +188,7 @@ class SklearnWrapper(RecipipeTransformer):
         df_new = pd.DataFrame(output, columns=self.new_cols)
         df_others = df.drop(columns=c)
         return df_others.join(df_new)
+
+
+def fun(f, **kwargs):
+    return SklearnCreator(FunctionTransformer(func=f, **kwargs))
