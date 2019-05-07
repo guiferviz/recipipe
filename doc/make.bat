@@ -1,5 +1,8 @@
 @ECHO OFF
 
+:: Run autodoc on the recipipe module.
+sphinx-apidoc -o . ../recipipe
+
 pushd %~dp0
 
 REM Command file for Sphinx documentation

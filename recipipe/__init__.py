@@ -1,6 +1,6 @@
 """Recipipe.
 
-Recipipe sort description.
+Improved pipelines for data science projects.
 """
 
 from ._version import __version__

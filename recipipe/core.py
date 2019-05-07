@@ -11,6 +11,7 @@ from sklearn.preprocessing import FunctionTransformer
 
 
 class Recipipe(TransformerMixin):
+    """Recipipe pipeline. """
 
     def __init__(self):
         self.pipeline = None
@@ -51,35 +52,67 @@ class Recipipe(TransformerMixin):
         return self.pipeline.transform(df)
 
 
-class RecipipeTransformer(BaseEstimator, TransformerMixin):
+class RecipipeTransformer(TransformerMixin):
+    """Base clase of all Recipipe transformers.
+
+    Args:
+        cols (list of str): List of column names to apply tranformer to.
+        dtype (dtype, str or list of dtype or str): The value
+            is passed to pandas.DataFrame.select_dtypes. This method
+            will select the columns that are going to be used in
+            the transformation.
+        name (str): Human-friendly name of the transformer.
+
+    Attributes:
+        name (str): Human-friendly name of the transformer.
+    """
 
     def __init__(self, cols=None, dtype=None, name=None):
         # Or cols or dtype, but not both.
         assert not(cols is not None and dtype is not None)
         # Set values.
-        self._cols = list(cols)
+        self._cols = list(cols) if cols is not None else None
         self._dtype = dtype
         self._cols_fitted = None
         self.name = name
 
-    def fit_cols(self, df):
+    def _fit_cols(self, df: pd.DataFrame):
+        """Set :attr:`RecipipeTransformer._cols_fitted` with a value.
+
+        :attr:`RecipipeTransformer._cols_fitted` is the attribute returned by
+        :func:`RecipipeTransformer.get_cols`.
+
+        Arguments:
+            df (pandas.DataFrame): DataFrame that is been fitted.
+        """
+
+        # If a list of columns is provided to the constructor...
         if self._cols is not None:
             self._cols_fitted = self._cols
+        # If a data type is specify...
         elif self._dtype is not None:
-            # Get columns or given dtype.
+            # Get columns of the given dtype.
             self._cols_fitted = list(df.select_dtypes(self._dtype).columns)
+        # If not cols or dtype given...
         else:
-            # If not cols or dtype given use all the columns names
-            # of the fitted dataframe.
+            # Use all the columns of the fitted dataframe.
             self._cols_fitted = list(df.columns)
 
     def get_cols(self):
+        """Return the list of columns selected.
+
+        Raises:
+            Exception: If the transformer is not fitted yet.
+        """
+
         if self._cols_fitted is None:
-            raise Exception("Columns not fitted, call fit_cols before")
+            raise Exception("Columns not fitted, call fit before. "
+                            "Make sure you called super().fit(df) on your "
+                            "transformer.")
         return self._cols_fitted
 
     def fit(self, df):
-        self.fit_cols(df)
+        self._fit_cols(df)
 
 
 class SelectTransformer(RecipipeTransformer):
@@ -223,6 +256,36 @@ class SklearnWrapper(RecipipeTransformer):
         df_new = pd.DataFrame(output, columns=self.new_cols)
         df_others = df.drop(columns=c)
         return df_others.join(df_new)
+
+from sklearn.base import clone
+class SklearnWrapperByColumn(ColumnsTransformer):
+
+    def __init__(self, sklearn_transformer, cols=None,
+                 keep_cols=False, separator="=", quote=True):
+        super().__init__(cols)
+        self.original_transformer = sklearn_transformer
+        self.new_cols = None
+        self.transformers = {}
+
+    def _fit_column(self, df, c):
+        t = clone(self.original_transformer)
+        t.fit(df[c].values)
+        if hasattr(t, "get_feature_names"):
+            nc = [i[1:] for i in t.get_feature_names("")]
+            str_format = "{}{}'{}'" if self.quote else "{}{}{}"
+            nc = [str_format.format(c, self.separator, i) for i in nc]
+            self.new_cols = nc
+        self.transformers[c] = t
+        return self
+
+    def _transform_column(self, df, c):
+        output = self.transformers[c].transform(df[c].values)
+        df_new = pd.DataFrame(output, columns=self.new_cols)
+        df_others = df if self.keep_cols else df.drop(columns=c)
+        return df_others.join(df_new)
+
+    def _columns_in_order(self, cols, new_cols):
+        pass
 
 
 def fun(f, **kwargs):

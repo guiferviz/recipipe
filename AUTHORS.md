@@ -8,4 +8,4 @@ Main contributors
 Others contributors
 ===================
 
- * others
+There is no others... yet :)

@@ -37,6 +37,10 @@ Run the automated tests with:
 
     python -m pytest
 
+Run an specific test file with:
+
+    python -m pytest tests/<filename>
+
 
 Contributing
 ------------

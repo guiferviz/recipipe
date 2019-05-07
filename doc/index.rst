@@ -7,6 +7,8 @@ Welcome to Recipipe's documentation!
     :caption: Contents:
 
     installation.rst
+    modules.rst
+    recipipe.rst
 
 
 Modules
