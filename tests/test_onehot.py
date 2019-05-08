@@ -22,8 +22,21 @@ class OneHotTest(TestCase):
         df1 = create_df_cat()
         t = r.recipipe() + r.onehot()
         df2 = t.fit_transform(df1)
-        expected = ["color_red", "color_blue"]
-        print(df2.columns, expected)
+        expected = ["color='red'", "color='blue'"]
+        self.assertCountEqual(df2.columns, expected)
+
+    def test_onehot_columns_names_underscore(self):
+        """Check columns names when "_" is present in the column name.
+
+        We are not taking into account the order of the columns for
+        this test.
+        """
+
+        df1 = create_df_cat()
+        df1.columns = ["my_color"]
+        t = r.recipipe() + r.onehot()
+        df2 = t.fit_transform(df1)
+        expected = ["my_color='red'", "my_color='blue'"]
         self.assertCountEqual(df2.columns, expected)
 
     def test_onehot_columns_values(self):
@@ -56,8 +69,8 @@ class OneHotTest(TestCase):
         t = r.recipipe() + r.onehot()
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
-            "color_red": [1., 0, 1],
-            "color_blue": [0., 1, 0]
+            "color='red'": [1., 0, 1],
+            "color='blue'": [0., 1, 0]
         })
         self.assertTrue(expected.eq(df2).all().all())
 
@@ -75,10 +88,10 @@ class OneHotTest(TestCase):
         t = r.recipipe() + r.onehot()
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
-            "gender_female": [1., 0, 0],
-            "gender_male": [0., 1, 1],
-            "color_blue": [0., 1, 0],
-            "color_red": [1., 0, 1]
+            "gender='female'": [1., 0, 0],
+            "gender='male'": [0., 1, 1],
+            "color='blue'": [0., 1, 0],
+            "color='red'": [1., 0, 1]
         })
         self.assertTrue(expected.equals(df2))
 
@@ -93,13 +106,13 @@ class OneHotTest(TestCase):
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
             "gender": ["female", "male", "male"],
-            "color_blue": [0., 1, 0],
-            "color_red": [1., 0, 1]
+            "color='blue'": [0., 1, 0],
+            "color='red'": [1., 0, 1]
         })
         self.assertTrue(expected.equals(df2))
 
     def test_onehot_one_of_two_columns_first(self):
-        """Apply onehot only to one column, the last one on the input df.
+        """Apply onehot only to one column, the first one on the input df.
 
         The non-onehotencoded column should be in the output dataframe
         and exactly in the same order.
@@ -107,16 +120,16 @@ class OneHotTest(TestCase):
 
         df1 = create_df_cat2()
         # Check that the fixture df is in the expected order.
-        self.assertListEqual(df1.columns, ["gender", "color"])
+        self.assertListEqual(list(df1.columns), ["gender", "color"])
 
         t = r.recipipe() + r.onehot(["gender"])
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
-            "gender_female": [1., 0, 0],
-            "gender_male": [0., 1, 1],
+            "gender='female'": [1., 0, 0],
+            "gender='male'": [0., 1, 1],
             "color": ["red", "blue", "red"],
         })
-        self.assertTrue(expected == df2)
+        self.assertTrue(expected.equals(df2))
 
     def test_onehot_two_columns_two_steps(self):
         """Apply onehot to two columns, once at a time. """
@@ -125,9 +138,9 @@ class OneHotTest(TestCase):
         t = r.recipipe() + r.onehot(["color"]) + r.onehot(["gender"])
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
-            "gender_female": [1., 0, 0],
-            "gender_male": [0., 1, 1],
-            "color_blue": [0., 1, 0],
-            "color_red": [1., 0, 1]
+            "gender='female'": [1., 0, 0],
+            "gender='male'": [0., 1, 1],
+            "color='blue'": [0., 1, 0],
+            "color='red'": [1., 0, 1]
         })
         self.assertTrue(expected.equals(df2))

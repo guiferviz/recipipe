@@ -99,7 +99,7 @@ class RecipipeTransformer(TransformerMixin):
             self._cols_fitted = list(df.columns)
 
     def get_cols(self):
-        """Return the list of columns selected.
+        """Returns the list of columns on which the transformer is applied.
 
         Raises:
             Exception: If the transformer is not fitted yet.
@@ -230,22 +230,46 @@ class SklearnCreator(object):
         self.trans = sklearn_transformer
 
     def __call__(self, *args, **kwargs):
-        return SklearnWrapper(self.trans, *args, **kwargs)
+        return SklearnWrapper(clone(self.trans), *args, **kwargs)
 
 
 class SklearnWrapper(RecipipeTransformer):
 
-    def __init__(self, sklearn_transformer, cols=None):
+    def __init__(self, sklearn_transformer, cols=None,
+                 keep_cols=False, separator="=", quote=True):
         super().__init__(cols)
         self.sklearn_transformer = sklearn_transformer
         self.new_cols = None
+        self.new_cols_hierarchy = None
+        self.separator = separator
+        self.quote = quote
+        self.keep_cols = keep_cols
 
     def fit(self, df, y=None):
         super().fit(df)
         c = self.get_cols()
         self.sklearn_transformer.fit(df[c].values)
         if hasattr(self.sklearn_transformer, "get_feature_names"):
-            self.new_cols = self.sklearn_transformer.get_feature_names(c)
+            # c_aux to avoid splitting column names that contain "_".
+            c_aux = [str(i) for i in range(len(c))]
+            str_format = "{}{}'{}'" if self.quote else "{}{}{}"
+            new_cols = self.sklearn_transformer.get_feature_names(c_aux)
+            new_cols = [i.split("_", 1) for i in new_cols]
+            new_cols = [(c[int(i[0])], i[1].replace("'", "\\'")) for i in new_cols]
+            new_cols_hierarchy = {i[0]: [] for i in new_cols}
+            for k, v in new_cols:
+                new_cols_hierarchy[k].append(v)
+            new_cols = [str_format.format(i[0], self.separator, i[1]) for i in new_cols]
+            self.new_cols = new_cols
+            return_cols = []
+            for i in df.columns:
+                if i in new_cols_hierarchy:
+                    if self.keep_cols:
+                        return_cols.append(i)
+                    return_cols += [str_format.format(i, self.separator, j) for j in new_cols_hierarchy[i]]
+                else:
+                    return_cols.append(i)
+            self.return_cols = return_cols
         else:
             self.new_cols = ["{}_{}".format("_".join(c), i) for i in range(output.shape[1])]
         return self
@@ -254,8 +278,11 @@ class SklearnWrapper(RecipipeTransformer):
         c = self.get_cols()
         output = self.sklearn_transformer.transform(df[c].values)
         df_new = pd.DataFrame(output, columns=self.new_cols)
-        df_others = df.drop(columns=c)
-        return df_others.join(df_new)
+        df_new_joined = df.join(df_new)
+        return df_new_joined[self.return_cols]
+
+    def _columns_in_order(self, cols, new_cols):
+        pass
 
 from sklearn.base import clone
 class SklearnWrapperByColumn(ColumnsTransformer):
