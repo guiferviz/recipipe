@@ -144,3 +144,16 @@ class OneHotTest(TestCase):
             "color='red'": [1., 0, 1]
         })
         self.assertTrue(expected.equals(df2))
+
+    def test_keep_cols(self):
+        """Keep transformed column. """
+
+        df1 = create_df_cat()
+        t = r.recipipe() + r.onehot(keep_cols=True)
+        df2 = t.fit_transform(df1)
+        expected = pd.DataFrame({
+            "color": ["red", "blue", "red"],
+            "color='blue'": [0., 1, 0],
+            "color='red'": [1., 0, 1]
+        })
+        self.assertTrue(expected.equals(df2))
