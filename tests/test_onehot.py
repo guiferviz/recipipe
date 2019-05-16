@@ -145,6 +145,25 @@ class OneHotTest(TestCase):
         })
         self.assertTrue(expected.equals(df2))
 
+    def test_onehot_two_columns_one_step(self):
+        """Apply onehot to two columns at the same time.
+
+        The order of the output columns is given by the
+        input dataset, not by the order of the list passed
+        to the one hot transformer.
+        """
+
+        df1 = create_df_cat2()
+        t = r.recipipe() + r.onehot(["color", "gender"])
+        df2 = t.fit_transform(df1)
+        expected = pd.DataFrame({
+            "gender='female'": [1., 0, 0],
+            "gender='male'": [0., 1, 1],
+            "color='blue'": [0., 1, 0],
+            "color='red'": [1., 0, 1]
+        })
+        self.assertTrue(expected.equals(df2))
+
     def test_keep_cols(self):
         """Keep transformed column. """
 
@@ -157,3 +176,13 @@ class OneHotTest(TestCase):
             "color='red'": [1., 0, 1]
         })
         self.assertTrue(expected.equals(df2))
+
+    def test_variable_args(self):
+        """Check that onehot allows the use of variable-length params. """
+
+        df1 = create_df_cat2()
+        t = r.recipipe() + r.onehot("color", "gender")
+        df2 = t.fit_transform(df1)
+        expected = ["gender='female'", "gender='male'", "color='blue'", "color='red'"]
+        columns = list(df2.columns)
+        self.assertEqual(columns, expected)

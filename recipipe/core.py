@@ -67,7 +67,15 @@ class RecipipeTransformer(TransformerMixin):
         name (str): Human-friendly name of the transformer.
     """
 
-    def __init__(self, cols=None, dtype=None, name=None):
+    def __init__(self, *args, cols=None, dtype=None, name=None):
+        # Variable args or cols, but not both.
+        assert not(cols is not None and args)
+        # Set cols using variable args.
+        if len(args) > 0:
+            if type(args[0]) == list:
+                cols = args[0]
+            else:
+                cols = args
         # Or cols or dtype, but not both.
         assert not(cols is not None and dtype is not None)
         # Set values.
@@ -118,10 +126,11 @@ class RecipipeTransformer(TransformerMixin):
 class SelectTransformer(RecipipeTransformer):
 
     def __init__(self, *args, **kwargs):
-        super().__init__(cols=args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def fit(self, df, y=None):
         super().fit(df)
+        return self
 
     def transform(self, df):
         cols = self.get_cols()
@@ -135,6 +144,7 @@ class DropTransformer(RecipipeTransformer):
 
     def fit(self, df, y=None):
         super().fit(df)
+        return self
 
     def transform(self, df):
         cols = self.get_cols()
@@ -235,9 +245,9 @@ class SklearnCreator(object):
 
 class SklearnWrapper(RecipipeTransformer):
 
-    def __init__(self, sklearn_transformer, cols=None,
+    def __init__(self, sklearn_transformer, *args, cols=None,
                  keep_cols=False, separator="=", quote=True):
-        super().__init__(cols)
+        super().__init__(*args, cols=cols)
         self.sklearn_transformer = sklearn_transformer
         self.new_cols = None
         self.new_cols_hierarchy = None

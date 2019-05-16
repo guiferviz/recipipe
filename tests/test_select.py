@@ -23,6 +23,7 @@ class SelectTest(TestCase):
         """
 
         df = create_df_all()
+        print(df.columns)
         t = r.recipipe() + r.select(*args, **kwargs)
         return t.fit_transform(df)
 
