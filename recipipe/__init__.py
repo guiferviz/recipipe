@@ -4,11 +4,12 @@ Improved pipelines for data science projects.
 """
 
 from ._version import __version__
+from .core import CategoryEncoder
+from .core import DropTransformer
+from .core import OneHotEncoder
 from .core import Recipipe
 from .core import SelectTransformer
-from .core import DropTransformer
 from .core import SklearnScaler
-from .core import OneHotEncoder
 from .core import SklearnCreator
 from .core import fun
 
@@ -24,6 +25,7 @@ def greet():
 
 # Aliases to make it easy to use.
 recipipe = Recipipe
+category = CategoryEncoder
 select = SelectTransformer
 drop = DropTransformer
 scale = SklearnScaler

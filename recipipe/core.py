@@ -53,14 +53,17 @@ class Recipipe(TransformerMixin):
 
 
 class RecipipeTransformer(TransformerMixin):
-    """Base clase of all Recipipe transformers.
+    """Base class of all Recipipe transformers.
+
+    `*args`, `cols` and `dtype` are mutually exclusive.
 
     Args:
-        cols (list of str): List of column names to apply tranformer to.
-        dtype (dtype, str or list of dtype or str): The value
-            is passed to pandas.DataFrame.select_dtypes. This method
-            will select the columns that are going to be used in
-            the transformation.
+        *args (List[str]): List of column names to apply transformer to.
+        cols (List[str]): List of column names to apply transformer to.
+        dtype (dtype, str, List[dtype] or List[str]): This value is passed to
+            `pandas.DataFrame.select_dtypes`. The columns returned by this
+            pandas method (executed in the dataframe passed to the fit method)
+            will be the columns that are going to be used in the transformation.
         name (str): Human-friendly name of the transformer.
 
     Attributes:
@@ -115,11 +118,17 @@ class RecipipeTransformer(TransformerMixin):
 
         if self._cols_fitted is None:
             raise Exception("Columns not fitted, call fit before. "
-                            "Make sure you called super().fit(df) on your "
-                            "transformer.")
+                            "Make sure you call super().fit(df) on "
+                            "your transformer subclass.")
         return self._cols_fitted
 
     def fit(self, df):
+        """Fit the transformer.
+
+        Args:
+            df (pandas.DataFrame): Dataframe used to fit the transformation.
+        """
+
         self._fit_cols(df)
 
 
@@ -140,7 +149,7 @@ class SelectTransformer(RecipipeTransformer):
 class DropTransformer(RecipipeTransformer):
 
     def __init__(self, *args, **kwargs):
-        super().__init__(cols=args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def fit(self, df, y=None):
         super().fit(df)
@@ -155,8 +164,8 @@ class ColumnTransformer(RecipipeTransformer):
 
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, cols=None):
-        super().__init__(cols)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def fit(self, df, y=None):
         super().fit(df)
@@ -205,10 +214,32 @@ class ColumnsTransformer(RecipipeTransformer):
         pass
 
 
+class CategoryEncoder(ColumnTransformer):
+
+    def __init__(self, *args, error_unknown=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.categories = {}
+        self.error_unknown = error_unknown
+
+    def _fit_column(self, df, column_name):
+        cat = df[column_name].astype("category").cat.categories
+        # Save category values for the transformation phase.
+        self.categories[column_name] = cat
+
+    def _transform_column(self, df, col):
+        encoded = pd.Categorical(df[col], categories=self.categories[col])
+        # Raise exception if unknown values.
+        if self.error_unknown and encoded.isna().values.any():
+            raise ValueError(f"The column {col} has unknown categories")
+        # Fill unknown.
+        #encoded.fillna(-1)
+        return encoded.codes
+
+
 class SklearnScaler(ColumnsTransformer):
 
-    def __init__(self, cols, name=None):
-        super().__init__(cols, name=name)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.ss = StandardScaler()
 
     def _fit_columns(self, df, c):
@@ -219,10 +250,10 @@ class SklearnScaler(ColumnsTransformer):
 
 
 class PandasScaler(ColumnTransformer):
-    """Standard scaler implemented with pandas operations. """
+    """Standard scaler implemented with Pandas operations. """
 
-    def __init__(self, cols="number", **kwargs):
-        super().__init__(cols, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.means = {}
         self.stds = {}
 
@@ -235,11 +266,33 @@ class PandasScaler(ColumnTransformer):
 
 
 class SklearnCreator(object):
+    """Utility class to generate SKLearn wrappers.
+
+    Use this class to reuse any existing SKLearn transformer in your
+    recipipe pipelines.
+
+    Args:
+        sklearn_transformer (sklearn.TransformerMixin): Any instance of an
+            SKLearn transformer you want to incorporate in the recipipes
+            pipelines.
+
+    Example::
+
+        # Create a onehot encoder using the SKLearn OneHotEncoder class.
+        onehot = SklearnCreator(OneHotEncoder(sparse=False))
+        # Now you can use the onehot variable as a transformer in a recipipe.
+        recipipe() + onehot(dtype="string")
+    """
 
     def __init__(self, sklearn_transformer):
         self.trans = sklearn_transformer
 
     def __call__(self, *args, **kwargs):
+        """Instantiate a SklearnWrapper using a copy of the given transformer.
+
+        It's important to make this copy to avoid fitting several times the
+        same transformer.
+        """
         return SklearnWrapper(clone(self.trans), *args, **kwargs)
 
 
@@ -256,6 +309,7 @@ class SklearnWrapper(RecipipeTransformer):
         self.keep_cols = keep_cols
 
     def fit(self, df, y=None):
+        # TODO: Refactor!!!!!!!
         super().fit(df)
         c = self.get_cols()
         self.sklearn_transformer.fit(df[c].values)
