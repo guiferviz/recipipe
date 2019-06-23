@@ -3,8 +3,8 @@ import pandas as pd
 
 from unittest import TestCase
 
-from .context import recipipe as r
-from .fixtures import create_df_cat
+from ..context import recipipe as r
+from ..fixtures import create_df_cat
 
 
 class TestCategoryEncoder(TestCase):
