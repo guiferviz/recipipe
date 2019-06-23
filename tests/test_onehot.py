@@ -168,7 +168,7 @@ class OneHotTest(TestCase):
         """Keep transformed column. """
 
         df1 = create_df_cat()
-        t = r.recipipe() + r.onehot(keep_cols=True)
+        t = r.recipipe() + r.onehot(keep_original=True)
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
             "color": ["red", "blue", "red"],

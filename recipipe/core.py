@@ -4,10 +4,11 @@ import abc
 import pandas as pd
 
 from sklearn.pipeline import Pipeline
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.base import TransformerMixin, clone
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import FunctionTransformer
+
+from recipipe.utils import default_params
 
 
 class Recipipe(TransformerMixin):
@@ -20,7 +21,7 @@ class Recipipe(TransformerMixin):
 
     def __add__(self, transformer):
         name = transformer.name if transformer.name is not None \
-            else "step{:02d}".format(self.idx)
+            else f"step{self.idx:02d}"
         self.steps.append([
             name,
             transformer
@@ -65,12 +66,15 @@ class RecipipeTransformer(TransformerMixin):
             pandas method (executed in the dataframe passed to the fit method)
             will be the columns that are going to be used in the transformation.
         name (str): Human-friendly name of the transformer.
+        keep_original (bool): `True` if you want to keep the input columns used
+            in the transformer in the transformed DataFrame, `False` if not.
 
     Attributes:
         name (str): Human-friendly name of the transformer.
     """
 
-    def __init__(self, *args, cols=None, dtype=None, name=None):
+    def __init__(self, *args, cols=None, dtype=None, name=None,
+                 keep_original=True):
         # Variable args or cols, but not both.
         assert not(cols is not None and args)
         # Set cols using variable args.
@@ -85,6 +89,7 @@ class RecipipeTransformer(TransformerMixin):
         self._cols = list(cols) if cols is not None else None
         self._dtype = dtype
         self._cols_fitted = None
+        self.keep_original = keep_original
         self.name = name
 
     def _fit_cols(self, df: pd.DataFrame):
@@ -109,6 +114,15 @@ class RecipipeTransformer(TransformerMixin):
             # Use all the columns of the fitted dataframe.
             self._cols_fitted = list(df.columns)
 
+    def _get_key_eq_value(self, dict):
+        return [k for k, v in dict.items() if k == v]
+
+    def _fit(self, df):
+        pass
+
+    def _transform(self, df):
+        raise NotImplementedError("Overwrite transform or _transform method")
+
     def get_cols(self):
         """Returns the list of columns on which the transformer is applied.
 
@@ -118,11 +132,12 @@ class RecipipeTransformer(TransformerMixin):
 
         if self._cols_fitted is None:
             raise Exception("Columns not fitted, call fit before. "
-                            "Make sure you call super().fit(df) on "
-                            "your transformer subclass.")
+                            "If you get this error from your own Recipipe"
+                            "Transformer make sure you are overwriting the"
+                            "_fit method an not fit.")
         return self._cols_fitted
 
-    def fit(self, df):
+    def fit(self, df, y=None):
         """Fit the transformer.
 
         Args:
@@ -130,6 +145,49 @@ class RecipipeTransformer(TransformerMixin):
         """
 
         self._fit_cols(df)
+        self._fit(df)
+        return self
+
+    def transform(self, df_in):
+        df_out = self._transform(df_in)
+        col_map = self.get_column_mapping()
+        # If key and value is the same we want to keep the transformed column
+        # and remove the input column.
+        to_drop = self._get_key_eq_value(col_map)
+        df_in = df_in.drop(to_drop, axis=1)
+        # Join input columns to output
+        df_joined = df_in.join(df_out)
+        # Reorder columns.
+        ordered_columns = []
+        for i in df_in.columns:
+            if i in col_map:
+                if self.keep_original:
+                    ordered_columns.append(i)
+                c = col_map[i]
+                ordered_columns += c if type(c) == tuple else [c]
+            else:
+                ordered_columns.append(i)
+        return df_joined[ordered_columns]
+
+    def get_column_mapping(self):
+        """Get the column mapping between the input and transformed dataframe.
+
+        By default it returns a 1:1 map between the input and output columns.
+        Make sure your transformed is fitted before calling this function.
+
+        Return:
+            A dict in which the key are the input dataframe column names and
+            the value is the output dataframe column names.
+            Both key and values can be a tuples, tuple:1 useful to indicate that
+            one output column has been created from a list of columns from the
+            input dataframe, 1:tuple useful to indicate that a list of output
+            columns come from one specific column of the input dataframe.
+            We use tuples and not list because list are not hashable so they
+            cannot be keys in a dict.
+        """
+
+        cols = self.get_cols()
+        return {i: i for i in cols}
 
 
 class SelectTransformer(RecipipeTransformer):
@@ -137,11 +195,9 @@ class SelectTransformer(RecipipeTransformer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def fit(self, df, y=None):
-        super().fit(df)
-        return self
-
     def transform(self, df):
+        """Select the fitted columns. """
+
         cols = self.get_cols()
         return df[cols]
 
@@ -151,11 +207,9 @@ class DropTransformer(RecipipeTransformer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def fit(self, df, y=None):
-        super().fit(df)
-        return self
-
     def transform(self, df):
+        """Drop the fitted columns. """
+
         cols = self.get_cols()
         return df.drop(cols, axis=1)
 
@@ -167,8 +221,7 @@ class ColumnTransformer(RecipipeTransformer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def fit(self, df, y=None):
-        super().fit(df)
+    def _fit(self, df, y=None):
         for i in self.get_cols():
             self._fit_column(df, i)
         return self
@@ -177,10 +230,11 @@ class ColumnTransformer(RecipipeTransformer):
     def _fit_column(self, df, column_name):
         pass
 
-    def transform(self, df):
+    def _transform(self, df_in):
+        df_out = pd.DataFrame()
         for i in self.get_cols():
-            df[i] = self._transform_column(df, i)
-        return df
+            df_out[i] = self._transform_column(df_in, i)
+        return df_out
 
     @abc.abstractmethod
     def _transform_column(self, df, column_name):
@@ -194,8 +248,7 @@ class ColumnsTransformer(RecipipeTransformer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def fit(self, df, y=None):
-        super().fit(df)
+    def _fit(self, df, y=None):
         c = self.get_cols()
         self._fit_columns(df, c)
         return self
@@ -204,10 +257,11 @@ class ColumnsTransformer(RecipipeTransformer):
     def _fit_columns(self, df, column_name):
         pass
 
-    def transform(self, df):
+    def _transform(self, df_in):
         c = self.get_cols()
-        df[c] = self._transform_columns(df, c)
-        return df
+        df_out = pd.DataFrame()
+        df_out[c] = self._transform_columns(df_in, c)
+        return df_out
 
     @abc.abstractmethod
     def _transform_columns(self, df, column_name):
@@ -284,8 +338,9 @@ class SklearnCreator(object):
         recipipe() + onehot(dtype="string")
     """
 
-    def __init__(self, sklearn_transformer):
+    def __init__(self, sklearn_transformer, **kwargs):
         self.trans = sklearn_transformer
+        self.kwargs = kwargs
 
     def __call__(self, *args, **kwargs):
         """Instantiate a SklearnWrapper using a copy of the given transformer.
@@ -293,62 +348,63 @@ class SklearnCreator(object):
         It's important to make this copy to avoid fitting several times the
         same transformer.
         """
+        kwargs = default_params(kwargs, **self.kwargs)
         return SklearnWrapper(clone(self.trans), *args, **kwargs)
 
 
 class SklearnWrapper(RecipipeTransformer):
 
-    def __init__(self, sklearn_transformer, *args, cols=None,
-                 keep_cols=False, separator="=", quote=True):
-        super().__init__(*args, cols=cols)
+    def __init__(self, sklearn_transformer, *args,
+                 separator="=", quote=True, **kwargs):
+        super().__init__(*args, **kwargs)
         self.sklearn_transformer = sklearn_transformer
-        self.new_cols = None
-        self.new_cols_hierarchy = None
         self.separator = separator
         self.quote = quote
-        self.keep_cols = keep_cols
+        self.new_cols_list = None
+        self.new_cols_hierarchy = None
 
-    def fit(self, df, y=None):
-        # TODO: Refactor!!!!!!!
-        super().fit(df)
+    def _fit(self, df, y=None):
         c = self.get_cols()
         self.sklearn_transformer.fit(df[c].values)
+        self._set_output_names_list(df, len(c))
+        return self
+
+    def _transform(self, df):
+        c = self.get_cols()
+        output = self.sklearn_transformer.transform(df[c].values)
+        df_new = pd.DataFrame(output, columns=self.new_cols_list)
+        return df_new
+
+    def _set_output_names_list(self, df, output_size):
+        """Set new_cols_list and new_cols_hierarchy. """
+
+        c = self.get_cols()
         if hasattr(self.sklearn_transformer, "get_feature_names"):
-            # c_aux to avoid splitting column names that contain "_".
+            # c_aux instead of c to avoid splitting column names with "_".
             c_aux = [str(i) for i in range(len(c))]
-            str_format = "{}{}'{}'" if self.quote else "{}{}{}"
             new_cols = self.sklearn_transformer.get_feature_names(c_aux)
             new_cols = [i.split("_", 1) for i in new_cols]
             new_cols = [(c[int(i[0])], i[1].replace("'", "\\'")) for i in new_cols]
             new_cols_hierarchy = {i[0]: [] for i in new_cols}
+            str_format = "{}{}'{}'" if self.quote else "{}{}{}"
             for k, v in new_cols:
                 new_cols_hierarchy[k].append(v)
-            new_cols = [str_format.format(i[0], self.separator, i[1]) for i in new_cols]
-            self.new_cols = new_cols
-            return_cols = []
-            for i in df.columns:
-                if i in new_cols_hierarchy:
-                    if self.keep_cols:
-                        return_cols.append(i)
-                    return_cols += [str_format.format(i, self.separator, j) for j in new_cols_hierarchy[i]]
-                else:
-                    return_cols.append(i)
-            self.return_cols = return_cols
+            self.new_cols_list = [str_format.format(i[0], self.separator, i[1]) for i in new_cols]
+            for i in new_cols_hierarchy:
+                new_cols_hierarchy[i] = tuple([str_format.format(i, self.separator, j) for j in new_cols_hierarchy[i]])
+            self.new_cols_hierarchy = new_cols_hierarchy
+        elif len(c) == output_size:
+            self.new_cols_list = c
+            self.new_cols_hierarchy = {i: i for i in c}
         else:
-            self.new_cols = ["{}_{}".format("_".join(c), i) for i in range(output.shape[1])]
-        return self
+            name = "_".join(c)
+            self.new_cols_list = [f"{name}_{i}" for i in range(output_size)]
+            self.new_cols_hierarchy = {tuple(c): tuple(self.new_cols_list)}
 
-    def transform(self, df):
-        c = self.get_cols()
-        output = self.sklearn_transformer.transform(df[c].values)
-        df_new = pd.DataFrame(output, columns=self.new_cols)
-        df_new_joined = df.join(df_new)
-        return df_new_joined[self.return_cols]
+    def get_column_mapping(self):
+        return self.new_cols_hierarchy
 
-    def _columns_in_order(self, cols, new_cols):
-        pass
 
-from sklearn.base import clone
 class SklearnWrapperByColumn(ColumnsTransformer):
 
     def __init__(self, sklearn_transformer, cols=None,

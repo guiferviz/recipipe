@@ -3,10 +3,11 @@
 Improved pipelines for data science projects.
 """
 
+from sklearn.preprocessing import OneHotEncoder
+
 from ._version import __version__
 from .core import CategoryEncoder
 from .core import DropTransformer
-from .core import OneHotEncoder
 from .core import Recipipe
 from .core import SelectTransformer
 from .core import SklearnScaler
@@ -30,4 +31,4 @@ select = SelectTransformer
 drop = DropTransformer
 scale = SklearnScaler
 from_sklearn = SklearnCreator
-onehot = from_sklearn(OneHotEncoder(sparse=False, handle_unknown="ignore"))
+onehot = from_sklearn(OneHotEncoder(sparse=False, handle_unknown="ignore"), keep_original=False)
