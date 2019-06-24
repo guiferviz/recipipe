@@ -12,7 +12,6 @@ from .core import Recipipe
 from .core import SelectTransformer
 from .core import SklearnScaler
 from .core import SklearnCreator
-from .core import fun
 
 
 __author__ = "guiferviz"

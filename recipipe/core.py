@@ -149,6 +149,7 @@ class RecipipeTransformer(TransformerMixin):
         return self
 
     def transform(self, df_in):
+        in_cols = df_in.columns
         df_out = self._transform(df_in)
         col_map = self.get_column_mapping()
         # If key and value is the same we want to keep the transformed column
@@ -159,9 +160,11 @@ class RecipipeTransformer(TransformerMixin):
         df_joined = df_in.join(df_out)
         # Reorder columns.
         ordered_columns = []
-        for i in df_in.columns:
+        for i in in_cols:
             if i in col_map:
-                if self.keep_original:
+                # FIXME: It's not possible to keep original if we do not rename
+                # the output column.
+                if self.keep_original and i not in to_drop:
                     ordered_columns.append(i)
                 c = col_map[i]
                 ordered_columns += c if type(c) == tuple else [c]
@@ -231,7 +234,7 @@ class ColumnTransformer(RecipipeTransformer):
         pass
 
     def _transform(self, df_in):
-        df_out = pd.DataFrame()
+        df_out = pd.DataFrame(index=df_in.index)
         for i in self.get_cols():
             df_out[i] = self._transform_column(df_in, i)
         return df_out
@@ -433,7 +436,3 @@ class SklearnWrapperByColumn(ColumnsTransformer):
 
     def _columns_in_order(self, cols, new_cols):
         pass
-
-
-def fun(f, **kwargs):
-    return SklearnCreator(FunctionTransformer(func=f, **kwargs))
