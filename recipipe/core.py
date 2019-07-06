@@ -52,6 +52,9 @@ class Recipipe(TransformerMixin):
     def transform(self, df):
         return self.pipeline.transform(df)
 
+    def inverse_transform(self, df):
+        return self.pipeline.inverse_transform(df)
+
 
 class RecipipeTransformer(TransformerMixin):
     """Base class of all Recipipe transformers.
@@ -172,6 +175,9 @@ class RecipipeTransformer(TransformerMixin):
                 ordered_columns.append(i)
         return df_joined[ordered_columns]
 
+    def inverse_transform(self, df_in):
+        return df_in
+
     def get_column_mapping(self):
         """Get the column mapping between the input and transformed dataframe.
 
@@ -243,6 +249,15 @@ class ColumnTransformer(RecipipeTransformer):
     def _transform_column(self, df, column_name):
         pass
 
+    def _inverse_transform_column(self, df, column_name):
+        raise NotImplementedError()
+
+    def inverse_transform(self, df_in):
+        df_out = pd.DataFrame(index=df_in.index)
+        for i in self.get_cols():
+            df_out[i] = self._inverse_transform_column(df_in, i)
+        return df_out
+
 
 class ColumnsTransformer(RecipipeTransformer):
 
@@ -262,8 +277,8 @@ class ColumnsTransformer(RecipipeTransformer):
 
     def _transform(self, df_in):
         c = self.get_cols()
-        df_out = pd.DataFrame()
-        df_out[c] = self._transform_columns(df_in, c)
+        np_out = self._transform_columns(df_in, c)
+        df_out = pd.DataFrame(np_out, columns=c, index=df_in.index)
         return df_out
 
     @abc.abstractmethod
@@ -292,18 +307,8 @@ class CategoryEncoder(ColumnTransformer):
         #encoded.fillna(-1)
         return encoded.codes
 
-
-class SklearnScaler(ColumnsTransformer):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.ss = StandardScaler()
-
-    def _fit_columns(self, df, c):
-        self.ss.fit(df[c].values)
-
-    def _transform_columns(self, df, c):
-        return self.ss.transform(df[c].values)
+    def _inverse_transform_column(self, df, column_name):
+        return self.categories[column_name][df[column_name].values]
 
 
 class PandasScaler(ColumnTransformer):
@@ -320,6 +325,9 @@ class PandasScaler(ColumnTransformer):
 
     def _transform_column(self, df, c):
         return (df[c] - self.means[c]) / self.stds[c]
+
+    def _inverse_transform_column(self, df, c):
+        return (df[c] * self.stds[c]) + self.means[c]
 
 
 class SklearnCreator(object):
@@ -375,7 +383,9 @@ class SklearnWrapper(RecipipeTransformer):
     def _transform(self, df):
         c = self.get_cols()
         output = self.sklearn_transformer.transform(df[c].values)
-        df_new = pd.DataFrame(output, columns=self.new_cols_list)
+        # TODO: do we need index=df.index here?
+        #  Answer: YEEEEES!!! We need it!
+        df_new = pd.DataFrame(output, columns=self.new_cols_list, index=df.index)
         return df_new
 
     def _set_output_names_list(self, df, output_size):
@@ -407,6 +417,12 @@ class SklearnWrapper(RecipipeTransformer):
     def get_column_mapping(self):
         return self.new_cols_hierarchy
 
+    def inverse_transform(self, df_in, *args, **kwargs):
+        c = self.get_cols()
+        np_out = self.sklearn_transformer.inverse_transform(df_in, *args, **kwargs)
+        df_out = pd.DataFrame(np_out, columns=c, index=df_in.index)
+        return df_out
+
 
 class SklearnWrapperByColumn(ColumnsTransformer):
 
@@ -436,3 +452,16 @@ class SklearnWrapperByColumn(ColumnsTransformer):
 
     def _columns_in_order(self, cols, new_cols):
         pass
+
+
+# TODO: Implement this.
+class GroupByTransformer(RecipipeTransformer):
+    """Apply a transformer on each group.
+
+    Example::
+
+        # Normalize by group using the SKLearn StandardScaler.
+        scaler = SklearnCreator(StandardScaler())
+        Recipipe() + GroupByTransformer("group_column", scaler("num_column"))
+    """
+    pass
