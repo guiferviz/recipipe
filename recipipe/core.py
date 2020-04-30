@@ -1,12 +1,14 @@
 
 import abc
+import fnmatch
+
+import numpy as np
 
 import pandas as pd
 
-from sklearn.pipeline import Pipeline
+import sklearn
 from sklearn.base import TransformerMixin, clone
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import FunctionTransformer
+from sklearn.pipeline import Pipeline
 
 from recipipe.utils import default_params
 
@@ -71,13 +73,17 @@ class RecipipeTransformer(TransformerMixin):
         name (str): Human-friendly name of the transformer.
         keep_original (bool): `True` if you want to keep the input columns used
             in the transformer in the transformed DataFrame, `False` if not.
+        col_format (str): New name of the columns. Use "{}" in to
+            substitute that placeholder by the column name. For example, if
+            you want to append the string "_new" at the end of all the
+            generated columns you must set `col_format="{}_new"`.
 
     Attributes:
         name (str): Human-friendly name of the transformer.
     """
 
     def __init__(self, *args, cols=None, dtype=None, name=None,
-                 keep_original=True):
+                 keep_original=True, col_format="{}"):
         # Variable args or cols, but not both.
         assert not(cols is not None and args)
         # Set cols using variable args.
@@ -92,6 +98,7 @@ class RecipipeTransformer(TransformerMixin):
         self._cols = list(cols) if cols is not None else None
         self._dtype = dtype
         self._cols_fitted = None
+        self._col_format = col_format
         self.keep_original = keep_original
         self.name = name
 
@@ -105,17 +112,26 @@ class RecipipeTransformer(TransformerMixin):
             df (pandas.DataFrame): DataFrame that is been fitted.
         """
 
+        cols_fitted = []
         # If a list of columns is provided to the constructor...
         if self._cols is not None:
-            self._cols_fitted = self._cols
+            # Check which columns in dataframe match the given columns.
+            for i in self._cols:
+                cols_match = fnmatch.filter(list(df.columns), i)
+                if len(cols_match) == 0:
+                    raise ValueError(f"No column match '{i}' in dataframe")
+                cols_fitted += cols_match
         # If a data type is specify...
-        elif self._dtype is not None:
+        if self._dtype is not None:
             # Get columns of the given dtype.
-            self._cols_fitted = list(df.select_dtypes(self._dtype).columns)
+            cols_fitted += list(df.select_dtypes(self._dtype).columns)
         # If not cols or dtype given...
-        else:
+        # We check self._cols is None because we want to
+        #  allow empty lists in transformers.
+        if self._cols is None and len(cols_fitted) == 0:
             # Use all the columns of the fitted dataframe.
-            self._cols_fitted = list(df.columns)
+            cols_fitted += list(df.columns)
+        self._cols_fitted = cols_fitted
 
     def _get_key_eq_value(self, dict):
         return [k for k, v in dict.items() if k == v]
@@ -176,7 +192,16 @@ class RecipipeTransformer(TransformerMixin):
         return df_joined[ordered_columns]
 
     def inverse_transform(self, df_in):
-        return df_in
+        in_cols = df_in.columns
+        df_out = self._inverse_transform(df_in)
+        col_map = self.get_column_mapping()
+        # If key and value is the same we want to keep the transformed column
+        # and remove the input column.
+        to_drop = self._get_key_eq_value(col_map)
+        df_in = df_in.drop(to_drop, axis=1)
+        # Join input columns to output
+        df_joined = df_in.join(df_out)
+        return df_joined
 
     def get_column_mapping(self):
         """Get the column mapping between the input and transformed dataframe.
@@ -196,7 +221,7 @@ class RecipipeTransformer(TransformerMixin):
         """
 
         cols = self.get_cols()
-        return {i: i for i in cols}
+        return {i: self._col_format.format(i) for i in cols}
 
 
 class SelectTransformer(RecipipeTransformer):
@@ -209,6 +234,9 @@ class SelectTransformer(RecipipeTransformer):
 
         cols = self.get_cols()
         return df[cols]
+
+    def inverse_transform(self, df):
+        return self.transform(df)
 
 
 class DropTransformer(RecipipeTransformer):
@@ -250,9 +278,9 @@ class ColumnTransformer(RecipipeTransformer):
         pass
 
     def _inverse_transform_column(self, df, column_name):
-        raise NotImplementedError()
+        pass
 
-    def inverse_transform(self, df_in):
+    def _inverse_transform(self, df_in):
         df_out = pd.DataFrame(index=df_in.index)
         for i in self.get_cols():
             df_out[i] = self._inverse_transform_column(df_in, i)
@@ -282,7 +310,7 @@ class ColumnsTransformer(RecipipeTransformer):
         return df_out
 
     @abc.abstractmethod
-    def _transform_columns(self, df, column_name):
+    def _transform_columns(self, df, columns_name):
         pass
 
 
@@ -314,20 +342,21 @@ class CategoryEncoder(ColumnTransformer):
 class PandasScaler(ColumnTransformer):
     """Standard scaler implemented with Pandas operations. """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, factor=1, **kwargs):
         super().__init__(*args, **kwargs)
         self.means = {}
         self.stds = {}
+        self.factor = factor
 
     def _fit_column(self, df, c):
         self.means[c] = df[c].mean()
         self.stds[c] = df[c].std()
 
     def _transform_column(self, df, c):
-        return (df[c] - self.means[c]) / self.stds[c]
+        return (df[c] - self.means[c]) / self.stds[c] * self.factor
 
     def _inverse_transform_column(self, df, c):
-        return (df[c] * self.stds[c]) + self.means[c]
+        return (df[c] * self.stds[c] / self.factor) + self.means[c]
 
 
 class SklearnCreator(object):
@@ -383,8 +412,6 @@ class SklearnWrapper(RecipipeTransformer):
     def _transform(self, df):
         c = self.get_cols()
         output = self.sklearn_transformer.transform(df[c].values)
-        # TODO: do we need index=df.index here?
-        #  Answer: YEEEEES!!! We need it!
         df_new = pd.DataFrame(output, columns=self.new_cols_list, index=df.index)
         return df_new
 
@@ -392,6 +419,15 @@ class SklearnWrapper(RecipipeTransformer):
         """Set new_cols_list and new_cols_hierarchy. """
 
         c = self.get_cols()
+
+        # Check if sklearn object has features index.
+        # This is common in transformers like MissingIndicator with param
+        # features="missing-only", that is, transformers that do not return
+        # all the input features we pass to them.
+        if hasattr(self.sklearn_transformer, "features_"):
+            c = [c[i] for i in self.sklearn_transformer.features_]
+            output_size = len(c)
+
         if hasattr(self.sklearn_transformer, "get_feature_names"):
             # c_aux instead of c to avoid splitting column names with "_".
             c_aux = [str(i) for i in range(len(c))]
@@ -407,8 +443,11 @@ class SklearnWrapper(RecipipeTransformer):
                 new_cols_hierarchy[i] = tuple([str_format.format(i, self.separator, j) for j in new_cols_hierarchy[i]])
             self.new_cols_hierarchy = new_cols_hierarchy
         elif len(c) == output_size:
-            self.new_cols_list = c
-            self.new_cols_hierarchy = {i: i for i in c}
+            self.new_cols_hierarchy = super().get_column_mapping()
+            # Recreate dict just in case the number of output columns
+            # is not the same as the number of input columns.
+            self.new_cols_hierarchy = {i: self.new_cols_hierarchy[i] for i in c}
+            self.new_cols_list = [self.new_cols_hierarchy[i] for i in c]
         else:
             name = "_".join(c)
             self.new_cols_list = [f"{name}_{i}" for i in range(output_size)]
@@ -417,9 +456,9 @@ class SklearnWrapper(RecipipeTransformer):
     def get_column_mapping(self):
         return self.new_cols_hierarchy
 
-    def inverse_transform(self, df_in, *args, **kwargs):
+    def _inverse_transform(self, df_in):
         c = self.get_cols()
-        np_out = self.sklearn_transformer.inverse_transform(df_in, *args, **kwargs)
+        np_out = self.sklearn_transformer.inverse_transform(df_in[c].values)
         df_out = pd.DataFrame(np_out, columns=c, index=df_in.index)
         return df_out
 
@@ -454,7 +493,74 @@ class SklearnWrapperByColumn(ColumnsTransformer):
         pass
 
 
-# TODO: Implement this.
+class MissingIndicatorCreator(object):
+    """Helper class for creating missing indicator transformers. """
+
+    def __init__(self):
+        self.kwargs = dict(col_format="INDICATOR({})")
+
+    def __call__(self, *args, missing_values=np.nan, features="missing-only",
+                 sparse="auto", error_on_new=True, **kwargs):
+        """Create an SKLearn MissingIndicator using an SKLearnWrapper.
+
+        Read the `sklearn.impute.MissingIndicator` documentation to get more
+        information about the parameters.
+
+        Returns:
+            SklearnWrapper transformer with MissingIndicator as sklearn
+            transformer.
+        """
+        kwargs = default_params(kwargs, **self.kwargs)
+        mi = sklearn.impute.MissingIndicator(missing_values=missing_values,
+                                             features=features,
+                                             sparse=sparse,
+                                             error_on_new=error_on_new)
+        return SklearnWrapper(mi, *args, **kwargs)
+
+
+class SimpleImputerCreator(object):
+    """Helper class for creating simple imputer transformers. """
+
+    def __call__(self, *args, missing_values=np.nan, strategy="mean",
+                 fill_value=None, verbose=0, copy=True, **kwargs):
+        """Create an SKLearn SimpleImputer using an SKLearnWrapper.
+
+        Read the `sklearn.impute.SimpleImputer` documentation to get more
+        information about the parameters.
+
+        Returns:
+            SklearnWrapper transformer with SimpleImputer as sklearn
+            transformer.
+        """
+        mi = sklearn.impute.SimpleImputer(missing_values=missing_values,
+                                          strategy=strategy,
+                                          fill_value=fill_value,
+                                          verbose=verbose,
+                                          copy=copy)
+        return SklearnWrapper(mi, *args, **kwargs)
+
+
+class ReplaceTransformer(ColumnsTransformer):
+
+    def __init__(self, *args, values=None, **kwargs):
+        assert values is not None
+        super().__init__(*args, **kwargs)
+        self.values = values
+
+    def _transform_columns(self, df, columns_name):
+        return df[columns_name].replace(self.values)
+
+
+class QueryTransformer(RecipipeTransformer):
+
+    def __init__(self, query, **kwargs):
+        super().__init__(**kwargs)
+        self.query = query
+
+    def transform(self, df_in):
+        return df_in.query(self.query)
+
+
 class GroupByTransformer(RecipipeTransformer):
     """Apply a transformer on each group.
 
@@ -464,4 +570,44 @@ class GroupByTransformer(RecipipeTransformer):
         scaler = SklearnCreator(StandardScaler())
         Recipipe() + GroupByTransformer("group_column", scaler("num_column"))
     """
-    pass
+
+    def __init__(self, groupby, transformer, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.groupby = groupby
+        self.transformer = transformer
+        self.transformers = {}
+
+    def fit(self, df, y=None):
+        groups = df.groupby(self.groupby)
+        for name, group in groups:
+            self.fit_group(name, group)
+        return self
+
+    def transform(self, df_in):
+        groups = df_in.groupby(self.groupby)
+        dfs = []
+        for name, group in groups:
+            dfs.append(self.transform_group(name, group))
+        df_out = pd.concat(dfs, axis=0)
+        return df_out.loc[df_in.index, :]
+
+    def fit_group(self, name, df):
+        import copy
+        t = copy.deepcopy(self.transformer)
+        t.fit(df)
+        self.transformers[name] = t
+
+    def transform_group(self, name, df):
+        return self.transformers[name].transform(df)
+
+    def inverse_transform_group(self, name, df):
+        return self.transformers[name].inverse_transform(df)
+
+    def inverse_transform(self, df_in):
+        groups = df_in.groupby(self.groupby)
+        dfs = []
+        for name, group in groups:
+            dfs.append(self.inverse_transform_group(name, group))
+        df_out = pd.concat(dfs, axis=0)
+        return df_out.loc[df_in.index, :]
+
