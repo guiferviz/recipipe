@@ -1,0 +1,16 @@
+# All runtime requirements.
+-r requirements.in
+
+# Tests and coverage.
+pylint
+pytest
+codecov
+coveralls
+
+# Documentation.
+sphinx
+sphinx_rtd_theme
+
+# Others.
+pip>=10
+pip-tools
