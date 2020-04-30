@@ -1,16 +1,37 @@
-"""Onehot transformer tests. """
 
-from unittest import TestCase
+import numpy as np
 
 import pandas as pd
 
-from .context import recipipe as r
-from .fixtures import create_df_cat
-from .fixtures import create_df_cat2
+from unittest import TestCase
+
+from tests.fixtures import create_df_all
+from tests.fixtures import create_df_cat
+from tests.fixtures import create_df_cat2
+
+import recipipe as r
+
+
+class RecipipeTest(TestCase):
+
+    def test_no_error_recipipe(self):
+        """Test the pipeline constructor.
+
+        No expecting any error.
+        """
+
+        r.recipipe()
+
+    def test_error_empty_recipipe(self):
+        """An error should be throw when you try to fit an empty pipeline. """
+
+        t = r.recipipe()
+        with self.assertRaises(Exception):
+            t.fit(pd.DataFrame())
 
 
 class OneHotTest(TestCase):
-    """OneHot test suite. """
+    """OneHot transformer test suite. """
 
     def test_onehot_columns_names(self):
         """Check the name of the columns after applying onehot encoding.
@@ -183,6 +204,141 @@ class OneHotTest(TestCase):
         df1 = create_df_cat2()
         t = r.recipipe() + r.onehot("color", "gender")
         df2 = t.fit_transform(df1)
-        expected = ["gender='female'", "gender='male'", "color='blue'", "color='red'"]
+        expected = ["gender='female'", "gender='male'",
+                    "color='blue'", "color='red'"]
         columns = list(df2.columns)
         self.assertEqual(columns, expected)
+
+
+class SelectTest(TestCase):
+    """Select transformer tests. """
+
+    def _create_fit_transform(self, *args, **kwargs):
+        """Create an apply a 'select' on the sample dataframe.
+
+        Args:
+            *args: Passed to the 'select'.
+            **kwargs: Passed to the 'select'.
+
+        Returns:
+            The sample dataframe transformed using a recipipe
+            that only contains a 'select'.
+        """
+
+        df = create_df_all()
+        print(df.columns)
+        t = r.recipipe() + r.select(*args, **kwargs)
+        return t.fit_transform(df)
+
+    def test_select_one_column(self):
+        """Check select works with one column. """
+
+        df = self._create_fit_transform("color")
+        expected = ["color"]
+        columns = list(df.columns)
+        self.assertEqual(columns, expected)
+
+    def test_select_two_columns(self):
+        """Check that select works with two columns.
+
+        The order of the returned columns should be the same.
+        """
+
+        df = self._create_fit_transform("color", "amount")
+        expected = ["color", "amount"]
+        columns = list(df.columns)
+        self.assertEqual(columns, expected)
+
+
+class DropTest(TestCase):
+
+    def _create_fit_transform(self, *args, **kwargs):
+        df = create_df_all()
+        t = r.recipipe() + r.drop(*args, **kwargs)
+        return t.fit_transform(df)
+
+    def test_select_one_column(self):
+        """Test if drop can remove one column.
+
+        We do not need more test for drop because it uses the
+        same method of fitting column names as all recipipe
+        transforms.
+        In this test we also check that the order of the remaining
+        columns is the same after droping.
+        """
+        df = self._create_fit_transform("color")
+        expected = ["price", "amount"]
+        columns = list(df.columns)
+        self.assertEqual(columns, expected)
+
+
+class TestCategoryEncoder(TestCase):
+
+    def test__fit_column(self):
+        df = create_df_cat()
+        t = r.category()
+        t._fit_column(df, "color")
+        cat = list(t.categories["color"])
+        self.assertListEqual(cat, ["blue", "red"])
+
+    def test__transform_column(self):
+        df = create_df_cat()
+        t = r.category()
+        t.categories = {"color": pd.Index(["blue", "red"])}
+        s = t._transform_column(df, "color")
+        self.assertListEqual(list(s), [1, 0, 1])
+
+
+class TestQueryTransformer(TestCase):
+
+    def test_transform(self):
+        df = create_df_all()
+        t = r.query("color == 'red'")
+        df_out = t.fit_transform(df)
+        expected = pd.DataFrame({
+            "color": ["red", "red"],
+            "price": [1.5, 3.5],
+            "amount": [1, 3],
+            "index": [0, 2]
+        })
+        expected.set_index("index", inplace=True)
+        self.assertTrue(expected.equals(df_out))
+
+
+class TestReplaceTransformer(TestCase):
+    def test__transform_columns_text(self):
+        df_in = pd.DataFrame({
+            "Vowels": ["a", "e", None, "o", "u"]
+        })
+        t = r.replace(values={None: "i"})
+        df_out = t.fit_transform(df_in)
+        expected = pd.DataFrame({
+            "Vowels": ["a", "e", "i", "o", "u"]
+        })
+        self.assertTrue(expected.equals(df_out))
+
+
+class TestGroupByTransformer(TestCase):
+
+    def test_fit_transform(self):
+        # TODO: This is not an unit test...
+        df_in = pd.DataFrame({
+            "color": ["red", "red", "red", "blue", "blue", "blue"],
+            "other": [1, 2, 3, 4, 5, 6],
+            "amount": [5, 6, 7, 1, 2, 3],
+            "index": [3, 4, 5, 0, 1, 2]
+        })
+        # Set an unordered index to check the correct order of the output.
+        df_in.set_index("index", inplace=True)
+        t = r.groupby("color", r.scale("amount"))
+        df_out = t.fit_transform(df_in)
+        norm = 1 / np.std([1, 2, 3])
+        expected = pd.DataFrame({
+            "color": ["red", "red", "red", "blue", "blue", "blue"],
+            "other": [1, 2, 3, 4, 5, 6],
+            "amount": [-norm, 0, norm, -norm, 0, norm],
+            "index": [3, 4, 5, 0, 1, 2]
+        })
+        expected.set_index("index", inplace=True)
+        self.assertTrue(expected.equals(df_out))
+
