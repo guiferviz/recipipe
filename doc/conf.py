@@ -56,7 +56,7 @@ autodoc_default_flags = [
     'members',
     'undoc-members',
     #'private-members',
-    #'special-members',
+    'special-members',
     #'inherited-members',
     'show-inheritance'
 ]
@@ -99,13 +99,15 @@ html_theme = 'sphinx_rtd_theme'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-# html_logo = '_static/recipipe_logo.png'
+html_logo = '_static/logo/logo.png'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+    "logo_only": True,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

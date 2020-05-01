@@ -11,6 +11,7 @@ recipipe.core module
     :members:
     :undoc-members:
     :show-inheritance:
+    :special-members:
 
 
 Module contents

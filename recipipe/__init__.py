@@ -1,4 +1,22 @@
-"""Improved pipelines for data science projects. """
+"""Improved pipelines for data science projects.
+
+Sklearn pipelines easy to declare and Pandas-compatible.
+"""
+
+
+from recipipe._version import __version__
+
+
+__author__ = "guiferviz"
+
+
+def greet():
+    """Print a silly sentence to stdout. """
+
+    # https://upjoke.com/recipe-jokes
+    print("I've found the recipe for happiness.\n"
+          "Can someone just send me some money so I can buy the ingredients?")
+
 
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
