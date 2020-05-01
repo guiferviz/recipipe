@@ -14,42 +14,65 @@ from recipipe.utils import default_params
 
 
 class Recipipe(TransformerMixin):
-    """Recipipe pipeline. """
+    """Recipipe pipeline.
+
+    A Recipipe pipeline is a wrapper of an Sklearn pipeline.
+    It adds some functionalities that made the creation of pipelines less
+    painful.
+    """
 
     def __init__(self, steps=None):
-        self.pipeline = None
-        self.steps = []
+        self._pipeline = None
+        self._steps = []
+
         if steps is not None:
             for i in steps:
                 self.add(i)
-        self.idx = 0
 
     def __add__(self, transformer):
         """Add a new step to the pipeline using the '+' operator.
 
         See Also:
-            recipipe.core.Recipipe.add
+            :obj:`recipipe.core.Recipipe.add`
         """
 
         return self.add(transformer)
 
     def _create_pipeline(self):
-        return Pipeline(self.steps)
+        """Create a Sklearn pipeline using the properties of this Recipipe. """
+
+        return Pipeline(self._steps)
+
+    @property
+    def pipeline(self):
+        """Underlying Sklearn pipeline.
+
+        Returns:
+            None if the pipeline is not fitted.
+        """
+
+        return self._pipeline
 
     def add(self, transformer):
         """Add a new step to the pipeline.
 
+        Args:
+            transformer (:obj:`recipipe.core.RecipipeTransformer`): The new
+                step that you want to add to the pipeline.
+
         See Also:
-            recipipe.core.Recipipe.__add__
+            :obj:`recipipe.core.Recipipe.__add__`
         """
 
-        name = transformer.name if transformer.name is not None \
-            else f"step{self.idx:02d}"
-        self.steps.append([
+        # Ensures no transformer is added after fitting.
+        assert not self.is_fitted()
+
+        idx = len(self._steps)
+        name = transformer.name or f"step{idx:02d}"
+        self._steps.append([
             name,
             transformer
         ])
-        self.idx += 1
         return self
 
     def get_step_dict(self):
@@ -58,22 +81,27 @@ class Recipipe(TransformerMixin):
             d[name] = o
         return d
 
-    def get_step(self, name):
-        return self.get_step_dict()[name]
-
-    def get_pipeline(self):
-        return self.pipeline
+    def get_step(self, name, default=None):
+        for k, v in self.steps:
+            if k == name:
+                return v
+        return default
 
     def fit(self, df):
-        self.pipeline = self._create_pipeline()
-        self.pipeline.fit(df)
+        pipe = self._create_pipeline()
+        pipe.fit(df)
+        # If self._pipeline has a value is because it's already fitted.
+        self._pipeline = pipe
         return self
 
+    def is_fitted(self):
+        return self._pipeline is not None
+
     def transform(self, df):
-        return self.pipeline.transform(df)
+        return self._pipeline.transform(df)
 
     def inverse_transform(self, df):
-        return self.pipeline.inverse_transform(df)
+        return self._pipeline.inverse_transform(df)
 
 
 class RecipipeTransformer(TransformerMixin):
