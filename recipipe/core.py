@@ -16,12 +16,33 @@ from recipipe.utils import default_params
 class Recipipe(TransformerMixin):
     """Recipipe pipeline. """
 
-    def __init__(self):
+    def __init__(self, steps=None):
         self.pipeline = None
         self.steps = []
+        if steps is not None:
+            for i in steps:
+                self.add(i)
         self.idx = 0
 
     def __add__(self, transformer):
+        """Add a new step to the pipeline using the '+' operator.
+
+        See Also:
+            recipipe.core.Recipipe.add
+        """
+
+        return self.add(transformer)
+
+    def _create_pipeline(self):
+        return Pipeline(self.steps)
+
+    def add(self, transformer):
+        """Add a new step to the pipeline.
+
+        See Also:
+            recipipe.core.Recipipe.__add__
+        """
+
         name = transformer.name if transformer.name is not None \
             else f"step{self.idx:02d}"
         self.steps.append([
@@ -30,9 +51,6 @@ class Recipipe(TransformerMixin):
         ])
         self.idx += 1
         return self
-
-    def _create_pipeline(self):
-        return Pipeline(self.steps)
 
     def get_step_dict(self):
         d = {}
