@@ -107,7 +107,6 @@ html_logo = '_static/logo/logo.png'
 #
 html_theme_options = {
     "logo_only": True,
-    "github_url": "https://github.com/guiferviz/recipipe",
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
