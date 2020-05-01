@@ -4,7 +4,7 @@
 # Tests and coverage.
 pylint
 pytest
-codecov
+pytest-cov
 coveralls
 
 # Documentation.

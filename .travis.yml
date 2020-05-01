@@ -1,20 +1,26 @@
 
 language: python
-
 python:
-  - "3.6"
-
+  - "3.7"
 cache: pip
 
-# Command to install test dependencies.
 install:
-  - pip install -r requirements_test.txt
+# Install dev dependencies without fixed versions.
+- pip install -r requirements_dev.in
 
-# Command to run tests
 script:
-  - python setup.py nosetests --with-coverage --cover-package=recipipe
+# Test and generate coverage reports of the recipipe package.
+- pytest --cov=recipipe
 
-# Upload coverage results.
-# CODECOV_TOKEN env var should be defined.
 after_success:
- - codecov
+- coveralls
+
+deploy:
+  provider: pypi
+  distributions: sdist
+  on:
+    tags: true
+  user: __token__
+  password:
+    secure: rL+9lYmep0dVrsB+Kzp7i1NRrMpJ0Z1fFtPX04QSPEa60wHzh/AMYh8x20jgF19LcQksEvz0NWeqqyEO3aVNtAyKjWtllqvVPhRxRm8AQAdtd7wM6/a6m74ENkcMPB/nFOVJbwCVKQWAQ3zBm8jBwvn2ZCNWuQJu9XD/pqqUWrbApKZtScNDLFGToAZFXsG1sWR8LTDMLPgHe2NU5CbYzXdy2y1/k8dfrl7Rx23BvAUXaPHErLtico1EngoX/059dhOpHcVo58rafCeLmDW9GoUd7W+YLVsDjoVxySN1ecPjSDFP/7RoLmghDud2gfj4ITV7LafKtpv+NTzy1lBboiy21eQkHcc4T4cvuPdKxkwSUQahdx7UGrAustglN3dDg4Dw5BLDhdQNBLzt93ctWSDF+v+OpZa5166PT0kFt920kpI85VNmsHGyqQbFywixsVd0yn/aHhqsVwZ24PAKWWNj7KxM3w8vmFvEnMawLtBI/FyRbfbwD/lM3UcbQZD12iocreH+TRLzGkNjwO/qo1PIEnZ7KuUxJ3p+0OVYVd26FkJmpHd1c4Ok4R3wJQmh8g4oDiWVSA/PTeZuDRYEWzVrSiGD1LuPixubiuGa9P23lceOnKD0SauzqfpNeUmuuHvnZ3gx/gbVX7KEdL2xW67Ep571nyCKXCrocRiPjlA=
+

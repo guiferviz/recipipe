@@ -2,7 +2,7 @@
 from os import listdir
 from os.path import join
 
-from setuptools import setup
+from setuptools import setup, find_packages
 try: # for pip >= 10
     from pip._internal.req import parse_requirements
 except ImportError: # for pip <= 9.0.3
@@ -22,8 +22,19 @@ with open(PACKAGE_NAME + "/_version.py") as file:
 
 # Read requirements.
 req = parse_requirements("requirements.txt", session="hack")
-REQUIREMENTS = [str(ir.req) for ir in req]
+REQUIREMENTS = []
+for i in req:
+    if getattr(i, "req", None) is not None:
+        REQUIREMENTS.append(str(i.req))
+    elif getattr(i, "requirement", None) is not None:  # pip >= 20.1
+        REQUIREMENTS.append(str(i.requirement))
+    else:
+        print("ERROR: I don't understand this requirement...")
 print("Requirements:", REQUIREMENTS)
+
+# Install all packages in the current dir except tests.
+PACKAGES = find_packages(exclude=["tests", "tests.*"])
+print("Packages:", PACKAGES)
 
 setup(name=PACKAGE_NAME,
       version=__version__,
@@ -33,7 +44,7 @@ setup(name=PACKAGE_NAME,
       keywords=KEYWORDS,
       author=AUTHOR,
       license=LICENSE,
-      packages=[PACKAGE_NAME],
+      packages=PACKAGES,
       install_requires=REQUIREMENTS,
       entry_points={
           "console_scripts": [
@@ -41,3 +52,4 @@ setup(name=PACKAGE_NAME,
           ]
       },
       zip_safe=False)
+
