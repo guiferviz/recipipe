@@ -1,14 +1,19 @@
 
+.. image:: _static/logo/logo.png
+    :align: center
+
+|
+|
+
 Welcome to Recipipe's documentation!
 ====================================
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
     :caption: Contents:
 
     installation.rst
     modules.rst
-    recipipe.rst
 
 
 Modules
@@ -27,3 +32,4 @@ Indices
 
 * :ref:`genindex`
 * :ref:`modindex`
+
