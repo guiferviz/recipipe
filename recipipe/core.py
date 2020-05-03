@@ -18,15 +18,11 @@ class Recipipe(sklearn.pipeline.Pipeline):
     """Recipipe pipeline.
 
     A Recipipe pipeline is an extension of an SKLearn pipeline.
-    It adds some functionalities that make the creation of pipelines less
+    It adds some functionality that make the creation of pipelines less
     painful.
-
     For example, the `steps` param is not required at the construction time.
     You can add your transformers to the pipeline anytime using
     :obj:`recipipe.core.Recipipe.add`.
-
-    You can also check if the pipeline is fitted in a very convenient way:
-    :obj:`recipipe.core.Recipipe.is_fitted`.
 
     Attributes:
         Same attributes as the SKLearn pipeline.
