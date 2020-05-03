@@ -7,30 +7,66 @@ import numpy as np
 import pandas as pd
 
 import sklearn
+import sklearn.impute
+import sklearn.pipeline
 from sklearn.base import TransformerMixin, clone
-from sklearn.pipeline import Pipeline
 
 from recipipe.utils import default_params
 
 
-class Recipipe(TransformerMixin):
+class Recipipe(sklearn.pipeline.Pipeline):
     """Recipipe pipeline.
 
-    A Recipipe pipeline is a wrapper of an Sklearn pipeline.
-    It adds some functionalities that made the creation of pipelines less
+    A Recipipe pipeline is an extension of an SKLearn pipeline.
+    It adds some functionality that make the creation of pipelines less
     painful.
+    For example, the `steps` param is not required at the construction time.
+    You can add your transformers to the pipeline anytime using
+    :obj:`recipipe.core.Recipipe.add`.
+
+    Attr:
+        Same attributes as :obj:`sklearn.pipeline.Pipeline`.
     """
 
-    def __init__(self, steps=None):
-        self._pipeline = None
-        self._steps = []
+    def __init__(self, steps=None, **kwargs):
+        """Create a Recipipe pipeline.
 
-        if steps is not None:
+        Args:
+            steps (:obj:`list`): Same as in :obj:`sklearn.pipeline.Pipeline`.
+            kwargs: Same as in :obj:`sklearn.pipeline.Pipeline`: `memory`
+                and `verbose`.
+        """
+
+        self.steps = []
+
+        if steps:
             for i in steps:
                 self.add(i)
+        else:
+            # Mock validate steps to avoid empty list validation.
+            # This method depends a lot of the hidden representation of the
+            # Pipeline class but it's better than using a dummy empty
+            # transformer.
+            # An empty transformer adds more complexity to make methods like
+            # __len__ work properly. Also it's impossible to control the use
+            # of self.steps from outside of the class.
+            aux = self._validate_steps
+            self._validate_steps = lambda: True
+
+        super().__init__(self.steps, **kwargs)
+
+        # Unmock validation method if needed.
+        if not steps:
+            self._validate_steps = aux
 
     def __add__(self, transformer):
         """Add a new step to the pipeline using the '+' operator.
+
+        Note that this is exactly the same as calling
+        :obj:`recipipe.core.Recipipe.add`.
+        The Recipipe object is going to be modified, that is `p = p + t` is
+        the same as `p + t`, where `p` is any Recipipe pipeline and `t` is any
+        transformer.
 
         See Also:
             :obj:`recipipe.core.Recipipe.add`
@@ -38,70 +74,40 @@ class Recipipe(TransformerMixin):
 
         return self.add(transformer)
 
-    def _create_pipeline(self):
-        """Create a Sklearn pipeline using the properties of this Recipipe. """
-
-        return Pipeline(self._steps)
-
-    @property
-    def pipeline(self):
-        """Underlying Sklearn pipeline.
-
-        Returns:
-            None if the pipeline is not fitted.
-        """
-
-        return self._pipeline
-
-    def add(self, transformer):
+    def add(self, step):
         """Add a new step to the pipeline.
 
+        You can add steps even if the pipeline is already fitted, so be
+        careful.
+
         Args:
-            transformer (:obj:`recipipe.core.RecipipeTransformer`): The new
-                step that you want to add to the pipeline.
+            step (Transformer or tuple(`str`, Transformer)): The new step that
+                you want to add to the pipeline.
+                Any transformer is good (SKLearn transformer or
+                :obj:`recipipe.core.RecipipeTransformer`).
+                If a tuple is given, the fist element of the tuple is going to
+                be used as a name for the step in the pipeline.
+
+        Returns:
+            The pipeline.
+            You can chain `add` methods: `pipe.add(...).add(...)...`.
 
         See Also:
             :obj:`recipipe.core.Recipipe.__add__`
         """
 
-        # Ensures no transformer is added after fitting.
-        assert not self.is_fitted()
+        if type(step) is not tuple:
+            transformer = step
+            if getattr(transformer, "name", None):
+                name = transformer.name
+            else:
+                idx = len(self.steps)
+                name = f"step{idx:02d}"
+            step = (name, transformer)
 
-        idx = len(self._steps)
-        name = transformer.name or f"step{idx:02d}"
-        self._steps.append([
-            name,
-            transformer
-        ])
+        self.steps.append(step)
+
         return self
-
-    def get_step_dict(self):
-        d = {}
-        for [name, o] in self.steps:
-            d[name] = o
-        return d
-
-    def get_step(self, name, default=None):
-        for k, v in self.steps:
-            if k == name:
-                return v
-        return default
-
-    def fit(self, df):
-        pipe = self._create_pipeline()
-        pipe.fit(df)
-        # If self._pipeline has a value is because it's already fitted.
-        self._pipeline = pipe
-        return self
-
-    def is_fitted(self):
-        return self._pipeline is not None
-
-    def transform(self, df):
-        return self._pipeline.transform(df)
-
-    def inverse_transform(self, df):
-        return self._pipeline.inverse_transform(df)
 
 
 class RecipipeTransformer(TransformerMixin):
@@ -578,6 +584,8 @@ class SimpleImputerCreator(object):
             SklearnWrapper transformer with SimpleImputer as sklearn
             transformer.
         """
+        if fill_value is not None:
+            strategy = "constant"
         mi = sklearn.impute.SimpleImputer(missing_values=missing_values,
                                           strategy=strategy,
                                           fill_value=fill_value,

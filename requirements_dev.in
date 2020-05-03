@@ -12,5 +12,5 @@ sphinx
 sphinx_rtd_theme
 
 # Others.
-pip>=10
-pip-tools
+pip-tools  # pip-compile *.in requirements files.
+notebook  # For running examples.
