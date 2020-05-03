@@ -24,11 +24,19 @@ class Recipipe(sklearn.pipeline.Pipeline):
     You can add your transformers to the pipeline anytime using
     :obj:`recipipe.core.Recipipe.add`.
 
-    Attributes:
-        Same attributes as the SKLearn pipeline.
+    Attr:
+        Same attributes as :obj:`sklearn.pipeline.Pipeline`.
     """
 
     def __init__(self, steps=None, **kwargs):
+        """Create a Recipipe pipeline.
+
+        Args:
+            steps (:obj:`list`): Same as in :obj:`sklearn.pipeline.Pipeline`.
+            kwargs: Same as in :obj:`sklearn.pipeline.Pipeline`: `memory`
+                and `verbose`.
+        """
+
         self.steps = []
 
         if steps:
@@ -82,7 +90,7 @@ class Recipipe(sklearn.pipeline.Pipeline):
 
         Returns:
             The pipeline.
-            You can chain add methods: `pipe.add(...).add(...)...`.
+            You can chain `add` methods: `pipe.add(...).add(...)...`.
 
         See Also:
             :obj:`recipipe.core.Recipipe.__add__`
