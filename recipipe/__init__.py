@@ -5,6 +5,7 @@ SKLearn pipelines easy to declare and Pandas-compatible.
 
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import Binarizer
 
 from recipipe.core import Recipipe
 
@@ -37,6 +38,9 @@ onehot = from_sklearn(
     keep_original=False)
 scale = from_sklearn(
     StandardScaler(),
+    keep_original=False)
+binarizer = from_sklearn(
+    Binarizer(),
     keep_original=False)
 indicator = MissingIndicatorCreator()
 query = QueryTransformer
