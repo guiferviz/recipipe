@@ -121,3 +121,24 @@ def is_categorical(s, column=None):
         s = s[column]
     return s.dtype.name == "category"
 
+
+def flatten_list(cols_list):
+    """Take a list of lists and return a flattened list.
+
+    Args:
+        cols_list: an iterable of any quantity of str/tuple/list/set.
+
+    Example:
+
+        >>> flatten_list(["a", ("b", set(["c"])), [["d"]]])
+        ["a", "b", "c", "d"]
+    """
+
+    cols = []
+    for i in cols_list:
+        if isinstance(i, (set, list, tuple)):
+            cols.extend(flatten_list(i))  # Flatten all the levels recursively.
+        else:
+            cols.append(i)
+    return cols
+
