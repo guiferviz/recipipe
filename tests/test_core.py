@@ -2,6 +2,7 @@
 from unittest import TestCase
 
 from tests.fixtures import TransformerMock
+from tests.fixtures import RecipipeTransformerMock
 
 import recipipe as r
 
@@ -107,4 +108,33 @@ class RecipipeTest(TestCase):
         # Of course, the p.transform call adds n to the number of
         # transformations performed.
         self.assertEqual(t.n_transform, n * 2 - 1)
+
+
+class RecipipeTransformerTest(TestCase):
+
+    def test_init_empty(self):
+        """Empty constructor should work. """
+
+        RecipipeTransformerMock()
+
+    def test_args_cols_mutual_exclusive(self):
+
+        with self.assertRaises(ValueError):
+            RecipipeTransformerMock("col1", cols=["col2"])
+
+    def test_get_params(self):
+        """Estimator method get_params does not give error using *args. """
+
+        t = r.RecipipeTransformer()
+        params = t.get_params()
+        self.assertEqual(len(params), 5)
+
+    def test_no_constructor_inherit_params(self):
+
+        class C(r.RecipipeTransformer):
+            pass
+
+        t = C()
+        params = t.get_params()
+        self.assertEqual(len(params), 5)
 

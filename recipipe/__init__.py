@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import Binarizer
 
 from recipipe.core import Recipipe
+from recipipe.core import RecipipeTransformer
 
 from recipipe.transformers import CategoryEncoder
 from recipipe.transformers import DropTransformer

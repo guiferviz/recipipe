@@ -1,15 +1,12 @@
 
 import abc
 import fnmatch
-
-import numpy as np
-
-import pandas as pd
+import inspect
 
 import sklearn
 import sklearn.impute
 import sklearn.pipeline
-from sklearn.base import TransformerMixin, clone
+from sklearn.base import BaseEstimator, TransformerMixin, clone
 
 from recipipe.utils import default_params
 
@@ -110,51 +107,103 @@ class Recipipe(sklearn.pipeline.Pipeline):
         return self
 
 
-class RecipipeTransformer(TransformerMixin):
+class RecipipeTransformer(BaseEstimator, TransformerMixin):
     """Base class of all Recipipe transformers.
-
-    `*args`, `cols` and `dtype` are mutually exclusive.
-
-    Args:
-        *args (List[str]): List of column names to apply transformer to.
-        cols (List[str]): List of column names to apply transformer to.
-        dtype (dtype, str, List[dtype] or List[str]): This value is passed to
-            `pandas.DataFrame.select_dtypes`. The columns returned by this
-            pandas method (executed in the dataframe passed to the fit method)
-            will be the columns that are going to be used in the transformation.
-        name (str): Human-friendly name of the transformer.
-        keep_original (bool): `True` if you want to keep the input columns used
-            in the transformer in the transformed DataFrame, `False` if not.
-        col_format (str): New name of the columns. Use "{}" in to
-            substitute that placeholder by the column name. For example, if
-            you want to append the string "_new" at the end of all the
-            generated columns you must set `col_format="{}_new"`.
 
     Attributes:
         name (str): Human-friendly name of the transformer.
     """
 
+    @classmethod
+    def _get_param_names(cls):
+        """Get parameter names for the estimator.
+
+        Taken from SKLearn with some extra modifications to allow the use of
+        var positional arguments (*args) in estimators and append all the
+        params of the RecipipeTransformer class.
+        """
+
+        # If not RecipipeTransformer class, get the parameters of the
+        # base class to avoid repeating params in subclasses __init__.
+        recipipe_params = [] if cls is RecipipeTransformer \
+                else RecipipeTransformer._get_param_names()
+        # fetch the constructor or the original constructor before
+        # deprecation wrapping if any
+        init = getattr(cls.__init__, 'deprecated_original', cls.__init__)
+        if init is object.__init__:
+            # No explicit constructor to introspect
+            return []
+
+        # introspect the constructor arguments to find the model parameters
+        # to represent
+        init_signature = inspect.signature(init)
+        # Consider the constructor parameters excluding 'self'
+        parameters = [p.name for p in init_signature.parameters.values()
+                      if p.name != 'self' and p.kind != p.VAR_KEYWORD
+                                          # No positional vars (*args).
+                                          and p.kind != p.VAR_POSITIONAL]
+        # No RuntimeError raised here!
+        # Add RecipipeTransformer params for all the subclasses.
+        parameters.extend(recipipe_params)
+        # Extract and sort argument names excluding 'self'
+        return sorted([p for p in parameters])
+
     def __init__(self, *args, cols=None, dtype=None, name=None,
                  keep_original=True, col_format="{}"):
+        """Create a new transformer.
+
+        Note that `*args` and `cols` are mutually exclusive.
+
+        Args:
+            *args (:obj:`list` of :obj:`str`): List of column names to apply
+                transformer to. Do not use if you are using `cols`.
+            cols (:obj:`list` of :obj:`str`): List of column names to apply
+                transformer to. Do not use if you are using `*args`.
+            dtype (dtype, str, list[dtype] or list[str]): This value is passed
+                to :obj:`pandas.DataFrame.select_dtypes`. The columns returned
+                by this method (executed in the dataframe passed to the fit
+                method) will be the columns that are going to be used in the
+                transformation phase.
+            name (:obj:`str`): Human-friendly name of the transformer.
+            keep_original (:obj:`bool`): `True` if you want to keep the input
+                columns used in the transformer in the transformed DataFrame,
+                `False` if not.
+            col_format (:obj:`str`): New name of the columns. Use "{}" in to
+                substitute that placeholder by the column name. For example, if
+                you want to append the string "_new" at the end of all the
+                generated columns you must set `col_format="{}_new"`.
+
+        Raise:
+            :obj:`AssertionError` if `*args` and `cols` are provided at the
+            same time.
+        """
+
         # Variable args or cols, but not both.
-        assert not(cols is not None and args)
+        if cols is not None and args:
+            raise ValueError("Do not expecting `cols` and `*args` at the "
+                             "same time")
         # Set cols using variable args.
-        if len(args) > 0:
-            if type(args[0]) == list:
-                cols = args[0]
-            else:
-                cols = args
-        # Or cols or dtype, but not both.
-        assert not(cols is not None and dtype is not None)
+        if args:
+            cols = []
+            for i in args:
+                if isinstance(i, [set, list, tuple]):
+                    cols.extend(i)
+                else:
+                    cols.append(i)
         # Set values.
         self._cols = list(cols) if cols is not None else None
         self._dtype = dtype
         self._cols_fitted = None
         self._col_format = col_format
+        # Define estimator params. We need to explicitly define all params
+        # to avoid errors from SKLearn.
+        self.cols = None
+        self.dtype = None
+        self.col_format = col_format
         self.keep_original = keep_original
         self.name = name
 
-    def _fit_cols(self, df: pd.DataFrame):
+    def _fit_cols(self, df):
         """Set :attr:`RecipipeTransformer._cols_fitted` with a value.
 
         :attr:`RecipipeTransformer._cols_fitted` is the attribute returned by
