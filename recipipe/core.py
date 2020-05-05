@@ -4,9 +4,11 @@ import fnmatch
 import inspect
 
 import sklearn.pipeline
-from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.base import BaseEstimator
+from sklearn.base import TransformerMixin
 
 from recipipe.utils import flatten_list
+from recipipe.utils import fit_columns
 
 
 class Recipipe(sklearn.pipeline.Pipeline):
@@ -190,20 +192,6 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
     def _transform(self, df):
         pass
 
-    def get_cols(self):
-        """Returns the list of columns on which the transformer is applied.
-
-        Raises:
-            Exception: If the transformer is not fitted yet.
-        """
-
-        if self._cols_fitted is None:
-            raise Exception("Columns not fitted, call fit before. "
-                            "If you get this error from your own Recipipe"
-                            "Transformer make sure you are overwriting the"
-                            "_fit method an not fit.")
-        return self._cols_fitted
-
     def fit(self, df, y=None):
         """Fit the transformer.
 
@@ -211,7 +199,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
             df (pandas.DataFrame): Dataframe used to fit the transformation.
         """
 
-        self._fit_cols(df)
+        self.cols = fit_columns(df, self.cols_init, self.dtype)
         self._fit(df)
         return self
 
@@ -270,42 +258,4 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
 
         cols = self.get_cols()
         return {i: self._col_format.format(i) for i in cols}
-
-
-def fit_columns(df, cols=None, dtype=None):
-    """Fit columns to a DataFrame.
-
-    If no `cols` and not `dtype` is given, `df.columns` is returned.
-
-    Args:
-        df (:obj:`pandas.DataFrame`): DataFrame that is been fitted.
-        cols (:obj:`list`): List of columns to fit. The names may contain
-            Unix filename pattern matching (:obj:`fnmatch`) symbols.
-        dtype: Any value suported by :obj:`pandas.DataFrame.select_dtypes`.
-
-    Returns:
-        List of existing columns in df that satisfy the constrains of `dtype`
-        and the list of `cols`.
-    """
-
-    cols_fitted = []
-    # If a list of columns is provided to the constructor...
-    if self._cols is not None:
-        # Check which columns in dataframe match the given columns.
-        for i in self._cols:
-            cols_match = fnmatch.filter(list(df.columns), i)
-            if len(cols_match) == 0:
-                raise ValueError(f"No column match '{i}' in dataframe")
-            cols_fitted += cols_match
-    # If a data type is specify...
-    if self._dtype is not None:
-        # Get columns of the given dtype.
-        cols_fitted += list(df.select_dtypes(self._dtype).columns)
-    # If not cols or dtype given...
-    # We check self._cols is None because we want to
-    #  allow empty lists in transformers.
-    if self._cols is None and len(cols_fitted) == 0:
-        # Use all the columns of the fitted dataframe.
-        cols_fitted += list(df.columns)
-    self._cols_fitted = cols_fitted
 
