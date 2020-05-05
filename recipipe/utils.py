@@ -1,4 +1,6 @@
 
+import fnmatch
+
 
 def default_params(fun_kwargs, default_dict=None, **kwargs):
     """Add to kwargs and/or default_dict the values of fun_kwargs.
@@ -141,4 +143,52 @@ def flatten_list(cols_list):
         else:
             cols.append(i)
     return cols
+
+
+def fit_columns(df, cols=None, dtype=None, raise_error=True):
+    """Fit columns to a DataFrame.
+
+    If no `cols` and not `dtype` are given, `df.columns` is returned.
+    If both `cols` and `dtype` are given, first `cols` are applied and `dtype`
+    is applied over the resulting columns.
+
+    Note than an empty list can be returned if `df` does not contain columns.
+
+    Args:
+        df (:obj:`pandas.DataFrame`): DataFrame that is been fitted.
+        cols (:obj:`list`): List of columns to fit. The names may contain
+            Unix filename pattern matching (:obj:`fnmatch`) symbols.
+        dtype: Any value suported by :obj:`pandas.DataFrame.select_dtypes`.
+        raise_error (:obj:`bool`): If `True` and not column in `df` match the
+            given column in `cols`, an exception is raised.
+
+    Returns:
+        List of existing columns in df that satisfy the constrains of `dtype`
+        and `cols`.
+
+    Raises:
+        :obj:`ValueError` if the patter in `cols` does not match any column and
+        `raise_error` is set to `True`.
+    """
+
+    cols_fitted = []
+    df_cols = list(df.columns)
+
+    if cols is None and dtype is None:
+        return df_cols
+
+    if cols:
+        for i in cols:
+            cols_match = fnmatch.filter(df_cols, i)
+            if raise_error and not cols_match:
+                raise ValueError(f"No column match '{i}' in dataframe")
+            cols_fitted += cols_match
+
+    if dtype:
+        if cols_fitted:
+            # dtype is applied after cols.
+            df = df[cols_fitted]
+        cols_fitted = list(df.select_dtypes(dtype).columns)
+
+    return cols_fitted
 
