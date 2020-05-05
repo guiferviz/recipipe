@@ -198,7 +198,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
     def _get_key_eq_value(self, dict):
         return [k for k, v in dict.items() if k == v]
 
-    def _fit(self, df):
+    def _fit(self, df):  # pragma: no cover
         """Your fit code should be here.
 
         Args:
@@ -208,7 +208,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def _transform(self, df):
+    def _transform(self, df):  # pragma: no cover
         """Your transform code should be here.
 
         Abstract method that you should overwrite in your classes.

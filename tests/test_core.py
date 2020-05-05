@@ -128,6 +128,28 @@ class RecipipeTransformerTest(TestCase):
 
         TestTransformer()
 
+    def test_inheritance_error(self):
+        """You should implement the _transform method in any subclass. """
+
+        class TestTransformer(r.RecipipeTransformer):
+            pass
+
+        with self.assertRaises(TypeError):
+            TestTransformer()
+
+    def test_inheritance_var_args_sklearn_params(self):
+        """You should implement the _transform method in any subclass. """
+
+        class TestTransformer(r.RecipipeTransformer):
+            def __init__(self, *args, param1=1, **kwargs):
+                self.param1 = param1
+                super().__init__(*args, **kwargs)
+            def _transform(self, df):
+                pass
+
+        params = TestTransformer(1, 2, param1=3, name="The Dude").get_params()
+        self.assertDictEqual(params, {"param1": 3})
+
     def test_init_cols_mix(self):
         t = RecipipeTransformerMock(cols=[
             "c1", ["c2"], set(["c3"]), ("c4", "c5")])
@@ -175,4 +197,10 @@ class RecipipeTransformerTest(TestCase):
         t.cols = ["c2", "c1"]
         cols_map = t.get_column_mapping()
         self.assertDictEqual(cols_map, {"c2": "c2_new", "c1": "c1_new"})
+
+    def test_transform(self):
+        t = RecipipeTransformerMock()
+        t.cols = ["c1", "c2", "t1"]
+        df = t.transform(create_df_3dtypes())
+        print(df)
 
