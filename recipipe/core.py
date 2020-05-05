@@ -142,7 +142,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         return sorted([p.name for p in parameters])
 
     def __init__(self, *args, cols=None, dtype=None, name=None,
-                 keep_original=True, col_format="{}",
+                 keep_original=True, cols_format="{}",
                  cols_not_found_error=False, cols_remove_duplicates=True):
         """Create a new transformer.
 
@@ -164,10 +164,10 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
             keep_original (:obj:`bool`): `True` if you want to keep the input
                 columns used in the transformer in the transformed DataFrame,
                 `False` if not.
-            col_format (:obj:`str`): New name of the columns. Use "{}" in to
+            cols_format (:obj:`str`): New name of the columns. Use "{}" in to
                 substitute that placeholder by the column name. For example, if
                 you want to append the string "_new" at the end of all the
-                generated columns you must set `col_format="{}_new"`.
+                generated columns you must set `cols_format="{}_new"`.
                 Default: "{}".
             cols_not_found_error (:obj:`bool`): Raise an error if the isn't
                 any match for any of the specified columns.
@@ -185,9 +185,9 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         self.cols_init = cols
         self.dtype = dtype
         self.cols = None  # fitted columns
-        self.col_format = col_format
         self.keep_original = keep_original
         self.name = name
+        self.cols_format = cols_format
         self.cols_not_found_error = cols_not_found_error
         self.cols_remove_duplicates = cols_remove_duplicates
 
@@ -250,22 +250,30 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         return df_joined
 
     def get_column_mapping(self):
-        """Get the column mapping between the input and transformed dataframe.
+        """Get the column mapping between the input and transformed DataFrame.
 
         By default it returns a 1:1 map between the input and output columns.
-        Make sure your transformed is fitted before calling this function.
+        Make sure your transformer is fitted before calling this function.
 
         Return:
-            A dict in which the key are the input dataframe column names and
-            the value is the output dataframe column names.
-            Both key and values can be a tuples, tuple:1 useful to indicate that
+            A dict in which the keys are the input DataFrame column names and
+            the value is the output DataFrame column names.
+            Both key and values can be tuples, tuple:1 useful to indicate that
             one output column has been created from a list of columns from the
-            input dataframe, 1:tuple useful to indicate that a list of output
-            columns come from one specific column of the input dataframe.
-            We use tuples and not list because list are not hashable so they
+            input DataFrame, 1:tuple useful to indicate that a list of output
+            columns come from one specific column of the input DataFrame.
+            We use tuples and not lists because lists are not hashable, so they
             cannot be keys in a dict.
+
+        See Also:
+            :obj:`recipipe.core.RecipipeTransformer.cols_format`
+
+        Raise:
+            :obj:`RuntimeError` if `self.cols` is `None`.
         """
 
-        cols = self.get_cols()
-        return {i: self._col_format.format(i) for i in cols}
+        if not self.cols:
+            raise RuntimeError("No columns. Transformer not fitted?")
+
+        return {i: self.cols_format.format(i) for i in self.cols}
 

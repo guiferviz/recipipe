@@ -153,3 +153,19 @@ class RecipipeTransformerTest(TestCase):
         self.assertListEqual(t.cols, ["c1"])
         self.assertEqual(t.n_fit, 1)
 
+    def test_get_column_map(self):
+        """Default column mapping, 1:1 mapping. """
+
+        t = RecipipeTransformerMock()
+        t.cols = ["c2", "c1"]
+        cols_map = t.get_column_mapping()
+        self.assertDictEqual(cols_map, {"c2": "c2", "c1": "c1"})
+
+    def test_get_column_map_format(self):
+        """Column mapping should use `cols_format`. """
+
+        t = RecipipeTransformerMock(cols_format="{}_new")
+        t.cols = ["c2", "c1"]
+        cols_map = t.get_column_mapping()
+        self.assertDictEqual(cols_map, {"c2": "c2_new", "c1": "c1_new"})
+
