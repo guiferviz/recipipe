@@ -1,5 +1,6 @@
 
 import fnmatch
+import collections
 
 
 def default_params(fun_kwargs, default_dict=None, **kwargs):
@@ -145,7 +146,8 @@ def flatten_list(cols_list):
     return cols
 
 
-def fit_columns(df, cols=None, dtype=None, raise_error=True):
+def fit_columns(df, cols=None, dtype=None, raise_error=True,
+        drop_duplicates=True):
     """Fit columns to a DataFrame.
 
     If no `cols` and not `dtype` are given, `df.columns` is returned.
@@ -161,6 +163,8 @@ def fit_columns(df, cols=None, dtype=None, raise_error=True):
         dtype: Any value suported by :obj:`pandas.DataFrame.select_dtypes`.
         raise_error (:obj:`bool`): If `True` and not column in `df` match the
             given column in `cols`, an exception is raised.
+        drop_duplicates (:obj:`bool`): Remove duplicates keeping the order.
+            Default: `True`.
 
     Returns:
         List of existing columns in df that satisfy the constrains of `dtype`
@@ -189,6 +193,9 @@ def fit_columns(df, cols=None, dtype=None, raise_error=True):
             # dtype is applied after cols.
             df = df[cols_fitted]
         cols_fitted = list(df.select_dtypes(dtype).columns)
+
+    if drop_duplicates:
+        cols_fitted = list(collections.OrderedDict.fromkeys(cols_fitted))
 
     return cols_fitted
 

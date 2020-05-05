@@ -3,6 +3,7 @@ from unittest import TestCase
 
 from tests.fixtures import TransformerMock
 from tests.fixtures import RecipipeTransformerMock
+from tests.fixtures import create_df_3dtypes
 
 import recipipe as r
 
@@ -143,4 +144,12 @@ class RecipipeTransformerTest(TestCase):
 
         t = RecipipeTransformerMock("c1", cols=["c2"])
         self.assertListEqual(t.cols_init, ["c1", "c2"])
+
+    def test_fit_cols(self):
+        """Cols should have a value after fit. """
+
+        t = RecipipeTransformerMock("c*", dtype=int)
+        t.fit(create_df_3dtypes())
+        self.assertListEqual(t.cols, ["c1"])
+        self.assertEqual(t.n_fit, 1)
 

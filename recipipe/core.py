@@ -142,7 +142,8 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         return sorted([p.name for p in parameters])
 
     def __init__(self, *args, cols=None, dtype=None, name=None,
-                 keep_original=True, col_format="{}"):
+                 keep_original=True, col_format="{}",
+                 cols_not_found_error=False, cols_remove_duplicates=True):
         """Create a new transformer.
 
         Columns names can be use Unix filename pattern matching (
@@ -168,6 +169,12 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
                 you want to append the string "_new" at the end of all the
                 generated columns you must set `col_format="{}_new"`.
                 Default: "{}".
+            cols_not_found_error (:obj:`bool`): Raise an error if the isn't
+                any match for any of the specified columns.
+                Default: `False`.
+            cols_remove_duplicates (:obj:`bool`): Remove duplicates if a column
+                is specified more than once in `args` or `cols`.
+                Default: `True`.
         """
 
         if cols:
@@ -181,6 +188,8 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         self.col_format = col_format
         self.keep_original = keep_original
         self.name = name
+        self.cols_not_found_error = cols_not_found_error
+        self.cols_remove_duplicates = cols_remove_duplicates
 
     def _get_key_eq_value(self, dict):
         return [k for k, v in dict.items() if k == v]
@@ -199,7 +208,8 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
             df (pandas.DataFrame): Dataframe used to fit the transformation.
         """
 
-        self.cols = fit_columns(df, self.cols_init, self.dtype)
+        self.cols = fit_columns(df, self.cols_init, self.dtype,
+                self.cols_not_found_error, self.cols_remove_duplicates)
         self._fit(df)
         return self
 

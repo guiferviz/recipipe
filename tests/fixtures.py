@@ -8,6 +8,9 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from recipipe.core import RecipipeTransformer
 
 
+def create_df_3dtypes():
+    return pd.DataFrame({"c1": [1], "c2": ["hi"], "t1": [1]})
+
 def create_df_cat():
     return pd.DataFrame({
         "color": ["red", "blue", "red"]
@@ -88,7 +91,7 @@ class RecipipeTransformerMock(RecipipeTransformer):
         self.n_transform = 0
         self.n_inverse_transform = 0
 
-    def _fit(self, X, y):
+    def _fit(self, X, y=None):
         self.n_fit += 1
         return self
 
