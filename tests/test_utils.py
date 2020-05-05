@@ -61,3 +61,8 @@ class UtilsTest(TestCase):
         cols = fit_columns(pd.DataFrame())
         self.assertListEqual(cols, [])
 
+    def test_fit_columns_no_dtype_in_df(self):
+
+        cols = fit_columns(DF, dtype=float)
+        self.assertListEqual(cols, [])
+
