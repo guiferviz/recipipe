@@ -153,6 +153,13 @@ class RecipipeTransformerTest(TestCase):
         self.assertListEqual(t.cols, ["c1"])
         self.assertEqual(t.n_fit, 1)
 
+    def test_get_column_map_not_fitted(self):
+        """Error in column map if no columns are fitted. """
+
+        t = RecipipeTransformerMock()
+        with self.assertRaises(ValueError):
+            t.get_column_mapping()
+
     def test_get_column_map(self):
         """Default column mapping, 1:1 mapping. """
 

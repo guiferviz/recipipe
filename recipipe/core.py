@@ -164,6 +164,10 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
             keep_original (:obj:`bool`): `True` if you want to keep the input
                 columns used in the transformer in the transformed DataFrame,
                 `False` if not.
+                Note that, if the output column has the same name as the input
+                column, the output input column will not be included even if
+                `keep_original` is set to `True`.
+                Default: `False`.
             cols_format (:obj:`str`): New name of the columns. Use "{}" in to
                 substitute that placeholder by the column name. For example, if
                 you want to append the string "_new" at the end of all the
@@ -195,10 +199,27 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         return [k for k, v in dict.items() if k == v]
 
     def _fit(self, df):
+        """Your fit code should be here.
+
+        Args:
+            df (:obj:`pandas.DataFrame`): DataFrame used for fitting.
+        """
+
         pass
 
     @abc.abstractmethod
     def _transform(self, df):
+        """Your transform code should be here.
+
+        Abstract method that you should overwrite in your classes.
+
+        Args:
+            df (:obj:`pandas.DataFrame`): DataFrame to transform.
+
+        Return:
+            The transformer DataFrame.
+        """
+
         pass
 
     def fit(self, df, y=None):
@@ -227,7 +248,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         ordered_columns = []
         for i in in_cols:
             if i in col_map:
-                # FIXME: It's not possible to keep original if we do not rename
+                # It's not possible to keep original if we do not rename
                 # the output column.
                 if self.keep_original and i not in to_drop:
                     ordered_columns.append(i)
@@ -269,11 +290,11 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
             :obj:`recipipe.core.RecipipeTransformer.cols_format`
 
         Raise:
-            :obj:`RuntimeError` if `self.cols` is `None`.
+            :obj:`ValueError` if `self.cols` is `None`.
         """
 
         if not self.cols:
-            raise RuntimeError("No columns. Transformer not fitted?")
+            raise ValueError("No columns. Transformer not fitted?")
 
         return {i: self.cols_format.format(i) for i in self.cols}
 
