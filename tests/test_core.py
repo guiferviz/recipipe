@@ -112,29 +112,35 @@ class RecipipeTest(TestCase):
 
 class RecipipeTransformerTest(TestCase):
 
-    def test_init_empty(self):
-        """Empty constructor should work. """
+    def test_abstract_class(self):
+        """You cannot instantiate a RecipipeTransformer. """
 
-        RecipipeTransformerMock()
+        with self.assertRaises(TypeError):
+            r.RecipipeTransformer()
 
-    def test_args_cols_mutual_exclusive(self):
+    def test_inheritance(self):
+        """You should implement the _transform method in any subclass. """
 
-        with self.assertRaises(ValueError):
-            RecipipeTransformerMock("col1", cols=["col2"])
+        class TestTransformer(r.RecipipeTransformer):
+            def _transform(self, df):
+                pass
 
-    def test_get_params(self):
-        """Estimator method get_params does not give error using *args. """
+        TestTransformer()
 
-        t = r.RecipipeTransformer()
-        params = t.get_params()
-        self.assertEqual(len(params), 5)
+    def test_init_cols_mix(self):
+        t = RecipipeTransformerMock(cols=[
+            "c1", ["c2"], set(["c3"]), ("c4", "c5")])
+        self.assertEqual(len(t.cols_init), 5)
 
-    def test_no_constructor_inherit_params(self):
+    def test_init_args_mix(self):
+        """Strs, lists, sets and tuples are allowed as var args. """
 
-        class C(r.RecipipeTransformer):
-            pass
+        t = RecipipeTransformerMock("c1", ["c2"], set(["c3"]), ("c4", "c5"))
+        self.assertEqual(len(t.cols_init), 5)
 
-        t = C()
-        params = t.get_params()
-        self.assertEqual(len(params), 5)
+    def test_init_cols_args(self):
+        """Cols is appended to args. """
+
+        t = RecipipeTransformerMock("c1", cols=["c2"])
+        self.assertListEqual(t.cols_init, ["c1", "c2"])
 

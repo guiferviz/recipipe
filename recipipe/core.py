@@ -3,12 +3,10 @@ import abc
 import fnmatch
 import inspect
 
-import sklearn
-import sklearn.impute
 import sklearn.pipeline
-from sklearn.base import BaseEstimator, TransformerMixin, clone
+from sklearn.base import BaseEstimator, TransformerMixin
 
-from recipipe.utils import default_params
+from recipipe.utils import flatten_list
 
 
 class Recipipe(sklearn.pipeline.Pipeline):
@@ -107,7 +105,7 @@ class Recipipe(sklearn.pipeline.Pipeline):
         return self
 
 
-class RecipipeTransformer(BaseEstimator, TransformerMixin):
+class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
     """Base class of all Recipipe transformers.
 
     Attributes:
@@ -119,14 +117,9 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
         """Get parameter names for the estimator.
 
         Taken from SKLearn with some extra modifications to allow the use of
-        var positional arguments (*args) in estimators and append all the
-        params of the RecipipeTransformer class.
+        var positional arguments (*args) in estimators.
         """
 
-        # If not RecipipeTransformer class, get the parameters of the
-        # base class to avoid repeating params in subclasses __init__.
-        recipipe_params = [] if cls is RecipipeTransformer \
-                else RecipipeTransformer._get_param_names()
         # fetch the constructor or the original constructor before
         # deprecation wrapping if any
         init = getattr(cls.__init__, 'deprecated_original', cls.__init__)
@@ -138,27 +131,27 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
         # to represent
         init_signature = inspect.signature(init)
         # Consider the constructor parameters excluding 'self'
-        parameters = [p.name for p in init_signature.parameters.values()
+        parameters = [p for p in init_signature.parameters.values()
                       if p.name != 'self' and p.kind != p.VAR_KEYWORD
                                           # No positional vars (*args).
                                           and p.kind != p.VAR_POSITIONAL]
         # No RuntimeError raised here!
-        # Add RecipipeTransformer params for all the subclasses.
-        parameters.extend(recipipe_params)
         # Extract and sort argument names excluding 'self'
-        return sorted([p for p in parameters])
+        return sorted([p.name for p in parameters])
 
     def __init__(self, *args, cols=None, dtype=None, name=None,
                  keep_original=True, col_format="{}"):
         """Create a new transformer.
 
-        Note that `*args` and `cols` are mutually exclusive.
+        Columns names can be use Unix filename pattern matching (
+        :obj:`fnmatch`).
 
         Args:
-            *args (:obj:`list` of :obj:`str`): List of column names to apply
-                transformer to. Do not use if you are using `cols`.
-            cols (:obj:`list` of :obj:`str`): List of column names to apply
-                transformer to. Do not use if you are using `*args`.
+            *args (:obj:`list` of :obj:`str`): List of columns the transformer
+                will work on.
+            cols (:obj:`list` of :obj:`str`):  List of columns the transformer
+                will work on. If `*args` are provided, the column array is
+                going to be appended at the end.
             dtype (dtype, str, list[dtype] or list[str]): This value is passed
                 to :obj:`pandas.DataFrame.select_dtypes`. The columns returned
                 by this method (executed in the dataframe passed to the fit
@@ -172,67 +165,20 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
                 substitute that placeholder by the column name. For example, if
                 you want to append the string "_new" at the end of all the
                 generated columns you must set `col_format="{}_new"`.
-
-        Raise:
-            :obj:`AssertionError` if `*args` and `cols` are provided at the
-            same time.
+                Default: "{}".
         """
 
-        # Variable args or cols, but not both.
-        if cols is not None and args:
-            raise ValueError("Do not expecting `cols` and `*args` at the "
-                             "same time")
-        # Set cols using variable args.
-        if args:
-            cols = []
-            for i in args:
-                if isinstance(i, [set, list, tuple]):
-                    cols.extend(i)
-                else:
-                    cols.append(i)
+        if cols:
+            args = (args, cols)
+        cols = flatten_list(args)
+
         # Set values.
-        self._cols = list(cols) if cols is not None else None
-        self._dtype = dtype
-        self._cols_fitted = None
-        self._col_format = col_format
-        # Define estimator params. We need to explicitly define all params
-        # to avoid errors from SKLearn.
-        self.cols = None
-        self.dtype = None
+        self.cols_init = cols
+        self.dtype = dtype
+        self.cols = None  # fitted columns
         self.col_format = col_format
         self.keep_original = keep_original
         self.name = name
-
-    def _fit_cols(self, df):
-        """Set :attr:`RecipipeTransformer._cols_fitted` with a value.
-
-        :attr:`RecipipeTransformer._cols_fitted` is the attribute returned by
-        :func:`RecipipeTransformer.get_cols`.
-
-        Arguments:
-            df (pandas.DataFrame): DataFrame that is been fitted.
-        """
-
-        cols_fitted = []
-        # If a list of columns is provided to the constructor...
-        if self._cols is not None:
-            # Check which columns in dataframe match the given columns.
-            for i in self._cols:
-                cols_match = fnmatch.filter(list(df.columns), i)
-                if len(cols_match) == 0:
-                    raise ValueError(f"No column match '{i}' in dataframe")
-                cols_fitted += cols_match
-        # If a data type is specify...
-        if self._dtype is not None:
-            # Get columns of the given dtype.
-            cols_fitted += list(df.select_dtypes(self._dtype).columns)
-        # If not cols or dtype given...
-        # We check self._cols is None because we want to
-        #  allow empty lists in transformers.
-        if self._cols is None and len(cols_fitted) == 0:
-            # Use all the columns of the fitted dataframe.
-            cols_fitted += list(df.columns)
-        self._cols_fitted = cols_fitted
 
     def _get_key_eq_value(self, dict):
         return [k for k, v in dict.items() if k == v]
@@ -240,8 +186,9 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
     def _fit(self, df):
         pass
 
+    @abc.abstractmethod
     def _transform(self, df):
-        raise NotImplementedError("Overwrite transform or _transform method")
+        pass
 
     def get_cols(self):
         """Returns the list of columns on which the transformer is applied.
@@ -323,4 +270,42 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
 
         cols = self.get_cols()
         return {i: self._col_format.format(i) for i in cols}
+
+
+def fit_columns(df, cols=None, dtype=None):
+    """Fit columns to a DataFrame.
+
+    If no `cols` and not `dtype` is given, `df.columns` is returned.
+
+    Args:
+        df (:obj:`pandas.DataFrame`): DataFrame that is been fitted.
+        cols (:obj:`list`): List of columns to fit. The names may contain
+            Unix filename pattern matching (:obj:`fnmatch`) symbols.
+        dtype: Any value suported by :obj:`pandas.DataFrame.select_dtypes`.
+
+    Returns:
+        List of existing columns in df that satisfy the constrains of `dtype`
+        and the list of `cols`.
+    """
+
+    cols_fitted = []
+    # If a list of columns is provided to the constructor...
+    if self._cols is not None:
+        # Check which columns in dataframe match the given columns.
+        for i in self._cols:
+            cols_match = fnmatch.filter(list(df.columns), i)
+            if len(cols_match) == 0:
+                raise ValueError(f"No column match '{i}' in dataframe")
+            cols_fitted += cols_match
+    # If a data type is specify...
+    if self._dtype is not None:
+        # Get columns of the given dtype.
+        cols_fitted += list(df.select_dtypes(self._dtype).columns)
+    # If not cols or dtype given...
+    # We check self._cols is None because we want to
+    #  allow empty lists in transformers.
+    if self._cols is None and len(cols_fitted) == 0:
+        # Use all the columns of the fitted dataframe.
+        cols_fitted += list(df.columns)
+    self._cols_fitted = cols_fitted
 
