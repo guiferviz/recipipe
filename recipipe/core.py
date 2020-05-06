@@ -286,19 +286,20 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         # maintain the input column order.
         # Ex: we can fit a df that contains a target column and transform dfs
         # without that target.
-        cols_out = self._get_ordered_out_cols(in_cols)
+        cols_out = self._get_ordered_out_cols(in_cols, self.cols,
+                self.col_map_1_n)
 
         return df_joined[cols_out]
 
-    def _get_ordered_out_cols(self, in_cols):
+    def _get_ordered_out_cols(self, cols_in_all, cols_in, col_map_1_n):
         cols_out = []
-        for i in in_cols:
-            if i in self.cols:
+        for i in cols_in_all:
+            if i in cols_in:
                 # It's not possible to keep original if we do not rename
                 # the output column.
                 if self.keep_original and i not in self.cols_to_drop:
                     cols_out.append(i)
-                cols_out += self.col_map_1_n[i]
+                cols_out += col_map_1_n[i]
             else:
                 cols_out.append(i)
         # Remove duplicates.
@@ -308,21 +309,23 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
     def inverse_transform(self, df_in):
         in_cols = df_in.columns
         df_out = self._inverse_transform(df_in)
-        to_drop = []
-        cols_out = []
-        for i in in_cols:
-            l = self.col_map_1_n_inverse.get(i, None)
-            if l:
-                cols_out += l
-            if i in self.cols_out:
-                to_drop.append(i)
-            else:
-                cols_out.append(i)
         df_in = df_in.drop(self.cols_to_drop, axis=1)
         df_joined = df_in.join(df_out)
+
+        cols_out = self._get_ordered_out_cols_inverse(in_cols)
+
+        return df_joined[cols_out]
+
+    def _get_ordered_out_cols_inverse(self, in_cols):
+        cols_out = []
+        for i in in_cols:
+            if i in self.cols_out:
+                cols_out += self.col_map_1_n_inverse[i]
+            else:
+                cols_out.append(i)
         # Remove duplicates.
         cols_out = list(collections.OrderedDict.fromkeys(cols_out))
-        return df_joined[cols_out]
+        return cols_out
 
     def _get_column_mapping(self):
         """Get the column mapping between the input and transformed DataFrame.
