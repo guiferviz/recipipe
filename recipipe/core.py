@@ -1,5 +1,6 @@
 
 import abc
+import collections
 import fnmatch
 import inspect
 
@@ -7,6 +8,7 @@ import sklearn.pipeline
 from sklearn.base import BaseEstimator
 from sklearn.base import TransformerMixin
 
+from recipipe.utils import add_to_map_dict
 from recipipe.utils import flatten_list
 from recipipe.utils import fit_columns
 
@@ -239,7 +241,14 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         self.cols = fit_columns(df, self.cols_init, self.dtype,
                 self.cols_not_found_error, self.cols_remove_duplicates)
         self._fit(df)
+        # Save column maps and lists.
         self.col_map = self._get_column_mapping()
+        col_map_1_n, col_map_1_n_inverse = {}, {}
+        for k, v in self.col_map.items():
+            add_to_map_dict(col_map_1_n, k, v)
+            add_to_map_dict(col_map_1_n_inverse, v, k)
+        self.col_map_1_n = col_map_1_n
+        self.col_map_1_n_inverse = col_map_1_n_inverse
         self.cols_out = flatten_list(self.col_map.values())
         # Cols in input columns and output columns should be removed from
         # df_in during the transform phase.
@@ -256,7 +265,14 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
 
         Returns:
             Transformed DataFrame.
+
+        Raise:
+            :obj:`ValueError` if not `cols` fitted. Fit the transform to avoid
+            this error.
         """
+
+        if self.cols is None:
+            raise ValueError("No cols set. Transformer not fitted?")
 
         in_cols = df_in.columns
         df_out = self._transform(df_in)
@@ -266,9 +282,15 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
 
         # Reorder output columns and return.
         # This cannot be precomputed during fit because we want to support
-        # any extra column not present during fit time.
+        # any extra column not present during fit time. We also want to
+        # maintain the input column order.
         # Ex: we can fit a df that contains a target column and transform dfs
         # without that target.
+        cols_out = self._get_ordered_out_cols(in_cols)
+
+        return df_joined[cols_out]
+
+    def _get_ordered_out_cols(self, in_cols):
         cols_out = []
         for i in in_cols:
             if i in self.cols:
@@ -276,23 +298,31 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
                 # the output column.
                 if self.keep_original and i not in self.cols_to_drop:
                     cols_out.append(i)
-                c = self.col_map[i]
-                cols_out += c if type(c) == tuple else [c]
+                cols_out += self.col_map_1_n[i]
             else:
                 cols_out.append(i)
-        return df_joined[cols_out]
+        # Remove duplicates.
+        cols_out = list(collections.OrderedDict.fromkeys(cols_out))
+        return cols_out
 
     def inverse_transform(self, df_in):
         in_cols = df_in.columns
         df_out = self._inverse_transform(df_in)
-        col_map = self.get_column_mapping()
-        # If key and value is the same we want to keep the transformed column
-        # and remove the input column.
-        to_drop = get_keys_eq_value(col_map)
+        to_drop = []
+        cols_out = []
+        for i in in_cols:
+            l = self.col_map_1_n_inverse.get(i, None)
+            if l:
+                cols_out += l
+            if i in self.cols_out:
+                to_drop.append(i)
+            else:
+                cols_out.append(i)
         df_in = df_in.drop(to_drop, axis=1)
-        # Join input columns to output
         df_joined = df_in.join(df_out)
-        return df_joined
+        # Remove duplicates.
+        cols_out = list(collections.OrderedDict.fromkeys(cols_out))
+        return df_joined[cols_out]
 
     def _get_column_mapping(self):
         """Get the column mapping between the input and transformed DataFrame.

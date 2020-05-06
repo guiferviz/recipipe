@@ -212,6 +212,8 @@ class RecipipeTransformerTest(TestCase):
         t = RecipipeTransformerMock()
         df = create_df_3dtypes()
         t.fit(df)
+        print(t.col_map)
+        print(t.col_map_1_n)
         df = t.transform(df)
         self.assertListEqual(list(df.columns), ["c1", "c2", "t1"])
 
@@ -247,15 +249,88 @@ class RecipipeTransformerTest(TestCase):
         class C(r.RecipipeTransformer):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
-                self.cols = ["c1", "t1"]
             def _get_column_mapping(self):
                 return {"c1": ("c1_1", "c1_2"), ("c1", "t1"): "c1t1"}
             def _transform(self, df):
                 df = df[["c1", "c1", "t1"]]
                 df.columns = ["c1_1", "c1_2", "c1t1"]
                 return df
-        t = C()
-        df = t.transform(create_df_3dtypes())
-        out_cols = ["c1_1", "c1_2", "c2", "c1t1"]
+        t = C("c1", "t1")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        out_cols = ["c1_1", "c1_2", "c1t1", "c2"]
         self.assertListEqual(list(df.columns), out_cols)
+
+    def test_transform_cols_map_str_and_tuples(self):
+
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _get_column_mapping(self):
+                return {"c1": "c1", ("c1", "t1"): "c1t1"}
+            def _transform(self, df):
+                df = df[["c1", "t1"]]
+                df.columns = ["c1", "c1t1"]
+                return df
+        t = C("c1", "t1")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        out_cols = ["c1", "c1t1", "c2"]
+        self.assertListEqual(list(df.columns), out_cols)
+
+    def test_inverse_transform_cols_map_tuples(self):
+
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _get_column_mapping(self):
+                return {"c1": ("c1_1", "c1_2"), ("c1", "t1"): "c1t1"}
+            def _transform(self, df):
+                df = df[["c1", "c1", "t1"]]
+                df.columns = ["c1_1", "c1_2", "c1t1"]
+                return df
+            def _inverse_transform(self, df):
+                df = df[["c1_1", "c1t1"]]
+                df.columns = ["c1", "t1"]
+                return df
+        t = C("c1", "t1")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        df = t.inverse_transform(df)
+        out_cols = ["c1", "t1", "c2"]
+        self.assertListEqual(list(df.columns), out_cols)
+
+    def test_inverse_transform_cols_map_str_and_tuples(self):
+        """Test 1:1 and n:1 in the same map. """
+
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _get_column_mapping(self):
+                return {"c1": "c1", ("c1", "t1"): "c1t1"}
+            def _transform(self, df):
+                df = df[["c1", "t1"]]
+                df.columns = ["c1", "c1t1"]
+                return df
+            def _inverse_transform(self, df):
+                df = df[["c1", "c1t1"]]
+                df.columns = ["c1", "t1"]
+                return df
+        t = C("c1", "t1")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        df = t.inverse_transform(df)
+        out_cols = ["c1", "t1", "c2"]
+        self.assertListEqual(list(df.columns), out_cols)
+
+    def test_transform_no_fit(self):
+        """Raise exception if the transformer method is called without fit. """
+
+        t = RecipipeTransformerMock()
+        with self.assertRaises(ValueError):
+            t.transform(None)
 

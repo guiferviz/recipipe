@@ -199,3 +199,29 @@ def fit_columns(df, cols=None, dtype=None, raise_error=True,
 
     return cols_fitted
 
+
+def add_to_map_dict(col_map, k, v):
+    """Stores `k` and `v` in the given `col_map`.
+
+    If `k` is a string, `col_map[k] += list(v)`.
+    If `k` is a tuple, `for each i in k: col_map[k] += list(v)`.
+
+    Args:
+        col_map (:obj:`dict`): Dictionary in which the keys and values will
+            be stored.
+        k (:obj:`str` or :obj:`tuple`): Tuples will be split and `col_map`
+            will contain a string key with a list of values taken from `v`.
+        v (:obj:`str` or :obj:`tuple`): Value appended to each of the keys
+            in `k`.
+    """
+
+    # Convert v to list, and k to tuple.
+    v = [v] if type(v) == str else list(v)
+    k = (k,) if type(k) == str else k
+
+    # Iterate the tuple keys and append values.
+    for kk in k:
+        l = col_map.get(kk, [])
+        l += v
+        col_map[kk] = l
+

@@ -3,9 +3,9 @@ from unittest import TestCase
 
 import pandas as pd
 
+from recipipe.utils import add_to_map_dict
 from recipipe.utils import flatten_list
 from recipipe.utils import fit_columns
-from recipipe.utils import get_keys_eq_value
 from tests.fixtures import create_df_3dtypes
 
 
@@ -87,4 +87,28 @@ class UtilsTest(TestCase):
         df = pd.DataFrame({"c2": [], "c1": []})
         cols = fit_columns(df, ["c*"])
         self.assertListEqual(cols, ["c2", "c1"])
+
+    def test_add_to_map_dict_str(self):
+
+        d = {}
+        add_to_map_dict(d, "a", "b")
+        self.assertDictEqual(d, {"a": ["b"]})
+
+    def test_add_to_map_dict_str(self):
+
+        d = {}
+        add_to_map_dict(d, ("a", "b"), "c")
+        self.assertDictEqual(d, {"a": ["c"], "b": ["c"]})
+
+    def test_add_to_map_dict_str(self):
+
+        d = {}
+        add_to_map_dict(d, "a", ("b", "c"))
+        self.assertDictEqual(d, {"a": ["b", "c"]})
+
+    def test_add_to_map_dict_tuples(self):
+
+        d = {}
+        add_to_map_dict(d, ("a", "b"), ("c", "d"))
+        self.assertDictEqual(d, {"a": ["c", "d"], "b": ["c", "d"]})
 
