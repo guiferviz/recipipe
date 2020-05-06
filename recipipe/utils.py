@@ -199,13 +199,3 @@ def fit_columns(df, cols=None, dtype=None, raise_error=True,
 
     return cols_fitted
 
-
-def get_keys_eq_value(dic):
-    """Return a list of keys that are equal to their value.
-
-    Args:
-        dic (:obj:`dict`): Dictionary.
-    """
-
-    return [k for k, v in dic.items() if k == v]
-

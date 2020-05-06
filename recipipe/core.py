@@ -9,7 +9,6 @@ from sklearn.base import TransformerMixin
 
 from recipipe.utils import flatten_list
 from recipipe.utils import fit_columns
-from recipipe.utils import get_keys_eq_value
 
 
 class Recipipe(sklearn.pipeline.Pipeline):

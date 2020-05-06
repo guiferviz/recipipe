@@ -88,21 +88,3 @@ class UtilsTest(TestCase):
         cols = fit_columns(df, ["c*"])
         self.assertListEqual(cols, ["c2", "c1"])
 
-    def test_get_keys(self):
-
-        d = {"a": "b", "c": "c"}
-        l = get_keys_eq_value(d)
-        self.assertListEqual(l, ["c"])
-
-    def test_get_keys_empty_dict(self):
-
-        d = {}
-        l = get_keys_eq_value(d)
-        self.assertListEqual(l, [])
-
-    def test_get_keys_empty_result(self):
-
-        d = {"ash": "pikachu"}
-        l = get_keys_eq_value(d)
-        self.assertListEqual(l, [])
-
