@@ -175,32 +175,87 @@ class RecipipeTransformerTest(TestCase):
         self.assertListEqual(t.cols, ["c1"])
         self.assertEqual(t.n_fit, 1)
 
+    def test_fit_cols_all(self):
+        """When not cols are specified we need to fit all of them. """
+
+        t = RecipipeTransformerMock()
+        t.fit(create_df_3dtypes())
+        self.assertListEqual(t.cols, ["c1", "c2", "t1"])
+        self.assertEqual(t.n_fit, 1)
+
     def test_get_column_map_not_fitted(self):
         """Error in column map if no columns are fitted. """
 
         t = RecipipeTransformerMock()
         with self.assertRaises(ValueError):
-            t.get_column_mapping()
+            t._get_column_mapping()
 
     def test_get_column_map(self):
         """Default column mapping, 1:1 mapping. """
 
         t = RecipipeTransformerMock()
         t.cols = ["c2", "c1"]
-        cols_map = t.get_column_mapping()
+        cols_map = t._get_column_mapping()
         self.assertDictEqual(cols_map, {"c2": "c2", "c1": "c1"})
 
     def test_get_column_map_format(self):
         """Column mapping should use `cols_format`. """
 
-        t = RecipipeTransformerMock(cols_format="{}_new")
+        t = RecipipeTransformerMock(col_format="{}_new")
         t.cols = ["c2", "c1"]
-        cols_map = t.get_column_mapping()
+        cols_map = t._get_column_mapping()
         self.assertDictEqual(cols_map, {"c2": "c2_new", "c1": "c1_new"})
 
-    def test_transform(self):
+    def test_transform_all_columns(self):
+        """Transform a df and return the same columns. """
+
         t = RecipipeTransformerMock()
-        t.cols = ["c1", "c2", "t1"]
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        self.assertListEqual(list(df.columns), ["c1", "c2", "t1"])
+
+    def test_transform_some_columns(self):
+
+        class C(r.RecipipeTransformer):
+            def _transform(self, df):
+                return df[self.cols]
+        t = C("c1", "c2")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        self.assertListEqual(list(df.columns), ["c1", "c2", "t1"])
+
+    def test_transform_keep_original(self):
+
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _transform(self, df):
+                df = df[self.cols]
+                df.columns = [self.col_format.format(i) for i in df.columns]
+                return df
+        t = C("c1", "c2", keep_original=True, col_format="{}_out")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        out_cols = ["c1", "c1_out", "c2", "c2_out", "t1"]
+        self.assertListEqual(list(df.columns), out_cols)
+
+    def test_transform_cols_map_tuples(self):
+
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.cols = ["c1", "t1"]
+            def _get_column_mapping(self):
+                return {"c1": ("c1_1", "c1_2"), ("c1", "t1"): "c1t1"}
+            def _transform(self, df):
+                df = df[["c1", "c1", "t1"]]
+                df.columns = ["c1_1", "c1_2", "c1t1"]
+                return df
+        t = C()
         df = t.transform(create_df_3dtypes())
-        print(df)
+        out_cols = ["c1_1", "c1_2", "c2", "c1t1"]
+        self.assertListEqual(list(df.columns), out_cols)
 

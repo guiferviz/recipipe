@@ -9,6 +9,7 @@ from sklearn.base import TransformerMixin
 
 from recipipe.utils import flatten_list
 from recipipe.utils import fit_columns
+from recipipe.utils import get_keys_eq_value
 
 
 class Recipipe(sklearn.pipeline.Pipeline):
@@ -120,12 +121,14 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
 
         Taken from SKLearn with some extra modifications to allow the use of
         var positional arguments (*args) in estimators.
+        My modifications are indicated by comments with two ##.
         """
 
         # fetch the constructor or the original constructor before
         # deprecation wrapping if any
         init = getattr(cls.__init__, 'deprecated_original', cls.__init__)
-        if init is object.__init__:
+        if init is object.__init__:  # pragma: no cover
+            ## I don't know how to force this situation for testing...
             # No explicit constructor to introspect
             return []
 
@@ -135,14 +138,14 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         # Consider the constructor parameters excluding 'self'
         parameters = [p for p in init_signature.parameters.values()
                       if p.name != 'self' and p.kind != p.VAR_KEYWORD
-                                          # No positional vars (*args).
+                                          ## No positional vars (*args).
                                           and p.kind != p.VAR_POSITIONAL]
-        # No RuntimeError raised here!
+        ## No RuntimeError raised here!
         # Extract and sort argument names excluding 'self'
         return sorted([p.name for p in parameters])
 
     def __init__(self, *args, cols=None, dtype=None, name=None,
-                 keep_original=True, cols_format="{}",
+                 keep_original=False, col_format="{}",
                  cols_not_found_error=False, cols_remove_duplicates=True):
         """Create a new transformer.
 
@@ -168,10 +171,10 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
                 column, the output input column will not be included even if
                 `keep_original` is set to `True`.
                 Default: `False`.
-            cols_format (:obj:`str`): New name of the columns. Use "{}" in to
+            col_format (:obj:`str`): New name of the columns. Use "{}" in to
                 substitute that placeholder by the column name. For example, if
                 you want to append the string "_new" at the end of all the
-                generated columns you must set `cols_format="{}_new"`.
+                generated columns you must set `col_format="{}_new"`.
                 Default: "{}".
             cols_not_found_error (:obj:`bool`): Raise an error if the isn't
                 any match for any of the specified columns.
@@ -188,15 +191,15 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         # Set values.
         self.cols_init = cols
         self.dtype = dtype
-        self.cols = None  # fitted columns
         self.keep_original = keep_original
         self.name = name
-        self.cols_format = cols_format
+        self.col_format = col_format
+        self.col_map = None  # set in fit
+        self.cols = None  # fitted columns, set in fit
+        self.cols_out = None  # set in fit
         self.cols_not_found_error = cols_not_found_error
         self.cols_remove_duplicates = cols_remove_duplicates
-
-    def _get_key_eq_value(self, dict):
-        return [k for k, v in dict.items() if k == v]
+        self.cols_to_drop = None  # set in fit
 
     def _fit(self, df):  # pragma: no cover
         """Your fit code should be here.
@@ -212,6 +215,11 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         """Your transform code should be here.
 
         Abstract method that you should overwrite in your classes.
+        Remember that any transformation done here should be consistent with
+        the column mapping returned by
+        :obj:`recipipe.core.RecipipeTransformer._get_column_mapping`.
+        Ex: if your column mapping is `{"c1": "c1"}` do not return in this
+        method a DataFrame with columns `c1` and `c2`.
 
         Args:
             df (:obj:`pandas.DataFrame`): DataFrame to transform.
@@ -232,31 +240,48 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         self.cols = fit_columns(df, self.cols_init, self.dtype,
                 self.cols_not_found_error, self.cols_remove_duplicates)
         self._fit(df)
+        self.col_map = self._get_column_mapping()
+        self.cols_out = flatten_list(self.col_map.values())
+        # Cols in input columns and output columns should be removed from
+        # df_in during the transform phase.
+        # We join df_in with df_out, so we do not want duplicate column names.
+        self.cols_to_drop = set(self.cols).intersection(set(self.cols_out))
+
         return self
 
     def transform(self, df_in):
+        """Transform DataFrame.
+
+        Args:
+            df_in (:obj:`pandas.DataFrame`): Input DataFrame.
+
+        Returns:
+            Transformed DataFrame.
+        """
+
         in_cols = df_in.columns
         df_out = self._transform(df_in)
-        col_map = self.get_column_mapping()
-        # If key and value is the same we want to keep the transformed column
-        # and remove the input column.
-        to_drop = self._get_key_eq_value(col_map)
-        df_in = df_in.drop(to_drop, axis=1)
+        df_in = df_in.drop(self.cols_to_drop, axis=1)
         # Join input columns to output
         df_joined = df_in.join(df_out)
-        # Reorder columns.
-        ordered_columns = []
+
+        # Reorder output columns and return.
+        # This cannot be precomputed during fit because we want to support
+        # any extra column not present during fit time.
+        # Ex: we can fit a df that contains a target column and transform dfs
+        # without that target.
+        cols_out = []
         for i in in_cols:
-            if i in col_map:
+            if i in self.cols:
                 # It's not possible to keep original if we do not rename
                 # the output column.
-                if self.keep_original and i not in to_drop:
-                    ordered_columns.append(i)
-                c = col_map[i]
-                ordered_columns += c if type(c) == tuple else [c]
+                if self.keep_original and i not in self.cols_to_drop:
+                    cols_out.append(i)
+                c = self.col_map[i]
+                cols_out += c if type(c) == tuple else [c]
             else:
-                ordered_columns.append(i)
-        return df_joined[ordered_columns]
+                cols_out.append(i)
+        return df_joined[cols_out]
 
     def inverse_transform(self, df_in):
         in_cols = df_in.columns
@@ -264,13 +289,13 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         col_map = self.get_column_mapping()
         # If key and value is the same we want to keep the transformed column
         # and remove the input column.
-        to_drop = self._get_key_eq_value(col_map)
+        to_drop = get_keys_eq_value(col_map)
         df_in = df_in.drop(to_drop, axis=1)
         # Join input columns to output
         df_joined = df_in.join(df_out)
         return df_joined
 
-    def get_column_mapping(self):
+    def _get_column_mapping(self):
         """Get the column mapping between the input and transformed DataFrame.
 
         By default it returns a 1:1 map between the input and output columns.
@@ -287,14 +312,14 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
             cannot be keys in a dict.
 
         See Also:
-            :obj:`recipipe.core.RecipipeTransformer.cols_format`
+            :obj:`recipipe.core.RecipipeTransformer.col_format`
 
         Raise:
             :obj:`ValueError` if `self.cols` is `None`.
         """
 
-        if not self.cols:
+        if self.cols is None:
             raise ValueError("No columns. Transformer not fitted?")
 
-        return {i: self.cols_format.format(i) for i in self.cols}
+        return {i: self.col_format.format(i) for i in self.cols}
 
