@@ -244,6 +244,22 @@ class RecipipeTransformerTest(TestCase):
         out_cols = ["c1", "c1_out", "c2", "c2_out", "t1"]
         self.assertListEqual(list(df.columns), out_cols)
 
+    def test_transform_keep_original_false_and_format(self):
+
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _transform(self, df):
+                df = df[self.cols]
+                df.columns = [self.col_format.format(i) for i in df.columns]
+                return df
+        t = C("c1", "c2", keep_original=False, col_format="{}_out")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        out_cols = ["c1_out", "c2_out", "t1"]
+        self.assertListEqual(list(df.columns), out_cols)
+
     def test_transform_cols_map_tuples(self):
 
         class C(r.RecipipeTransformer):
@@ -263,6 +279,7 @@ class RecipipeTransformerTest(TestCase):
         self.assertListEqual(list(df.columns), out_cols)
 
     def test_transform_cols_map_str_and_tuples(self):
+        """Test 1:1 and n:1 in the same map. """
 
         class C(r.RecipipeTransformer):
             def __init__(self, *args, **kwargs):
@@ -325,6 +342,27 @@ class RecipipeTransformerTest(TestCase):
         df = t.transform(df)
         df = t.inverse_transform(df)
         out_cols = ["c1", "t1", "c2"]
+        self.assertListEqual(list(df.columns), out_cols)
+
+    def test_inverse_transform_keep_original_false_and_format(self):
+
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _transform(self, df):
+                df = df[self.cols]
+                df.columns = [self.col_format.format(i) for i in df.columns]
+                return df
+            def _inverse_transform(self, df):
+                df = df[["c1_out", "c2_out"]]
+                df.columns = ["c1", "c2"]
+                return df
+        t = C("c1", "c2", keep_original=False, col_format="{}_out")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        df = t.inverse_transform(df)
+        out_cols = ["c1", "c2", "t1"]
         self.assertListEqual(list(df.columns), out_cols)
 
     def test_transform_no_fit(self):

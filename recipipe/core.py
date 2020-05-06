@@ -318,7 +318,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
                 to_drop.append(i)
             else:
                 cols_out.append(i)
-        df_in = df_in.drop(to_drop, axis=1)
+        df_in = df_in.drop(self.cols_to_drop, axis=1)
         df_joined = df_in.join(df_out)
         # Remove duplicates.
         cols_out = list(collections.OrderedDict.fromkeys(cols_out))
