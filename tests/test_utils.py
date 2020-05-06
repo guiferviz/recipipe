@@ -30,6 +30,11 @@ class UtilsTest(TestCase):
         cols = fit_columns(create_df_3dtypes(), ["c*"])
         self.assertListEqual(cols, ["c1", "c2"])
 
+    def test_fit_columns_cols_empty(self):
+
+        cols = fit_columns(create_df_3dtypes(), [], [])
+        self.assertListEqual(cols, ["c1", "c2", "t1"])
+
     def test_fit_columns_dtype(self):
 
         cols = fit_columns(create_df_3dtypes(), dtype=int)

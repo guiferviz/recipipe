@@ -178,7 +178,7 @@ def fit_columns(df, cols=None, dtype=None, raise_error=True,
     cols_fitted = []
     df_cols = list(df.columns)
 
-    if cols is None and dtype is None:
+    if not cols and not dtype:
         return df_cols
 
     if cols:
