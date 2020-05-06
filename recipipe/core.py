@@ -312,15 +312,16 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         df_in = df_in.drop(self.cols_to_drop, axis=1)
         df_joined = df_in.join(df_out)
 
-        cols_out = self._get_ordered_out_cols_inverse(in_cols)
+        cols_out = self._get_ordered_out_cols_inverse(in_cols, self.cols_out,
+                self.col_map_1_n_inverse)
 
         return df_joined[cols_out]
 
-    def _get_ordered_out_cols_inverse(self, in_cols):
+    def _get_ordered_out_cols_inverse(self, cols_in_all, cols_in, col_map_1_n):
         cols_out = []
-        for i in in_cols:
-            if i in self.cols_out:
-                cols_out += self.col_map_1_n_inverse[i]
+        for i in cols_in_all:
+            if i in cols_in:
+                cols_out += col_map_1_n[i]
             else:
                 cols_out.append(i)
         # Remove duplicates.
