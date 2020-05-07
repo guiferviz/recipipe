@@ -15,9 +15,7 @@ from recipipe.core import RecipipeTransformer
 
 
 class SelectTransformer(RecipipeTransformer):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    """Select the fitted columns and ignore the rest of them. """
 
     def transform(self, df):
         """Select the fitted columns. """
@@ -32,24 +30,22 @@ class SelectTransformer(RecipipeTransformer):
 
 
 class DropTransformer(RecipipeTransformer):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    """Drop the fitted columns and continue with the reminded ones. """
 
     def transform(self, df):
         """Drop the fitted columns. """
 
-        cols = self.get_cols()
-        return df.drop(cols, axis=1)
+        errors = "raise" if self.cols_not_found_error else "ignore"
+        return df.drop(self.cols, axis=1, errors=errors)
+
+    def inverse_transform(self, df):
+        return df
 
 
 class ColumnTransformer(RecipipeTransformer, abc.ABC):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def _fit(self, df, y=None):
-        for i in self.get_cols():
+        for i in self.cols:
             self._fit_column(df, i)
         return self
 
