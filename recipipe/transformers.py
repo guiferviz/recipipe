@@ -22,11 +22,13 @@ class SelectTransformer(RecipipeTransformer):
     def transform(self, df):
         """Select the fitted columns. """
 
-        cols = self.get_cols()
+        cols = self.cols
+        if not self.cols_not_found_error:
+            cols = [i for i in self.cols if i in df.columns]
         return df[cols]
 
     def inverse_transform(self, df):
-        return self.transform(df)
+        return df
 
 
 class DropTransformer(RecipipeTransformer):
@@ -41,9 +43,7 @@ class DropTransformer(RecipipeTransformer):
         return df.drop(cols, axis=1)
 
 
-class ColumnTransformer(RecipipeTransformer):
-
-    __metaclass__ = abc.ABCMeta
+class ColumnTransformer(RecipipeTransformer, abc.ABC):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -77,9 +77,7 @@ class ColumnTransformer(RecipipeTransformer):
         return df_out
 
 
-class ColumnsTransformer(RecipipeTransformer):
-
-    __metaclass__ = abc.ABCMeta
+class ColumnsTransformer(RecipipeTransformer, abc.ABC):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
