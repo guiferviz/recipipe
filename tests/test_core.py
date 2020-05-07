@@ -1,16 +1,9 @@
 
-import numpy as np
-
-import pandas as pd
-
 from unittest import TestCase
 
-from tests.fixtures import create_df_all
-from tests.fixtures import create_df_cat
-from tests.fixtures import create_df_cat2
 from tests.fixtures import TransformerMock
-from tests.fixtures import SklearnTransformerMock
 from tests.fixtures import RecipipeTransformerMock
+from tests.fixtures import create_df_3dtypes
 
 import recipipe as r
 
@@ -118,315 +111,314 @@ class RecipipeTest(TestCase):
         self.assertEqual(t.n_transform, n * 2 - 1)
 
 
-class OneHotTest(TestCase):
-    """OneHot transformer test suite. """
+class RecipipeTransformerTest(TestCase):
 
-    def test_onehot_columns_names(self):
-        """Check the name of the columns after applying onehot encoding.
+    def test_abstract_class(self):
+        """You cannot instantiate a RecipipeTransformer. """
 
-        We are not taking into account the order of the columns for
-        this test.
-        """
+        with self.assertRaises(TypeError):
+            r.RecipipeTransformer()
 
-        df1 = create_df_cat()
-        t = r.recipipe() + r.onehot()
-        df2 = t.fit_transform(df1)
-        expected = ["color='red'", "color='blue'"]
-        self.assertCountEqual(df2.columns, expected)
+    def test_inheritance(self):
+        """You should implement the _transform method in any subclass. """
 
-    def test_onehot_columns_names_underscore(self):
-        """Check columns names when "_" is present in the column name.
+        class TestTransformer(r.RecipipeTransformer):
+            def _transform(self, df):
+                pass
 
-        We are not taking into account the order of the columns for
-        this test.
-        """
+        TestTransformer()
 
-        df1 = create_df_cat()
-        df1.columns = ["my_color"]
-        t = r.recipipe() + r.onehot()
-        df2 = t.fit_transform(df1)
-        expected = ["my_color='red'", "my_color='blue'"]
-        self.assertCountEqual(df2.columns, expected)
+    def test_inheritance_error(self):
+        """You should implement the _transform method in any subclass. """
 
-    def test_onehot_columns_values(self):
-        """Check the values of a column after applying onehot encoding.
+        class TestTransformer(r.RecipipeTransformer):
+            pass
 
-        The order of the resulting columns should be first the blue
-        color and second the red color (alphabetically sorted).
-        This test does not check the column names, only the values.
-        """
+        with self.assertRaises(TypeError):
+            TestTransformer()
 
-        df1 = create_df_cat()
-        t = r.recipipe() + r.onehot()
-        df2 = t.fit_transform(df1)
-        # Ignore the column names, we assign a new ones.
-        df2.columns = ["color_blue", "color_red"]
-        expected1 = pd.DataFrame({
-            "color_blue": [0., 1, 0],
-            "color_red": [1., 0, 1]
-        })
-        self.assertTrue(expected1.equals(df2))
+    def test_inheritance_var_args_sklearn_params(self):
+        """You should implement the _transform method in any subclass. """
 
-    def test_onehot_columns_names_and_values(self):
-        """Check the output dataframe after applying onehot encoding.
+        class TestTransformer(r.RecipipeTransformer):
+            def __init__(self, *args, param1=1, **kwargs):
+                self.param1 = param1
+                super().__init__(*args, **kwargs)
+            def _transform(self, df):
+                pass
 
-        For passing this test the order of the resulting columns
-        does not matter.
-        """
+        params = TestTransformer(1, 2, param1=3, name="The Dude").get_params()
+        self.assertDictEqual(params, {"param1": 3})
 
-        df1 = create_df_cat()
-        t = r.recipipe() + r.onehot()
-        df2 = t.fit_transform(df1)
-        expected = pd.DataFrame({
-            "color='red'": [1., 0, 1],
-            "color='blue'": [0., 1, 0]
-        })
-        self.assertTrue(expected.eq(df2).all().all())
+    def test_init_cols_mix(self):
+        t = RecipipeTransformerMock(cols=[
+            "c1", ["c2"], set(["c3"]), ("c4", "c5")])
+        self.assertEqual(len(t.cols_init), 5)
 
-    def test_onehot_two_columns(self):
-        """Test onehot over dataframes with more than 2 category columns.
-        
-        The output dataframe should contain the columns in the same order.
-        In this example, first all the gender onehot columns and second
-        all the color columns.
-        As before, the onehot columns of one column should be ordered
-        alphabetically.
-        """
+    def test_init_args_mix(self):
+        """Strs, lists, sets and tuples are allowed as var args. """
 
-        df1 = create_df_cat2()
-        t = r.recipipe() + r.onehot()
-        df2 = t.fit_transform(df1)
-        expected = pd.DataFrame({
-            "gender='female'": [1., 0, 0],
-            "gender='male'": [0., 1, 1],
-            "color='blue'": [0., 1, 0],
-            "color='red'": [1., 0, 1]
-        })
-        self.assertTrue(expected.equals(df2))
+        t = RecipipeTransformerMock("c1", ["c2"], set(["c3"]), ("c4", "c5"))
+        self.assertEqual(len(t.cols_init), 5)
 
-    def test_onehot_one_of_two_columns_last(self):
-        """Apply onehot only to one column, the last one on the input df.
+    def test_init_cols_args(self):
+        """Cols is appended to args. """
 
-        The non-onehotencoded column should be in the output dataframe.
-        """
+        t = RecipipeTransformerMock("c1", cols=["c2"])
+        self.assertListEqual(t.cols_init, ["c1", "c2"])
 
-        df1 = create_df_cat2()
-        t = r.recipipe() + r.onehot(["color"])
-        df2 = t.fit_transform(df1)
-        expected = pd.DataFrame({
-            "gender": ["female", "male", "male"],
-            "color='blue'": [0., 1, 0],
-            "color='red'": [1., 0, 1]
-        })
-        self.assertTrue(expected.equals(df2))
+    def test_fit_cols(self):
+        """Cols should have a value after fit. """
 
-    def test_onehot_one_of_two_columns_first(self):
-        """Apply onehot only to one column, the first one on the input df.
+        t = RecipipeTransformerMock("c*", dtype=int)
+        t.fit(create_df_3dtypes())
+        self.assertListEqual(t.cols, ["c1"])
+        self.assertEqual(t.n_fit, 1)
 
-        The non-onehotencoded column should be in the output dataframe
-        and exactly in the same order.
-        """
+    def test_fit_cols_all(self):
+        """When not cols are specified we need to fit all of them. """
 
-        df1 = create_df_cat2()
-        # Check that the fixture df is in the expected order.
-        self.assertListEqual(list(df1.columns), ["gender", "color"])
+        t = RecipipeTransformerMock()
+        t.fit(create_df_3dtypes())
+        self.assertListEqual(t.cols, ["c1", "c2", "t1"])
+        self.assertEqual(t.n_fit, 1)
 
-        t = r.recipipe() + r.onehot(["gender"])
-        df2 = t.fit_transform(df1)
-        expected = pd.DataFrame({
-            "gender='female'": [1., 0, 0],
-            "gender='male'": [0., 1, 1],
-            "color": ["red", "blue", "red"],
-        })
-        self.assertTrue(expected.equals(df2))
+    def test_fit_cols_keep_original_collision(self):
+        """Keep original only works when no name collisions exist. """
 
-    def test_onehot_two_columns_two_steps(self):
-        """Apply onehot to two columns, once at a time. """
+        t = RecipipeTransformerMock(keep_original=True)
+        with self.assertRaises(ValueError):
+            t.fit(create_df_3dtypes())
 
-        df1 = create_df_cat2()
-        t = r.recipipe() + r.onehot(["color"]) + r.onehot(["gender"])
-        df2 = t.fit_transform(df1)
-        expected = pd.DataFrame({
-            "gender='female'": [1., 0, 0],
-            "gender='male'": [0., 1, 1],
-            "color='blue'": [0., 1, 0],
-            "color='red'": [1., 0, 1]
-        })
-        self.assertTrue(expected.equals(df2))
+    def test_get_column_map_not_fitted(self):
+        """Error in column map if no columns are fitted. """
 
-    def test_onehot_two_columns_one_step(self):
-        """Apply onehot to two columns at the same time.
+        t = RecipipeTransformerMock()
+        with self.assertRaises(ValueError):
+            t._get_column_mapping()
 
-        The order of the output columns is given by the
-        input dataset, not by the order of the list passed
-        to the one hot transformer.
-        """
+    def test_get_column_map(self):
+        """Default column mapping, 1:1 mapping. """
 
-        df1 = create_df_cat2()
-        t = r.recipipe() + r.onehot(["color", "gender"])
-        df2 = t.fit_transform(df1)
-        expected = pd.DataFrame({
-            "gender='female'": [1., 0, 0],
-            "gender='male'": [0., 1, 1],
-            "color='blue'": [0., 1, 0],
-            "color='red'": [1., 0, 1]
-        })
-        self.assertTrue(expected.equals(df2))
+        t = RecipipeTransformerMock()
+        t.cols = ["c2", "c1"]
+        cols_map = t._get_column_mapping()
+        self.assertDictEqual(cols_map, {"c2": "c2", "c1": "c1"})
 
-    def test_keep_cols(self):
-        """Keep transformed column. """
+    def test_get_column_map_format(self):
+        """Column mapping should use `cols_format`. """
 
-        df1 = create_df_cat()
-        t = r.recipipe() + r.onehot(keep_original=True)
-        df2 = t.fit_transform(df1)
-        expected = pd.DataFrame({
-            "color": ["red", "blue", "red"],
-            "color='blue'": [0., 1, 0],
-            "color='red'": [1., 0, 1]
-        })
-        self.assertTrue(expected.equals(df2))
+        t = RecipipeTransformerMock(col_format="{}_new")
+        t.cols = ["c2", "c1"]
+        cols_map = t._get_column_mapping()
+        self.assertDictEqual(cols_map, {"c2": "c2_new", "c1": "c1_new"})
 
-    def test_variable_args(self):
-        """Check that onehot allows the use of variable-length params. """
+    def test_transform_all_columns(self):
+        """Transform a df and return the same columns. """
 
-        df1 = create_df_cat2()
-        t = r.recipipe() + r.onehot("color", "gender")
-        df2 = t.fit_transform(df1)
-        expected = ["gender='female'", "gender='male'",
-                    "color='blue'", "color='red'"]
-        columns = list(df2.columns)
-        self.assertEqual(columns, expected)
+        t = RecipipeTransformerMock()
+        df = create_df_3dtypes()
+        t.fit(df)
+        print(t.col_map)
+        print(t.col_map_1_n)
+        df = t.transform(df)
+        self.assertListEqual(list(df.columns), ["c1", "c2", "t1"])
 
+    def test_transform_some_columns(self):
 
-class SelectTest(TestCase):
-    """Select transformer tests. """
+        class C(r.RecipipeTransformer):
+            def _transform(self, df):
+                return df[self.cols]
+        t = C("c1", "c2")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        self.assertListEqual(list(df.columns), ["c1", "c2", "t1"])
 
-    def _create_fit_transform(self, *args, **kwargs):
-        """Create an apply a 'select' on the sample dataframe.
+    def test_transform_keep_original(self):
 
-        Args:
-            *args: Passed to the 'select'.
-            **kwargs: Passed to the 'select'.
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _transform(self, df):
+                df = df[self.cols]
+                df.columns = [self.col_format.format(i) for i in df.columns]
+                return df
+        t = C("c1", "c2", keep_original=True, col_format="{}_out")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        out_cols = ["c1", "c1_out", "c2", "c2_out", "t1"]
+        self.assertListEqual(list(df.columns), out_cols)
 
-        Returns:
-            The sample dataframe transformed using a recipipe
-            that only contains a 'select'.
-        """
+    def test_transform_keep_original_false_and_format(self):
 
-        df = create_df_all()
-        print(df.columns)
-        t = r.recipipe() + r.select(*args, **kwargs)
-        return t.fit_transform(df)
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _transform(self, df):
+                df = df[self.cols]
+                df.columns = [self.col_format.format(i) for i in df.columns]
+                return df
+        t = C("c1", "c2", keep_original=False, col_format="{}_out")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        out_cols = ["c1_out", "c2_out", "t1"]
+        self.assertListEqual(list(df.columns), out_cols)
 
-    def test_select_one_column(self):
-        """Check select works with one column. """
+    def test_transform_cols_map_tuples(self):
 
-        df = self._create_fit_transform("color")
-        expected = ["color"]
-        columns = list(df.columns)
-        self.assertEqual(columns, expected)
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _get_column_mapping(self):
+                return {"c1": ("c1_1", "c1_2"), ("c1", "t1"): "c1t1"}
+            def _transform(self, df):
+                df = df[["c1", "c1", "t1"]]
+                df.columns = ["c1_1", "c1_2", "c1t1"]
+                return df
+        t = C("c1", "t1")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        out_cols = ["c1_1", "c1_2", "c1t1", "c2"]
+        self.assertListEqual(list(df.columns), out_cols)
 
-    def test_select_two_columns(self):
-        """Check that select works with two columns.
+    def test_transform_cols_map_str_and_tuples(self):
+        """Test 1:1 and n:1 in the same map. """
 
-        The order of the returned columns should be the same.
-        """
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _get_column_mapping(self):
+                return {"c1": "c1", ("c1", "t1"): "c1t1"}
+            def _transform(self, df):
+                df = df[["c1", "t1"]]
+                df.columns = ["c1", "c1t1"]
+                return df
+        t = C("c1", "t1")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        out_cols = ["c1", "c1t1", "c2"]
+        self.assertListEqual(list(df.columns), out_cols)
 
-        df = self._create_fit_transform("color", "amount")
-        expected = ["color", "amount"]
-        columns = list(df.columns)
-        self.assertEqual(columns, expected)
+    def test_inverse_transform_cols_map_tuples(self):
 
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _get_column_mapping(self):
+                return {"c1": ("c1_1", "c1_2"), ("c1", "t1"): "c1t1"}
+            def _transform(self, df):
+                df = df[["c1", "c1", "t1"]]
+                df.columns = ["c1_1", "c1_2", "c1t1"]
+                return df
+            def _inverse_transform(self, df):
+                df = df[["c1_1", "c1t1"]]
+                df.columns = ["c1", "t1"]
+                return df
+        t = C("c1", "t1")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        df = t.inverse_transform(df)
+        out_cols = ["c1", "t1", "c2"]
+        self.assertListEqual(list(df.columns), out_cols)
 
-class DropTest(TestCase):
+    def test_inverse_transform_cols_map_str_and_tuples(self):
+        """Test 1:1 and n:1 in the same map. """
 
-    def _create_fit_transform(self, *args, **kwargs):
-        df = create_df_all()
-        t = r.recipipe() + r.drop(*args, **kwargs)
-        return t.fit_transform(df)
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _get_column_mapping(self):
+                return {"c1": "c1", ("c1", "t1"): "c1t1"}
+            def _transform(self, df):
+                df = df[["c1", "t1"]]
+                df.columns = ["c1", "c1t1"]
+                return df
+            def _inverse_transform(self, df):
+                df = df[["c1", "c1t1"]]
+                df.columns = ["c1", "t1"]
+                return df
+        t = C("c1", "t1")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        df = t.inverse_transform(df)
+        out_cols = ["c1", "t1", "c2"]
+        self.assertListEqual(list(df.columns), out_cols)
 
-    def test_select_one_column(self):
-        """Test if drop can remove one column.
+    def test_inverse_transform_keep_original_false_and_format(self):
 
-        We do not need more test for drop because it uses the
-        same method of fitting column names as all recipipe
-        transforms.
-        In this test we also check that the order of the remaining
-        columns is the same after droping.
-        """
-        df = self._create_fit_transform("color")
-        expected = ["price", "amount"]
-        columns = list(df.columns)
-        self.assertEqual(columns, expected)
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _transform(self, df):
+                df = df[self.cols]
+                df.columns = [self.col_format.format(i) for i in df.columns]
+                return df
+            def _inverse_transform(self, df):
+                df = df[["c1_out", "c2_out"]]
+                df.columns = ["c1", "c2"]
+                return df
+        t = C("c1", "c2", keep_original=False, col_format="{}_out")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        df = t.inverse_transform(df)
+        out_cols = ["c1", "c2", "t1"]
+        self.assertListEqual(list(df.columns), out_cols)
 
+    def test_inverse_transform_keep_original_true_and_format(self):
 
-class TestCategoryEncoder(TestCase):
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _transform(self, df):
+                df = df[self.cols]
+                df.columns = ["c1_out", "c2_out"]
+                return df
+            def _inverse_transform(self, df):
+                df = df[["c1_out", "c2_out"]]
+                df.columns = ["c1", "c2"]
+                return df
+        t = C("c*", keep_original=True, col_format="{}_out")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        df = t.inverse_transform(df)
+        out_cols = ["c1", "c2", "t1"]
+        self.assertListEqual(list(df.columns), out_cols)
 
-    def test__fit_column(self):
-        df = create_df_cat()
-        t = r.category()
-        t._fit_column(df, "color")
-        cat = list(t.categories["color"])
-        self.assertListEqual(cat, ["blue", "red"])
+    def test_inverse_transform_keep_original_without_original(self):
 
-    def test__transform_column(self):
-        df = create_df_cat()
-        t = r.category()
-        t.categories = {"color": pd.Index(["blue", "red"])}
-        s = t._transform_column(df, "color")
-        self.assertListEqual(list(s), [1, 0, 1])
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _transform(self, df):
+                df = df[self.cols]
+                df.columns = ["c1_out", "c2_out"]
+                return df
+            def _inverse_transform(self, df):
+                df = df[["c1_out", "c2_out"]]
+                df.columns = ["c1", "c2"]
+                return df
+        t = C("c*", keep_original=True, col_format="{}_out")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        df = df.drop(["c1", "c2"], axis=1)
+        df = t.inverse_transform(df)
+        out_cols = ["c1", "c2", "t1"]
+        self.assertListEqual(list(df.columns), out_cols)
 
+    def test_transform_no_fit(self):
+        """Raise exception if the transformer method is called without fit. """
 
-class TestQueryTransformer(TestCase):
-
-    def test_transform(self):
-        df = create_df_all()
-        t = r.query("color == 'red'")
-        df_out = t.fit_transform(df)
-        expected = pd.DataFrame({
-            "color": ["red", "red"],
-            "price": [1.5, 3.5],
-            "amount": [1, 3],
-            "index": [0, 2]
-        })
-        expected.set_index("index", inplace=True)
-        self.assertTrue(expected.equals(df_out))
-
-
-class TestReplaceTransformer(TestCase):
-    def test__transform_columns_text(self):
-        df_in = pd.DataFrame({
-            "Vowels": ["a", "e", None, "o", "u"]
-        })
-        t = r.replace(values={None: "i"})
-        df_out = t.fit_transform(df_in)
-        expected = pd.DataFrame({
-            "Vowels": ["a", "e", "i", "o", "u"]
-        })
-        self.assertTrue(expected.equals(df_out))
-
-
-class TestGroupByTransformer(TestCase):
-
-    def test_fit_transform(self):
-        # TODO: This is not an unit test...
-        df_in = pd.DataFrame({
-            "color": ["red", "red", "red", "blue", "blue", "blue"],
-            "other": [1, 2, 3, 4, 5, 6],
-            "amount": [5, 6, 7, 1, 2, 3],
-            "index": [3, 4, 5, 0, 1, 2]
-        })
-        # Set an unordered index to check the correct order of the output.
-        df_in.set_index("index", inplace=True)
-        t = r.groupby("color", r.scale("amount"))
-        df_out = t.fit_transform(df_in)
-        norm = 1 / np.std([1, 2, 3])
-        expected = pd.DataFrame({
-            "color": ["red", "red", "red", "blue", "blue", "blue"],
-            "other": [1, 2, 3, 4, 5, 6],
-            "amount": [-norm, 0, norm, -norm, 0, norm],
-            "index": [3, 4, 5, 0, 1, 2]
-        })
-        expected.set_index("index", inplace=True)
-        self.assertTrue(expected.equals(df_out))
+        t = RecipipeTransformerMock()
+        with self.assertRaises(ValueError):
+            t.transform(None)
 
