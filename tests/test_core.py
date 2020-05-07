@@ -113,39 +113,21 @@ class RecipipeTest(TestCase):
 
 class RecipipeTransformerTest(TestCase):
 
-    def test_abstract_class(self):
-        """You cannot instantiate a RecipipeTransformer. """
-
-        with self.assertRaises(TypeError):
-            r.RecipipeTransformer()
-
     def test_inheritance(self):
-        """You should implement the _transform method in any subclass. """
-
-        class TestTransformer(r.RecipipeTransformer):
-            def _transform(self, df):
-                pass
-
-        TestTransformer()
-
-    def test_inheritance_error(self):
-        """You should implement the _transform method in any subclass. """
+        """Inherit and test constructor. """
 
         class TestTransformer(r.RecipipeTransformer):
             pass
 
-        with self.assertRaises(TypeError):
-            TestTransformer()
+        TestTransformer()
 
     def test_inheritance_var_args_sklearn_params(self):
-        """You should implement the _transform method in any subclass. """
+        """Init params are used as SKLearn estimator params. """
 
         class TestTransformer(r.RecipipeTransformer):
             def __init__(self, *args, param1=1, **kwargs):
                 self.param1 = param1
                 super().__init__(*args, **kwargs)
-            def _transform(self, df):
-                pass
 
         params = TestTransformer(1, 2, param1=3, name="The Dude").get_params()
         self.assertDictEqual(params, {"param1": 3})

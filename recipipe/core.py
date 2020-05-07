@@ -1,5 +1,4 @@
 
-import abc
 import collections
 import fnmatch
 import inspect
@@ -109,7 +108,7 @@ class Recipipe(sklearn.pipeline.Pipeline):
         return self
 
 
-class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
+class RecipipeTransformer(BaseEstimator, TransformerMixin):
     """Base class of all Recipipe transformers.
 
     Attributes:
@@ -211,7 +210,6 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
 
         pass
 
-    @abc.abstractmethod
     def _transform(self, df):  # pragma: no cover
         """Your transform code should be here.
 
@@ -229,7 +227,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
             The transformer DataFrame.
         """
 
-        pass
+        return df
 
     def fit(self, df, y=None):
         """Fit the transformer.
