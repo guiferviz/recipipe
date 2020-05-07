@@ -255,6 +255,11 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         # We join df_in with df_out, so we do not want duplicate column names.
         self.cols_in_out = set(self.cols).intersection(set(self.cols_out))
 
+        if self.keep_original and self.cols_in_out:
+            raise ValueError("Rename the output columns if you want to keep "
+                             "the original columns, name collisions in "
+                             f"{self.cols_in_out}")
+
         return self
 
     def transform(self, df_in):

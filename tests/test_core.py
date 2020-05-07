@@ -183,6 +183,13 @@ class RecipipeTransformerTest(TestCase):
         self.assertListEqual(t.cols, ["c1", "c2", "t1"])
         self.assertEqual(t.n_fit, 1)
 
+    def test_fit_cols_keep_original_collision(self):
+        """Keep original only works when no name collisions exist. """
+
+        t = RecipipeTransformerMock(keep_original=True)
+        with self.assertRaises(ValueError):
+            t.fit(create_df_3dtypes())
+
     def test_get_column_map_not_fitted(self):
         """Error in column map if no columns are fitted. """
 
@@ -382,7 +389,6 @@ class RecipipeTransformerTest(TestCase):
         df = create_df_3dtypes()
         t.fit(df)
         df = t.transform(df)
-        print(df)
         df = t.inverse_transform(df)
         out_cols = ["c1", "c2", "t1"]
         self.assertListEqual(list(df.columns), out_cols)
@@ -408,6 +414,7 @@ class RecipipeTransformerTest(TestCase):
         df = t.inverse_transform(df)
         out_cols = ["c1", "c2", "t1"]
         self.assertListEqual(list(df.columns), out_cols)
+
     def test_transform_no_fit(self):
         """Raise exception if the transformer method is called without fit. """
 
