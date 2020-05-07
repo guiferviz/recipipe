@@ -18,7 +18,14 @@ class SelectTransformer(RecipipeTransformer):
     """Select the fitted columns and ignore the rest of them. """
 
     def transform(self, df):
-        """Select the fitted columns. """
+        """Select the fitted columns.
+
+        Args:
+            df (:obj:`pandas.DataFrame`): DataFrame to select columns from.
+
+        Returns:
+            Transformed DataFrame.
+        """
 
         cols = self.cols
         if not self.cols_not_found_error:
@@ -26,6 +33,20 @@ class SelectTransformer(RecipipeTransformer):
         return df[cols]
 
     def inverse_transform(self, df):
+        """No inverse exists for a select operation but...
+
+        Obviously, there is no way to get back the non-selected columns, but
+        it's useful to have this operation defined to avoid errors when using
+        this transformer in a pipeline.
+        For that reason, the inverse in defined as the identity function.
+
+        Args:
+            df (:obj:`pandas.DataFrame`): DataFrame to inverse transform.
+
+        Returns:
+            Identity function: `df` without modifications.
+        """
+
         return df
 
 
@@ -33,68 +54,90 @@ class DropTransformer(RecipipeTransformer):
     """Drop the fitted columns and continue with the reminded ones. """
 
     def transform(self, df):
-        """Drop the fitted columns. """
+        """Drop the fitted columns.
+
+        Args:
+            df (:obj:`pandas.DataFrame`): DataFrame to drop columns from.
+
+        Returns:
+            Transformed DataFrame.
+        """
 
         errors = "raise" if self.cols_not_found_error else "ignore"
         return df.drop(self.cols, axis=1, errors=errors)
 
     def inverse_transform(self, df):
+        """No inverse exists for a drop operation but...
+
+        Obviously, there is no way to get back the dropped columns, but
+        it's useful to have this operation defined to avoid errors when using
+        this transformer in a pipeline.
+        For that reason, the inverse in defined as the identity function.
+
+        Args:
+            df (:obj:`pandas.DataFrame`): DataFrame to inverse transform.
+
+        Returns:
+            Identity function: `df` without modifications.
+        """
+
         return df
 
 
-class ColumnTransformer(RecipipeTransformer, abc.ABC):
+class ColumnTransformer(RecipipeTransformer):
+    """Apply an operation per each input column. """
 
     def _fit(self, df, y=None):
         for i in self.cols:
             self._fit_column(df, i)
         return self
 
-    @abc.abstractmethod
     def _fit_column(self, df, column_name):
         pass
 
     def _transform(self, df_in):
         df_out = pd.DataFrame(index=df_in.index)
-        for i in self.get_cols():
-            df_out[i] = self._transform_column(df_in, i)
+        for i in self.cols:
+            df_out[i] = self._transform_column(df_in[i])
         return df_out
 
-    @abc.abstractmethod
     def _transform_column(self, df, column_name):
-        pass
+        return df[column_name]
 
     def _inverse_transform_column(self, df, column_name):
-        pass
+        return df[column_name]
 
     def _inverse_transform(self, df_in):
         df_out = pd.DataFrame(index=df_in.index)
-        for i in self.get_cols():
+        for i in self.cols:
             df_out[i] = self._inverse_transform_column(df_in, i)
         return df_out
 
 
-class ColumnsTransformer(RecipipeTransformer, abc.ABC):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class ColumnsTransformer(RecipipeTransformer):
+    """Apply an operation at all the input columns at the same time. """
 
     def _fit(self, df, y=None):
-        c = self.get_cols()
-        self._fit_columns(df, c)
-        return self
+        self._fit_columns(df, self.cols)
 
-    @abc.abstractmethod
     def _fit_columns(self, df, column_name):
         pass
 
     def _transform(self, df_in):
-        c = self.get_cols()
-        np_out = self._transform_columns(df_in, c)
+        np_out = self._transform_columns(df_in, self.cols)
+        cols_out = flatten_list([self.col_map_1_n[i] for i in df_in])
         df_out = pd.DataFrame(np_out, columns=c, index=df_in.index)
         return df_out
 
-    @abc.abstractmethod
     def _transform_columns(self, df, columns_name):
+        pass
+
+    def _inverse_transform(self, df_in):
+        np_out = self._inverse_transform_columns(df_in, self.cols_out)
+        df_out = pd.DataFrame(np_out, columns=self.cols, index=df_in.index)
+        return df_out
+
+    def _inverse_transform_columns(self, df, columns_name):
         pass
 
 
