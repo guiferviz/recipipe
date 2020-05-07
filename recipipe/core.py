@@ -200,7 +200,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         self.cols_out = None  # set in fit
         self.cols_not_found_error = cols_not_found_error
         self.cols_remove_duplicates = cols_remove_duplicates
-        self.cols_to_drop = None  # set in fit
+        self.cols_in_out = None  # set in fit
 
     def _fit(self, df):  # pragma: no cover
         """Your fit code should be here.
@@ -253,7 +253,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         # Cols in input columns and output columns should be removed from
         # df_in during the transform phase.
         # We join df_in with df_out, so we do not want duplicate column names.
-        self.cols_to_drop = set(self.cols).intersection(set(self.cols_out))
+        self.cols_in_out = set(self.cols).intersection(set(self.cols_out))
 
         return self
 
@@ -276,7 +276,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
 
         in_cols = df_in.columns
         df_out = self._transform(df_in)
-        df_in = df_in.drop(self.cols_to_drop, axis=1)
+        df_in = df_in.drop(self.cols_in_out, axis=1)
         # Join input columns to output
         df_joined = df_in.join(df_out)
 
@@ -297,7 +297,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
             if i in cols_in:
                 # It's not possible to keep original if we do not rename
                 # the output column.
-                if self.keep_original and i not in self.cols_to_drop:
+                if self.keep_original and i not in self.cols_in_out:
                     cols_out.append(i)
                 cols_out += col_map_1_n[i]
             else:
@@ -308,8 +308,21 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
 
     def inverse_transform(self, df_in):
         in_cols = df_in.columns
+
+        if self.keep_original and all(i in in_cols for i in self.cols):
+            # If keep original and all the original columns are present in
+            # df_in, we save computation removing output columns and returning
+            # original columns.
+            df_in = df_in.drop(self.cols_out, axis=1, errors="ignore")
+            return df_in
+
         df_out = self._inverse_transform(df_in)
-        df_in = df_in.drop(self.cols_to_drop, axis=1)
+        df_in = df_in.drop(self.cols_in_out, axis=1)
+        if self.keep_original:
+            # If we keep original cols, the best will be to just drop the
+            # transformed columns (look at the first if of this method), but I
+            # want it to work even without those columns.
+            df_in = df_in.drop(df_out.columns, axis=1, errors="ignore")
         df_joined = df_in.join(df_out)
 
         cols_out = self._get_ordered_out_cols_inverse(in_cols, self.cols_out,

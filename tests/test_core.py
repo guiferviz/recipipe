@@ -365,6 +365,49 @@ class RecipipeTransformerTest(TestCase):
         out_cols = ["c1", "c2", "t1"]
         self.assertListEqual(list(df.columns), out_cols)
 
+    def test_inverse_transform_keep_original_true_and_format(self):
+
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _transform(self, df):
+                df = df[self.cols]
+                df.columns = ["c1_out", "c2_out"]
+                return df
+            def _inverse_transform(self, df):
+                df = df[["c1_out", "c2_out"]]
+                df.columns = ["c1", "c2"]
+                return df
+        t = C("c*", keep_original=True, col_format="{}_out")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        print(df)
+        df = t.inverse_transform(df)
+        out_cols = ["c1", "c2", "t1"]
+        self.assertListEqual(list(df.columns), out_cols)
+
+    def test_inverse_transform_keep_original_without_original(self):
+
+        class C(r.RecipipeTransformer):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+            def _transform(self, df):
+                df = df[self.cols]
+                df.columns = ["c1_out", "c2_out"]
+                return df
+            def _inverse_transform(self, df):
+                df = df[["c1_out", "c2_out"]]
+                df.columns = ["c1", "c2"]
+                return df
+        t = C("c*", keep_original=True, col_format="{}_out")
+        df = create_df_3dtypes()
+        t.fit(df)
+        df = t.transform(df)
+        df = df.drop(["c1", "c2"], axis=1)
+        df = t.inverse_transform(df)
+        out_cols = ["c1", "c2", "t1"]
+        self.assertListEqual(list(df.columns), out_cols)
     def test_transform_no_fit(self):
         """Raise exception if the transformer method is called without fit. """
 
