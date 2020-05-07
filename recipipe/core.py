@@ -292,17 +292,16 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         # Ex: we can fit a df that contains a target column and transform dfs
         # without that target.
         cols_out = self._get_ordered_out_cols(in_cols, self.cols,
-                self.col_map_1_n)
+                self.col_map_1_n, self.keep_original)
 
         return df_joined[cols_out]
 
-    def _get_ordered_out_cols(self, cols_in_all, cols_in, col_map_1_n):
+    def _get_ordered_out_cols(self, cols_in_all, cols_in, col_map_1_n,
+            keep_original=False):
         cols_out = []
         for i in cols_in_all:
             if i in cols_in:
-                # It's not possible to keep original if we do not rename
-                # the output column.
-                if self.keep_original and i not in self.cols_in_out:
+                if keep_original:
                     cols_out.append(i)
                 cols_out += col_map_1_n[i]
             else:
@@ -330,21 +329,10 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
             df_in = df_in.drop(df_out.columns, axis=1, errors="ignore")
         df_joined = df_in.join(df_out)
 
-        cols_out = self._get_ordered_out_cols_inverse(in_cols, self.cols_out,
+        cols_out = self._get_ordered_out_cols(in_cols, self.cols_out,
                 self.col_map_1_n_inverse)
 
         return df_joined[cols_out]
-
-    def _get_ordered_out_cols_inverse(self, cols_in_all, cols_in, col_map_1_n):
-        cols_out = []
-        for i in cols_in_all:
-            if i in cols_in:
-                cols_out += col_map_1_n[i]
-            else:
-                cols_out.append(i)
-        # Remove duplicates.
-        cols_out = list(collections.OrderedDict.fromkeys(cols_out))
-        return cols_out
 
     def _get_column_mapping(self):
         """Get the column mapping between the input and transformed DataFrame.
