@@ -193,17 +193,19 @@ class CategoryEncoder(ColumnTransformer):
 
     def _fit_column(self, df, col):
         cat = df[col].astype("category").cat.categories
+        if self.unknown_value is not None:
+            cat = cat.insert(0, self.unknown_value)
         # Save category values for the transformation phase.
         self.categories[col] = cat
 
     def _transform_column(self, df, col):
         encoded = pd.Categorical(df[col], categories=self.categories[col])
         # Raise exception if unknown values.
-        if self.error_unknown and encoded.isna().values.any():
+        if self.error_unknown and encoded.isna().any():
             raise ValueError(f"The column {col} has unknown categories")
         # Fill unknown.
         if self.unknown_value is not None:
-            encoded.fillna(-1)
+            encoded = encoded.fillna(self.unknown_value)
         return encoded.codes
 
     def _inverse_transform_column(self, df, col):

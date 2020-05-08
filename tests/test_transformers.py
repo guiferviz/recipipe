@@ -206,14 +206,69 @@ class ColumnsTransformerTest(TestCase):
         t._inverse_transform_columns.assert_called_once_with(*params)
 
 
+class CategoryEncoderTest(TestCase):
+
+    def test_fit_transform(self):
+        df = create_df_all()
+        t = r.CategoryEncoder("color")
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({
+            "color": [1,0,1], "price": [1.5,2.5,3.5], "amount": [1,2,3]})
+        df_expected["color"] = df_expected["color"].astype("int8")
+        self.assertTrue(df_out.equals(df_expected))
+
+    def _test_fit_transform_unknown_none(self, error_unknown):
+        df = create_df_all()
+        t = r.CategoryEncoder("color", error_unknown=error_unknown)
+        t.fit(df)
+        df_in = pd.DataFrame({
+            "color": ["red","yellow"], "price": [1.5,2.5], "amount": [1,2]})
+        df_out = t.transform(df_in)
+        df_expected = pd.DataFrame({
+            "color": [1,-1], "price": [1.5,2.5], "amount": [1,2]})
+        df_expected["color"] = df_expected["color"].astype("int8")
+        print(df_out)
+        print(df_expected)
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_fit_transform_unknown_no_error(self):
+        self._test_fit_transform_unknown_none(False)
+
+    def test_fit_transform_unknown_error(self):
+        with self.assertRaisesRegex(ValueError, ".*unknown categories.*"):
+            self._test_fit_transform_unknown_none(True)
+
+    def test_fit_transform_unknown_default(self):
+        df = create_df_all()
+        t = r.CategoryEncoder("color", unknown_value="UNKNOWN")
+        t.fit(df)
+        df_in = pd.DataFrame({
+            "color": ["red","yellow"], "price": [1.5,2.5], "amount": [1,2]})
+        df_out = t.transform(df_in)
+        df_expected = pd.DataFrame({
+            "color": [2,0], "price": [1.5,2.5], "amount": [1,2]})
+        df_expected["color"] = df_expected["color"].astype("int8")
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_inverse_transform_unknown_default(self):
+        df = create_df_all()
+        t = r.CategoryEncoder("color", unknown_value="UNKNOWN")
+        t.fit(df)
+        df_in_inverse = pd.DataFrame({
+            "color": [2,0], "price": [1.5,2.5], "amount": [1,2]})
+        df_out = t.inverse_transform(df_in_inverse)
+        df_expected = pd.DataFrame({
+            "color": ["red","UNKNOWN"], "price": [1.5,2.5], "amount": [1,2]})
+        self.assertTrue(df_out.equals(df_expected))
+
+
 class OneHotTest(TestCase):
     """OneHot transformer test suite. """
 
     def test_onehot_columns_names(self):
         """Check the name of the columns after applying onehot encoding.
 
-        We are not taking into account the order of the columns for
-        this test.
+        We are not taking into account the order of the columns for this test.
         """
 
         df1 = create_df_cat()
