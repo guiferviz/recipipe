@@ -108,51 +108,57 @@ class DropTransformerTest(TestCase):
 
 class ColumnTransformerTest(TestCase):
 
-    def test_transform_column_calls(self):
-        t = r.ColumnTransformer("color", "price")
+    def _test_transform_column_calls(self, col_format):
+        t = r.ColumnTransformer("color", "price", col_format=col_format)
         t._transform_column = MagicMock(return_value=[1,1,1])
         df = create_df_all()
         t.fit_transform(df)
         calls = [call(df, "price"), call(df, "color")]
         t._transform_column.assert_has_calls(calls, any_order=True)
 
-    def test_transform_column_calls_format(self):
-        t = r.ColumnTransformer("color", "price", col_format="{}_out")
-        t._transform_column = MagicMock(return_value=[1,1,1])
-        df = create_df_all()
-        df_out = t.fit_transform(df)
-        calls = [call(df, "price"), call(df, "color")]
-        t._transform_column.assert_has_calls(calls, any_order=True)
-        cols_expected = ["color_out", "price_out", "amount"]
-        self.assertEqual(list(df_out.columns), cols_expected)
+    def test_transform_column_calls(self):
+        self._test_transform_column_calls("{}")
 
-    def test_transform_column_values(self):
-        t = r.ColumnTransformer("color", "price")
+    def test_transform_column_calls_format(self):
+        """col_format does not change the calls made to _transform_column. """
+
+        self._test_transform_column_calls("{}_out")
+
+    def _test_transform_column_values(self, col_format):
+        t = r.ColumnTransformer("color", "price", col_format=col_format)
         t._transform_column = MagicMock(return_value=[1,1,1])
         df = create_df_all()
         df_out = t.fit_transform(df)
         df_expected = pd.DataFrame({
-            "color": [1,1,1], "price": [1,1,1], "amount": [1,2,3]})
+            col_format.format("color"): [1,1,1],
+            col_format.format("price"): [1,1,1],
+            "amount": [1,2,3]})
         self.assertTrue(df_out.equals(df_expected))
         self.assertFalse(df.equals(df_expected))  # No changes on input df.
 
-    def test_inverse_column_transform_calls(self):
-        t = r.ColumnTransformer("color", "price")
-        t._inverse_transform_column = MagicMock(return_value=[1,1,1])
-        df = create_df_all()
-        t.fit(df)
-        t.inverse_transform(df)
-        calls = [call(df, "price"), call(df, "color")]
-        t._inverse_transform_column.assert_has_calls(calls, any_order=True)
+    def test_transform_column_values(self):
+        self._test_transform_column_values("{}")
 
-    def test_inverse_column_transform_calls_format(self):
-        t = r.ColumnTransformer("color", "price", col_format="{}_out")
+    def test_transform_column_values_format(self):
+        """col_format does not change the calls made to _transform_column. """
+
+        self._test_transform_column_values("{}_out")
+
+    def _test_inverse_column_transform_calls(self, col_format):
+        t = r.ColumnTransformer("color", "price", col_format=col_format)
         t._inverse_transform_column = MagicMock(return_value=[1,1,1])
         df = create_df_all()
         df = t.fit_transform(df)
-        df_out = t.inverse_transform(df)
-        calls = [call(df, "price_out"), call(df, "color_out")]
+        t.inverse_transform(df)
+        calls = [call(df, col_format.format("price")),
+                 call(df, col_format.format("color"))]
         t._inverse_transform_column.assert_has_calls(calls, any_order=True)
+
+    def test_inverse_column_transform_calls(self):
+        self._test_inverse_column_transform_calls("{}")
+
+    def test_inverse_column_transform_calls_format(self):
+        self._test_inverse_column_transform_calls("{}_out")
 
     def test_inverse_transform_column_values(self):
         t = r.ColumnTransformer("color", "price", col_format="{}_out")
