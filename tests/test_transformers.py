@@ -184,7 +184,7 @@ class ColumnTransformerTest(TestCase):
 
 class ColumnsTransformerTest(TestCase):
 
-    def test_columns(self):
+    def test_transform_columns(self):
         t = r.ColumnsTransformer("color", "price")
         df = create_df_all()
         t._transform_columns = MagicMock(return_value=df)
@@ -192,7 +192,7 @@ class ColumnsTransformerTest(TestCase):
         # TODO: Columns order does not really matter.
         t._transform_columns.assert_called_once_with(df, ["color", "price"])
 
-    def test_columns_inverse(self):
+    def test_transform_columns_inverse(self):
         t = r.ColumnsTransformer("color", "price", col_format="{}_out")
         df = create_df_all()
         df_out = df[["color", "price"]].copy()

@@ -86,7 +86,17 @@ class DropTransformer(RecipipeTransformer):
 
 
 class ColumnTransformer(RecipipeTransformer):
-    """Apply an operation per each input column. """
+    """Apply an operation per each input column.
+
+    This transformer only allows 1 to 1 relationships between input and output
+    columns.
+    If you want to concat one column to another (that is, creating a column
+    from two existing ones) or splitting a column (creating more than one
+    column from one input column) this transformer is not for you.
+
+    Note that the output number of rows of this transformer should be the same
+    as in the input DataFrame. No deletes are supported here.
+    """
 
     def fit(self, df, y=None):
         r = super().fit(df, y)
@@ -111,10 +121,10 @@ class ColumnTransformer(RecipipeTransformer):
             df_out[c] = self._transform_column(df_in, i)
         return df_out
 
-    def _transform_column(self, df, column_name):
+    def _transform_column(self, df, column_name):  # pragma: no cover
         return df[column_name]
 
-    def _inverse_transform_column(self, df, column_name):
+    def _inverse_transform_column(self, df, column_name):  # pragma: no cover
         return df[column_name]
 
     def _inverse_transform(self, df_in):
@@ -126,7 +136,16 @@ class ColumnTransformer(RecipipeTransformer):
 
 
 class ColumnsTransformer(RecipipeTransformer):
-    """Apply an operation at all the input columns at the same time. """
+    """Apply an operation at all the input columns at the same time.
+
+    This class does not do that much... It's only particular useful when
+    working with transformers that return a :obj:`numpy.ndarray`, like the
+    ones in SKLearn. This class deals with the creation of a DataFrame so
+    yo do not need to create it by yourself.
+
+    Note that the output number of rows of this transformer should be the same
+    as in the input DataFrame. No deletes are supported here.
+    """
 
     def _fit(self, df, y=None):
         self._fit_columns(df, self.cols)
@@ -140,6 +159,18 @@ class ColumnsTransformer(RecipipeTransformer):
         return df_out
 
     def _transform_columns(self, df, columns_name):
+        """Transform the given columns.
+
+        Args:
+            df (:obj:`pandas.DataFrame`): Input DataFrame.
+            columns_name (:obj:`list`): List of columns. `df` can contain more
+                columns apart from the ones in `columns_name`.
+
+        Returns:
+            A :obj:`numpy.ndarray` or :obj:`pandas.DataFrame` with the
+            transformed columns.
+        """
+
         pass
 
     def _inverse_transform(self, df_in):
@@ -153,15 +184,17 @@ class ColumnsTransformer(RecipipeTransformer):
 
 class CategoryEncoder(ColumnTransformer):
 
-    def __init__(self, *args, error_unknown=False, **kwargs):
+    def __init__(self, *args, error_unknown=False, unknown_value=None,
+                 **kwargs):
         super().__init__(*args, **kwargs)
         self.categories = {}
         self.error_unknown = error_unknown
+        self.unknown_value = unknown_value
 
-    def _fit_column(self, df, column_name):
-        cat = df[column_name].astype("category").cat.categories
+    def _fit_column(self, df, col):
+        cat = df[col].astype("category").cat.categories
         # Save category values for the transformation phase.
-        self.categories[column_name] = cat
+        self.categories[col] = cat
 
     def _transform_column(self, df, col):
         encoded = pd.Categorical(df[col], categories=self.categories[col])
@@ -169,11 +202,12 @@ class CategoryEncoder(ColumnTransformer):
         if self.error_unknown and encoded.isna().values.any():
             raise ValueError(f"The column {col} has unknown categories")
         # Fill unknown.
-        #encoded.fillna(-1)
+        if self.unknown_value is not None:
+            encoded.fillna(-1)
         return encoded.codes
 
-    def _inverse_transform_column(self, df, column_name):
-        return self.categories[column_name][df[column_name].values]
+    def _inverse_transform_column(self, df, col):
+        return self.categories[col][df[col].values]
 
 
 class PandasScaler(ColumnTransformer):
