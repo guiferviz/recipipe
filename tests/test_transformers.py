@@ -108,6 +108,14 @@ class DropTransformerTest(TestCase):
 
 class ColumnTransformerTest(TestCase):
 
+    def test_not_1_to_1_relationship(self):
+        class C(r.ColumnTransformer):
+            def _get_column_mapping(self):
+                return {"color": ["color1", "color2"], "price": "price"}
+        t = C("color", "price")
+        with self.assertRaises(ValueError):
+            t.fit(create_df_all())
+
     def _test_transform_column_calls(self, col_format):
         t = r.ColumnTransformer("color", "price", col_format=col_format)
         t._transform_column = MagicMock(return_value=[1,1,1])
@@ -146,7 +154,8 @@ class ColumnTransformerTest(TestCase):
 
     def _test_inverse_column_transform_calls(self, col_format):
         t = r.ColumnTransformer("color", "price", col_format=col_format)
-        t._inverse_transform_column = MagicMock(return_value=[1,1,1])
+        t._transform_column = MagicMock(return_value=[1,1,1])
+        t._inverse_transform_column = MagicMock(return_value=[2,2,2])
         df = create_df_all()
         df = t.fit_transform(df)
         t.inverse_transform(df)
