@@ -11,6 +11,7 @@ import sklearn.impute
 from sklearn.base import TransformerMixin, clone
 
 from recipipe.utils import default_params
+from recipipe.utils import flatten_list
 from recipipe.core import RecipipeTransformer
 
 
@@ -87,7 +88,15 @@ class DropTransformer(RecipipeTransformer):
 class ColumnTransformer(RecipipeTransformer):
     """Apply an operation per each input column. """
 
-    def _fit(self, df, y=None):
+    def fit(self, df, y=None):
+        r = super().fit(df, y)
+        if len(self.cols) != len(self.cols_out):
+            raise ValueError("Only 1 to 1 relationships between input and "
+                             "output columns are supported by the "
+                             "ColumnTransformer")
+        return r
+
+    def _fit(self, df):
         for i in self.cols:
             self._fit_column(df, i)
         return self
@@ -96,9 +105,10 @@ class ColumnTransformer(RecipipeTransformer):
         pass
 
     def _transform(self, df_in):
-        df_out = pd.DataFrame(index=df_in.index)
+        df_out = pd.DataFrame(index=df_in.index, columns=self.cols_out)
         for i in self.cols:
-            df_out[i] = self._transform_column(df_in[i])
+            c = self.col_map_1_n[i][0]
+            df_out[c] = self._transform_column(df_in, i)
         return df_out
 
     def _transform_column(self, df, column_name):
@@ -109,8 +119,9 @@ class ColumnTransformer(RecipipeTransformer):
 
     def _inverse_transform(self, df_in):
         df_out = pd.DataFrame(index=df_in.index)
-        for i in self.cols:
-            df_out[i] = self._inverse_transform_column(df_in, i)
+        for i in self.cols_out:
+            c = self.col_map_1_n_inverse[i][0]
+            df_out[c] = self._inverse_transform_column(df_in, i)
         return df_out
 
 
@@ -125,8 +136,7 @@ class ColumnsTransformer(RecipipeTransformer):
 
     def _transform(self, df_in):
         np_out = self._transform_columns(df_in, self.cols)
-        cols_out = flatten_list([self.col_map_1_n[i] for i in df_in])
-        df_out = pd.DataFrame(np_out, columns=c, index=df_in.index)
+        df_out = pd.DataFrame(np_out, columns=self.cols_out, index=df_in.index)
         return df_out
 
     def _transform_columns(self, df, columns_name):
