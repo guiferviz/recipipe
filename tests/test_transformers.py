@@ -208,6 +208,20 @@ class ColumnsTransformerTest(TestCase):
 
 class CategoryEncoderTest(TestCase):
 
+    def test_fit_column(self):
+        df = create_df_cat()
+        t = r.CategoryEncoder()
+        t._fit_column(df, "color")
+        cat = list(t.categories["color"])
+        self.assertListEqual(cat, ["blue", "red"])
+
+    def test_transform_column(self):
+        df = create_df_cat()
+        t = r.CategoryEncoder()
+        t.categories = {"color": pd.Index(["blue", "red"])}
+        s = t._transform_column(df, "color")
+        self.assertListEqual(list(s), [1, 0, 1])
+
     def test_fit_transform(self):
         df = create_df_all()
         t = r.CategoryEncoder("color")
@@ -260,6 +274,14 @@ class CategoryEncoderTest(TestCase):
         df_expected = pd.DataFrame({
             "color": ["red","UNKNOWN"], "price": [1.5,2.5], "amount": [1,2]})
         self.assertTrue(df_out.equals(df_expected))
+
+
+class PandasScalerTest(TestCase):
+
+    def test_scaler(self):
+        df = create_df_all()
+        t = r.PandasScaler("amount")
+        df = t.fit_transform()
 
 
 class OneHotTest(TestCase):
@@ -441,28 +463,11 @@ class OneHotTest(TestCase):
         self.assertEqual(columns, expected)
 
 
-class TestCategoryEncoder(TestCase):
-
-    def test__fit_column(self):
-        df = create_df_cat()
-        t = r.category()
-        t._fit_column(df, "color")
-        cat = list(t.categories["color"])
-        self.assertListEqual(cat, ["blue", "red"])
-
-    def test__transform_column(self):
-        df = create_df_cat()
-        t = r.category()
-        t.categories = {"color": pd.Index(["blue", "red"])}
-        s = t._transform_column(df, "color")
-        self.assertListEqual(list(s), [1, 0, 1])
-
-
-class TestQueryTransformer(TestCase):
+class QueryTransformerTest(TestCase):
 
     def test_transform(self):
         df = create_df_all()
-        t = r.query("color == 'red'")
+        t = r.QueryTransformer("color == 'red'")
         df_out = t.fit_transform(df)
         expected = pd.DataFrame({
             "color": ["red", "red"],
@@ -474,15 +479,16 @@ class TestQueryTransformer(TestCase):
         self.assertTrue(expected.equals(df_out))
 
 
-class TestReplaceTransformer(TestCase):
+class ReplaceTransformerTest(TestCase):
+
     def test__transform_columns_text(self):
         df_in = pd.DataFrame({
-            "Vowels": ["a", "e", None, "o", "u"]
+            "vowels": ["a", "e", None, "o", "u"]
         })
-        t = r.replace(values={None: "i"})
+        t = r.ReplaceTransformer(values={None: "i"})
         df_out = t.fit_transform(df_in)
         expected = pd.DataFrame({
-            "Vowels": ["a", "e", "i", "o", "u"]
+            "vowels": ["a", "e", "i", "o", "u"]
         })
         self.assertTrue(expected.equals(df_out))
 
