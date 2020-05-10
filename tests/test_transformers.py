@@ -6,8 +6,11 @@ import pandas as pd
 from unittest import TestCase
 from unittest.mock import call
 from unittest.mock import MagicMock
+from unittest.mock import Mock
 
+from tests.fixtures import SklearnTransformerMock
 from tests.fixtures import create_df_all
+from tests.fixtures import create_df_int
 from tests.fixtures import create_df_cat
 from tests.fixtures import create_df_cat2
 
@@ -279,12 +282,83 @@ class CategoryEncoderTest(TestCase):
 class PandasScalerTest(TestCase):
 
     def test_scaler(self):
-        df = create_df_all()
+        df = create_df_int()
         t = r.PandasScaler("amount")
-        df = t.fit_transform()
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({"amount": [-1.,0,1]})
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_scaler_inverse(self):
+        df = create_df_int()
+        t = r.PandasScaler("amount")
+        df_out = t.fit_transform(df)
+        df_out = t.inverse_transform(df_out)
+        df_expected = pd.DataFrame({"amount": [1.,2,3]})
+        self.assertTrue(df_out.equals(df_expected))
 
 
-class OneHotTest(TestCase):
+class SklearnWrapperTest(TestCase):
+
+    def test_get_column_map_features_changes_cols(self):
+        sk = MagicMock()
+        sk.features_ = [1]
+        t = r.SklearnWrapper(sk)
+        t.cols = ["amount", "color"]
+        t._get_column_mapping()
+        self.assertListEqual(t.cols, ["color"])
+
+    def test_get_column_map_features(self):
+        sk = SklearnTransformerMock()
+        sk.features_ = [1]
+        t = r.SklearnWrapper(sk)
+        t.cols = ["amount", "color"]
+        d = t._get_column_mapping()
+        d_expected = {"color": "color"}
+        self.assertDictEqual(d, d_expected)
+
+    def _test_get_column_map_features_name(self, col_format, expected):
+        sk = SklearnTransformerMock()
+        sk.get_feature_names = MagicMock(return_value=["0_blue", "0_red"])
+        if col_format is not None:
+            t = r.SklearnWrapper(sk, col_format=col_format)
+        else:
+            t = r.SklearnWrapper(sk)
+        t.cols = ["color"]
+        d = t._get_column_mapping()
+        d_expected = {"color": tuple(expected)}
+        self.assertDictEqual(d, d_expected)
+
+    def test_get_column_map_features_name_default(self):
+        expected = ["color=blue", "color=red"]
+        self._test_get_column_map_features_name(None, expected)
+
+    def test_get_column_map_features_name_format_unnamed(self):
+        expected = ["color='blue'", "color='red'"]
+        col_format = "{}='{}'"
+        self._test_get_column_map_features_name(col_format, expected)
+
+    def test_get_column_map_features_name_format_named(self):
+        expected = ["blue(color)", "red(color)"]
+        col_format = "{value}({column})"
+        self._test_get_column_map_features_name(col_format, expected)
+
+    def test_fit_transform_features_name_result(self):
+        sk = SklearnTransformerMock()
+        sk.get_feature_names = MagicMock(return_value=["0_blue", "0_red"])
+        return_value = np.array([[1,2,3], [3,2,1]]).T
+        sk.transform = MagicMock(return_value=return_value)
+        t = r.SklearnWrapper(sk, "color")
+        df_out = t.fit_transform(create_df_all())
+        df_expected = pd.DataFrame({
+            "color=blue": [1,2,3],
+            "color=red": [3,2,1],
+            "price": [1.5,2.5,3.5],
+            "amount": [1,2,3]})
+        sk.transform.assert_called_once()
+        self.assertTrue(df_out.equals(df_expected))
+
+
+class OneHotTransformerTest(TestCase):
     """OneHot transformer test suite. """
 
     def test_onehot_columns_names(self):
@@ -296,21 +370,22 @@ class OneHotTest(TestCase):
         df1 = create_df_cat()
         t = r.recipipe() + r.onehot()
         df2 = t.fit_transform(df1)
-        expected = ["color='red'", "color='blue'"]
+        expected = ["color=red", "color=blue"]
         self.assertCountEqual(df2.columns, expected)
 
     def test_onehot_columns_names_underscore(self):
         """Check columns names when "_" is present in the column name.
 
-        We are not taking into account the order of the columns for
-        this test.
+        This is important because SKLearn `get_feature_names` method returns
+        names with "_" as a separator.
+        Not taking into account the order of the columns for this test.
         """
 
         df1 = create_df_cat()
         df1.columns = ["my_color"]
         t = r.recipipe() + r.onehot()
         df2 = t.fit_transform(df1)
-        expected = ["my_color='red'", "my_color='blue'"]
+        expected = ["my_color=red", "my_color=blue"]
         self.assertCountEqual(df2.columns, expected)
 
     def test_onehot_columns_values(self):
@@ -343,8 +418,8 @@ class OneHotTest(TestCase):
         t = r.recipipe() + r.onehot()
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
-            "color='red'": [1., 0, 1],
-            "color='blue'": [0., 1, 0]
+            "color=red": [1., 0, 1],
+            "color=blue": [0., 1, 0]
         })
         self.assertTrue(expected.eq(df2).all().all())
 
@@ -362,10 +437,10 @@ class OneHotTest(TestCase):
         t = r.recipipe() + r.onehot()
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
-            "gender='female'": [1., 0, 0],
-            "gender='male'": [0., 1, 1],
-            "color='blue'": [0., 1, 0],
-            "color='red'": [1., 0, 1]
+            "gender=female": [1., 0, 0],
+            "gender=male": [0., 1, 1],
+            "color=blue": [0., 1, 0],
+            "color=red": [1., 0, 1]
         })
         self.assertTrue(expected.equals(df2))
 
@@ -380,8 +455,8 @@ class OneHotTest(TestCase):
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
             "gender": ["female", "male", "male"],
-            "color='blue'": [0., 1, 0],
-            "color='red'": [1., 0, 1]
+            "color=blue": [0., 1, 0],
+            "color=red": [1., 0, 1]
         })
         self.assertTrue(expected.equals(df2))
 
@@ -399,8 +474,8 @@ class OneHotTest(TestCase):
         t = r.recipipe() + r.onehot(["gender"])
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
-            "gender='female'": [1., 0, 0],
-            "gender='male'": [0., 1, 1],
+            "gender=female": [1., 0, 0],
+            "gender=male": [0., 1, 1],
             "color": ["red", "blue", "red"],
         })
         self.assertTrue(expected.equals(df2))
@@ -412,10 +487,10 @@ class OneHotTest(TestCase):
         t = r.recipipe() + r.onehot(["color"]) + r.onehot(["gender"])
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
-            "gender='female'": [1., 0, 0],
-            "gender='male'": [0., 1, 1],
-            "color='blue'": [0., 1, 0],
-            "color='red'": [1., 0, 1]
+            "gender=female": [1., 0, 0],
+            "gender=male": [0., 1, 1],
+            "color=blue": [0., 1, 0],
+            "color=red": [1., 0, 1]
         })
         self.assertTrue(expected.equals(df2))
 
@@ -431,10 +506,10 @@ class OneHotTest(TestCase):
         t = r.recipipe() + r.onehot(["color", "gender"])
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
-            "gender='female'": [1., 0, 0],
-            "gender='male'": [0., 1, 1],
-            "color='blue'": [0., 1, 0],
-            "color='red'": [1., 0, 1]
+            "gender=female": [1., 0, 0],
+            "gender=male": [0., 1, 1],
+            "color=blue": [0., 1, 0],
+            "color=red": [1., 0, 1]
         })
         self.assertTrue(expected.equals(df2))
 
@@ -446,8 +521,8 @@ class OneHotTest(TestCase):
         df2 = t.fit_transform(df1)
         expected = pd.DataFrame({
             "color": ["red", "blue", "red"],
-            "color='blue'": [0., 1, 0],
-            "color='red'": [1., 0, 1]
+            "color=blue": [0., 1, 0],
+            "color=red": [1., 0, 1]
         })
         self.assertTrue(expected.equals(df2))
 
@@ -457,8 +532,8 @@ class OneHotTest(TestCase):
         df1 = create_df_cat2()
         t = r.recipipe() + r.onehot("color", "gender")
         df2 = t.fit_transform(df1)
-        expected = ["gender='female'", "gender='male'",
-                    "color='blue'", "color='red'"]
+        expected = ["gender=female", "gender=male",
+                    "color=blue", "color=red"]
         columns = list(df2.columns)
         self.assertEqual(columns, expected)
 
@@ -493,10 +568,10 @@ class ReplaceTransformerTest(TestCase):
         self.assertTrue(expected.equals(df_out))
 
 
-class TestGroupByTransformer(TestCase):
+class GroupByTransformerTest(TestCase):
 
+    # TODO: This is not an unit test...
     def test_fit_transform(self):
-        # TODO: This is not an unit test...
         df_in = pd.DataFrame({
             "color": ["red", "red", "red", "blue", "blue", "blue"],
             "other": [1, 2, 3, 4, 5, 6],
@@ -505,15 +580,17 @@ class TestGroupByTransformer(TestCase):
         })
         # Set an unordered index to check the correct order of the output.
         df_in.set_index("index", inplace=True)
-        t = r.groupby("color", r.scale("amount"))
-        df_out = t.fit_transform(df_in)
+
         norm = 1 / np.std([1, 2, 3])
-        expected = pd.DataFrame({
+        df_expected = pd.DataFrame({
             "color": ["red", "red", "red", "blue", "blue", "blue"],
             "other": [1, 2, 3, 4, 5, 6],
-            "amount": [-norm, 0, norm, -norm, 0, norm],
+            "amount": [-1., 0, 1, -1, 0, 1],
             "index": [3, 4, 5, 0, 1, 2]
         })
-        expected.set_index("index", inplace=True)
-        self.assertTrue(expected.equals(df_out))
+        df_expected.set_index("index", inplace=True)
+
+        t = r.GroupByTransformer("color", r.PandasScaler("amount"))
+        df_out = t.fit_transform(df_in)
+        self.assertTrue(df_out.equals(df_expected))
 

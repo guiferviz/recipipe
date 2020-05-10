@@ -1,5 +1,7 @@
 
 import abc
+import collections
+import copy
 import fnmatch
 
 import numpy as np
@@ -239,7 +241,7 @@ class SklearnCreator(object):
     recipipe pipelines.
 
     Args:
-        sklearn_transformer (sklearn.TransformerMixin): Any instance of an
+        sk_transformer (sklearn.TransformerMixin): Any instance of an
             SKLearn transformer you want to incorporate in the recipipes
             pipelines.
 
@@ -251,8 +253,8 @@ class SklearnCreator(object):
         recipipe() + onehot(dtype="string")
     """
 
-    def __init__(self, sklearn_transformer, **kwargs):
-        self.trans = sklearn_transformer
+    def __init__(self, sk_transformer, **kwargs):
+        self.trans = sk_transformer
         self.kwargs = kwargs
 
     def __call__(self, *args, **kwargs):
@@ -265,83 +267,60 @@ class SklearnCreator(object):
         return SklearnWrapper(clone(self.trans), *args, **kwargs)
 
 
-class SklearnWrapper(RecipipeTransformer):
+class SklearnWrapper(ColumnsTransformer):
 
-    def __init__(self, sklearn_transformer, *args,
-                 separator="=", quote=True, **kwargs):
+    def __init__(self, sk_transformer, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.sklearn_transformer = sklearn_transformer
-        self.separator = separator
-        self.quote = quote
-        self.new_cols_list = None
-        self.new_cols_hierarchy = None
+        self.sk_transformer = sk_transformer
 
     def _fit(self, df, y=None):
-        c = self.get_cols()
-        self.sklearn_transformer.fit(df[c].values)
-        self._set_output_names_list(df, len(c))
+        self.sk_transformer.fit(df[self.cols].values)
         return self
 
-    def _transform(self, df):
-        c = self.get_cols()
-        output = self.sklearn_transformer.transform(df[c].values)
-        df_new = pd.DataFrame(output, columns=self.new_cols_list, index=df.index)
-        return df_new
+    def _transform_columns(self, df, cols):
+        return self.sk_transformer.transform(df[cols].values)
 
-    def _set_output_names_list(self, df, output_size):
-        """Set new_cols_list and new_cols_hierarchy. """
-
-        c = self.get_cols()
-
-        # Check if sklearn object has features index.
+    def _get_column_mapping(self):
+        # Check if SKLearn object has features index.
         # This is common in transformers like MissingIndicator with param
         # features="missing-only", that is, transformers that do not return
         # all the input features we pass to them.
-        if hasattr(self.sklearn_transformer, "features_"):
-            c = [c[i] for i in self.sklearn_transformer.features_]
-            output_size = len(c)
+        if hasattr(self.sk_transformer, "features_"):
+            self.cols = [self.cols[i] for i in self.sk_transformer.features_]
 
-        if hasattr(self.sklearn_transformer, "get_feature_names"):
-            # c_aux instead of c to avoid splitting column names with "_".
-            c_aux = [str(i) for i in range(len(c))]
-            new_cols = self.sklearn_transformer.get_feature_names(c_aux)
-            new_cols = [i.split("_", 1) for i in new_cols]
-            new_cols = [(c[int(i[0])], i[1].replace("'", "\\'")) for i in new_cols]
-            new_cols_hierarchy = {i[0]: [] for i in new_cols}
-            str_format = "{}{}'{}'" if self.quote else "{}{}{}"
-            for k, v in new_cols:
-                new_cols_hierarchy[k].append(v)
-            self.new_cols_list = [str_format.format(i[0], self.separator, i[1]) for i in new_cols]
-            for i in new_cols_hierarchy:
-                new_cols_hierarchy[i] = tuple([str_format.format(i, self.separator, j) for j in new_cols_hierarchy[i]])
-            self.new_cols_hierarchy = new_cols_hierarchy
-        elif len(c) == output_size:
-            self.new_cols_hierarchy = super().get_column_mapping()
-            # Recreate dict just in case the number of output columns
-            # is not the same as the number of input columns.
-            self.new_cols_hierarchy = {i: self.new_cols_hierarchy[i] for i in c}
-            self.new_cols_list = [self.new_cols_hierarchy[i] for i in c]
+        if hasattr(self.sk_transformer, "get_feature_names"):
+            if self.col_format == "{}": self.col_format = "{column}={value}"
+            # c_aux instead of self.cols to avoid splitting column names
+            # with "_",
+            # This is important because SKLearn `get_feature_names` method
+            # returns names with "_" as a separator.
+            c_aux = list(map(str, range(len(self.cols))))
+            new_cols = self.sk_transformer.get_feature_names(c_aux)
+            col_map = collections.defaultdict(list)
+            for i in new_cols:
+                col, value = i.split("_", 1)
+                col = self.cols[int(col)]
+                full_name = self.col_format.format(col, value,
+                        column=col, value=value)
+                col_map[col].append(full_name)
+            col_map = {k: tuple(v) for k, v in col_map.items()}
+        else:
+            col_map = super()._get_column_mapping()
+        """
         else:
             name = "_".join(c)
-            self.new_cols_list = [f"{name}_{i}" for i in range(output_size)]
-            self.new_cols_hierarchy = {tuple(c): tuple(self.new_cols_list)}
-
-    def get_column_mapping(self):
-        return self.new_cols_hierarchy
-
-    def _inverse_transform(self, df_in):
-        c = self.get_cols()
-        np_out = self.sklearn_transformer.inverse_transform(df_in[c].values)
-        df_out = pd.DataFrame(np_out, columns=c, index=df_in.index)
-        return df_out
+            self.cols_out = [f"{name}_{i}" for i in range(output_size)]
+            col_map = {tuple(c): tuple(self.new_cols_list)}
+        """
+        return col_map
 
 
 class SklearnWrapperByColumn(ColumnsTransformer):
 
-    def __init__(self, sklearn_transformer, cols=None,
+    def __init__(self, sk_transformer, cols=None,
                  keep_cols=False, separator="=", quote=True):
         super().__init__(cols)
-        self.original_transformer = sklearn_transformer
+        self.original_transformer = sk_transformer
         self.new_cols = None
         self.transformers = {}
 
@@ -462,12 +441,12 @@ class GroupByTransformer(RecipipeTransformer):
         groups = df_in.groupby(self.groupby)
         dfs = []
         for name, group in groups:
-            dfs.append(self.transform_group(name, group))
+            df = self.transform_group(name, group)
+            dfs.append(df)
         df_out = pd.concat(dfs, axis=0)
         return df_out.loc[df_in.index, :]
 
     def fit_group(self, name, df):
-        import copy
         t = copy.deepcopy(self.transformer)
         t.fit(df)
         self.transformers[name] = t
