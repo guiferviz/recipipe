@@ -11,6 +11,8 @@ from recipipe.core import Recipipe
 from recipipe.core import RecipipeTransformer
 
 from recipipe.transformers import CategoryEncoder
+from recipipe.transformers import ColumnTransformer
+from recipipe.transformers import ColumnsTransformer
 from recipipe.transformers import DropTransformer
 from recipipe.transformers import GroupByTransformer
 from recipipe.transformers import MissingIndicatorCreator
@@ -20,6 +22,7 @@ from recipipe.transformers import ReplaceTransformer
 from recipipe.transformers import SelectTransformer
 from recipipe.transformers import SimpleImputerCreator
 from recipipe.transformers import SklearnCreator
+from recipipe.transformers import SklearnWrapper
 
 from recipipe._version import __version__
 

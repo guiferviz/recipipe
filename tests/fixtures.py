@@ -69,7 +69,7 @@ class SklearnTransformerMock(BaseEstimator, TransformerMixin):
         self.n_transform = 0
         self.n_inverse_transform = 0
 
-    def fit(self, X, y):
+    def fit(self, X, y=None):
         self.n_fit += 1
         return self
 

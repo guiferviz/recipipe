@@ -1,5 +1,4 @@
 
-import abc
 import collections
 import fnmatch
 import inspect
@@ -109,7 +108,7 @@ class Recipipe(sklearn.pipeline.Pipeline):
         return self
 
 
-class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
+class RecipipeTransformer(BaseEstimator, TransformerMixin):
     """Base class of all Recipipe transformers.
 
     Attributes:
@@ -147,7 +146,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
 
     def __init__(self, *args, cols=None, dtype=None, name=None,
                  keep_original=False, col_format="{}",
-                 cols_not_found_error=False, cols_remove_duplicates=True):
+                 cols_not_found_error=False):
         """Create a new transformer.
 
         Columns names can be use Unix filename pattern matching (
@@ -180,9 +179,6 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
             cols_not_found_error (:obj:`bool`): Raise an error if the isn't
                 any match for any of the specified columns.
                 Default: `False`.
-            cols_remove_duplicates (:obj:`bool`): Remove duplicates if a column
-                is specified more than once in `args` or `cols`.
-                Default: `True`.
         """
 
         if cols:
@@ -199,7 +195,6 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         self.cols = None  # fitted columns, set in fit
         self.cols_out = None  # set in fit
         self.cols_not_found_error = cols_not_found_error
-        self.cols_remove_duplicates = cols_remove_duplicates
         self.cols_in_out = None  # set in fit
 
     def _fit(self, df):  # pragma: no cover
@@ -211,7 +206,6 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
 
         pass
 
-    @abc.abstractmethod
     def _transform(self, df):  # pragma: no cover
         """Your transform code should be here.
 
@@ -229,7 +223,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
             The transformer DataFrame.
         """
 
-        pass
+        return df
 
     def fit(self, df, y=None):
         """Fit the transformer.
@@ -239,7 +233,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
         """
 
         self.cols = fit_columns(df, self.cols_init, self.dtype,
-                self.cols_not_found_error, self.cols_remove_duplicates)
+                self.cols_not_found_error)
         self._fit(df)
         # Save column maps and lists.
         self.col_map = self._get_column_mapping()
@@ -249,7 +243,8 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin, abc.ABC):
             add_to_map_dict(col_map_1_n_inverse, v, k)
         self.col_map_1_n = col_map_1_n
         self.col_map_1_n_inverse = col_map_1_n_inverse
-        self.cols_out = flatten_list(self.col_map.values())
+        self.cols_out = list(collections.OrderedDict.fromkeys(
+            flatten_list(self.col_map.values())))
         # Cols in input columns and output columns should be removed from
         # df_in during the transform phase.
         # We join df_in with df_out, so we do not want duplicate column names.

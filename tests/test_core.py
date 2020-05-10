@@ -1,5 +1,6 @@
 
 from unittest import TestCase
+from unittest.mock import MagicMock
 
 from tests.fixtures import TransformerMock
 from tests.fixtures import RecipipeTransformerMock
@@ -113,39 +114,21 @@ class RecipipeTest(TestCase):
 
 class RecipipeTransformerTest(TestCase):
 
-    def test_abstract_class(self):
-        """You cannot instantiate a RecipipeTransformer. """
-
-        with self.assertRaises(TypeError):
-            r.RecipipeTransformer()
-
     def test_inheritance(self):
-        """You should implement the _transform method in any subclass. """
-
-        class TestTransformer(r.RecipipeTransformer):
-            def _transform(self, df):
-                pass
-
-        TestTransformer()
-
-    def test_inheritance_error(self):
-        """You should implement the _transform method in any subclass. """
+        """Inherit and test constructor. """
 
         class TestTransformer(r.RecipipeTransformer):
             pass
 
-        with self.assertRaises(TypeError):
-            TestTransformer()
+        TestTransformer()
 
     def test_inheritance_var_args_sklearn_params(self):
-        """You should implement the _transform method in any subclass. """
+        """Init params are used as SKLearn estimator params. """
 
         class TestTransformer(r.RecipipeTransformer):
             def __init__(self, *args, param1=1, **kwargs):
                 self.param1 = param1
                 super().__init__(*args, **kwargs)
-            def _transform(self, df):
-                pass
 
         params = TestTransformer(1, 2, param1=3, name="The Dude").get_params()
         self.assertDictEqual(params, {"param1": 3})
@@ -187,6 +170,15 @@ class RecipipeTransformerTest(TestCase):
         """Keep original only works when no name collisions exist. """
 
         t = RecipipeTransformerMock(keep_original=True)
+        with self.assertRaises(ValueError):
+            t.fit(create_df_3dtypes())
+
+    # TODO: this test is not working, do we really need to check the returned
+    # column mapping?
+    def _test_fit_check_column_mapping(self):
+        t = r.RecipipeTransformer()
+        t._get_column_mapping = MagicMock(return_value={
+            "c1": ["c1", "c2"], "c2": []})
         with self.assertRaises(ValueError):
             t.fit(create_df_3dtypes())
 
