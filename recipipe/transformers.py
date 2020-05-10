@@ -315,36 +315,6 @@ class SklearnWrapper(ColumnsTransformer):
         return col_map
 
 
-class SklearnWrapperByColumn(ColumnsTransformer):
-
-    def __init__(self, sk_transformer, cols=None,
-                 keep_cols=False, separator="=", quote=True):
-        super().__init__(cols)
-        self.original_transformer = sk_transformer
-        self.new_cols = None
-        self.transformers = {}
-
-    def _fit_column(self, df, c):
-        t = clone(self.original_transformer)
-        t.fit(df[c].values)
-        if hasattr(t, "get_feature_names"):
-            nc = [i[1:] for i in t.get_feature_names("")]
-            str_format = "{}{}'{}'" if self.quote else "{}{}{}"
-            nc = [str_format.format(c, self.separator, i) for i in nc]
-            self.new_cols = nc
-        self.transformers[c] = t
-        return self
-
-    def _transform_column(self, df, c):
-        output = self.transformers[c].transform(df[c].values)
-        df_new = pd.DataFrame(output, columns=self.new_cols)
-        df_others = df if self.keep_cols else df.drop(columns=c)
-        return df_others.join(df_new)
-
-    def _columns_in_order(self, cols, new_cols):
-        pass
-
-
 class MissingIndicatorCreator(object):
     """Helper class for creating missing indicator transformers. """
 
