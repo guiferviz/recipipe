@@ -90,11 +90,10 @@ class DropTransformer(RecipipeTransformer):
 class ColumnTransformer(RecipipeTransformer):
     """Apply an operation per each input column.
 
-    This transformer only allows 1 to 1 relationships between input and output
+    This transformer only allows 1 to N relationships between input and output
     columns.
-    If you want to concat one column to another (that is, creating a column
-    from two existing ones) or splitting a column (creating more than one
-    column from one input column) this transformer is not for you.
+    If you want to create a column from two existing ones (like concatenate one
+    column to another) this transformer is not for you.
 
     Note that the output number of rows of this transformer should be the same
     as in the input DataFrame. No deletes are supported here.
@@ -102,8 +101,8 @@ class ColumnTransformer(RecipipeTransformer):
 
     def fit(self, df, y=None):
         r = super().fit(df, y)
-        if len(self.cols) != len(self.cols_out):
-            raise ValueError("Only 1 to 1 relationships between input and "
+        if any(len(i) > 1 for i in self.col_map_1_n_inverse.values()):
+            raise ValueError("Only 1 to N relationships between input and "
                              "output columns are supported by the "
                              "ColumnTransformer")
         return r
@@ -258,16 +257,20 @@ class SklearnCreator(object):
         self.kwargs = kwargs
 
     def __call__(self, *args, **kwargs):
-        """Instantiate a SklearnWrapper using a copy of the given transformer.
+        """Instantiate a SKLearn wrapper using a copy of the given transformer.
 
         It's important to make this copy to avoid fitting several times the
         same transformer.
         """
+        t = clone(self.trans)
         kwargs = default_params(kwargs, **self.kwargs)
-        return SklearnWrapper(clone(self.trans), *args, **kwargs)
+        return SklearnColumnsWrapper(t, *args, **kwargs)
 
 
-class SklearnWrapper(ColumnsTransformer):
+class SklearnColumnWrapper(ColumnTransformer):
+    pass
+
+class SklearnColumnsWrapper(ColumnsTransformer):
 
     def __init__(self, sk_transformer, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -329,7 +332,7 @@ class MissingIndicatorCreator(object):
         information about the parameters.
 
         Returns:
-            SklearnWrapper transformer with MissingIndicator as sklearn
+            SklearnColumnsWrapper transformer with MissingIndicator as sklearn
             transformer.
         """
         kwargs = default_params(kwargs, **self.kwargs)
@@ -337,7 +340,7 @@ class MissingIndicatorCreator(object):
                                              features=features,
                                              sparse=sparse,
                                              error_on_new=error_on_new)
-        return SklearnWrapper(mi, *args, **kwargs)
+        return SklearnColumnsWrapper(mi, *args, **kwargs)
 
 
 class SimpleImputerCreator(object):
@@ -351,7 +354,7 @@ class SimpleImputerCreator(object):
         information about the parameters.
 
         Returns:
-            SklearnWrapper transformer with SimpleImputer as sklearn
+            SklearnColumnsWrapper transformer with SimpleImputer as sklearn
             transformer.
         """
         if fill_value is not None:
@@ -361,7 +364,7 @@ class SimpleImputerCreator(object):
                                           fill_value=fill_value,
                                           verbose=verbose,
                                           copy=copy)
-        return SklearnWrapper(mi, *args, **kwargs)
+        return SklearnColumnsWrapper(mi, *args, **kwargs)
 
 
 class ReplaceTransformer(ColumnsTransformer):

@@ -111,12 +111,22 @@ class DropTransformerTest(TestCase):
 
 class ColumnTransformerTest(TestCase):
 
-    def test_not_1_to_1_relationship(self):
+    def test_allow_1_to_N_relationship(self):
         class C(r.ColumnTransformer):
             def _get_column_mapping(self):
                 return {"color": ["color1", "color2"], "price": "price"}
         t = C("color", "price")
-        with self.assertRaises(ValueError):
+        t.fit(create_df_all())
+
+    def test_not_N_to_1_relationship(self):
+        class C(r.ColumnTransformer):
+            def _get_column_mapping(self):
+                return {
+                        tuple(["color", "price"]): "color_price",
+                        "color": tuple(["color1", "color2"])
+                }
+        t = C("color", "price")
+        with self.assertRaisesRegex(ValueError, "Only 1 to N relationships.*"):
             t.fit(create_df_all())
 
     def _test_transform_column_calls(self, col_format):
@@ -297,12 +307,12 @@ class PandasScalerTest(TestCase):
         self.assertTrue(df_out.equals(df_expected))
 
 
-class SklearnWrapperTest(TestCase):
+class SklearnColumnsWrapperTest(TestCase):
 
     def test_get_column_map_features_changes_cols(self):
         sk = MagicMock()
         sk.features_ = [1]
-        t = r.SklearnWrapper(sk)
+        t = r.SklearnColumnsWrapper(sk)
         t.cols = ["amount", "color"]
         t._get_column_mapping()
         self.assertListEqual(t.cols, ["color"])
@@ -310,7 +320,7 @@ class SklearnWrapperTest(TestCase):
     def test_get_column_map_features(self):
         sk = SklearnTransformerMock()
         sk.features_ = [1]
-        t = r.SklearnWrapper(sk)
+        t = r.SklearnColumnsWrapper(sk)
         t.cols = ["amount", "color"]
         d = t._get_column_mapping()
         d_expected = {"color": "color"}
@@ -320,9 +330,9 @@ class SklearnWrapperTest(TestCase):
         sk = SklearnTransformerMock()
         sk.get_feature_names = MagicMock(return_value=["0_blue", "0_red"])
         if col_format is not None:
-            t = r.SklearnWrapper(sk, col_format=col_format)
+            t = r.SklearnColumnsWrapper(sk, col_format=col_format)
         else:
-            t = r.SklearnWrapper(sk)
+            t = r.SklearnColumnsWrapper(sk)
         t.cols = ["color"]
         d = t._get_column_mapping()
         d_expected = {"color": tuple(expected)}
@@ -347,7 +357,7 @@ class SklearnWrapperTest(TestCase):
         sk.get_feature_names = MagicMock(return_value=["0_blue", "0_red"])
         return_value = np.array([[1,2,3], [3,2,1]]).T
         sk.transform = MagicMock(return_value=return_value)
-        t = r.SklearnWrapper(sk, "color")
+        t = r.SklearnColumnsWrapper(sk, "color")
         df_out = t.fit_transform(create_df_all())
         df_expected = pd.DataFrame({
             "color=blue": [1,2,3],
