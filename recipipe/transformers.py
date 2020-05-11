@@ -100,17 +100,16 @@ class ColumnTransformer(RecipipeTransformer):
     """
 
     def fit(self, df, y=None):
-        r = super().fit(df, y)
+        super().fit(df, y)
         if any(len(i) > 1 for i in self.col_map_1_n_inverse.values()):
             raise ValueError("Only 1 to N relationships between input and "
                              "output columns are supported by the "
                              "ColumnTransformer")
-        return r
+        return self
 
     def _fit(self, df):
         for i in self.cols:
             self._fit_column(df, i)
-        return self
 
     def _fit_column(self, df, column_name):
         pass
@@ -171,9 +170,6 @@ class ColumnsTransformer(RecipipeTransformer):
     """
 
     def _fit(self, df, y=None):
-        self._fit_columns(df, self.cols)
-
-    def _fit_columns(self, df, column_name):
         pass
 
     def _transform(self, df_in):
@@ -201,7 +197,7 @@ class ColumnsTransformer(RecipipeTransformer):
         df_out = pd.DataFrame(np_out, columns=self.cols, index=df_in.index)
         return df_out
 
-    def _inverse_transform_columns(self, df, columns_name):
+    def _inverse_transform_columns(self, df, columns_name):  # pragma: no cover
         pass
 
 
@@ -292,7 +288,50 @@ class SklearnCreator(object):
 
 
 class SklearnColumnWrapper(ColumnTransformer):
-    pass
+
+    def __init__(self, sk_transformer, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.original_transformer = sk_transformer
+        self.transformers = {}
+
+    def _fit_column(self, df, column_name):
+        t = clone(self.original_transformer)
+        t.fit(df[column_name].values)
+        self.transformers[c] = t
+
+    def _transform_column(self, df, c):
+        return self.transformers[c].transform(df[c].values)
+
+    def _get_column_mapping(self):
+        # Check if SKLearn object has features index.
+        # "features_" is common in transformers like MissingIndicator with
+        # the parameter features="missing-only", that is, transformers that do
+        # not return all the input features we pass to them.
+        cols = []
+        for c, t in self.transformers.items():
+            if hasattr(t, "features_"):
+                if t.features_:
+                    cols.append(c)
+            else:
+                cols.append(c)
+        self.cols = cols
+
+        col_map = super()._get_column_mapping()
+        for c, t in self.transformers.items():
+            if hasattr(t, "get_feature_names"):
+                col_format = self.col_format
+                if col_format == "{}": col_format = "{column}={value}"
+                new_cols = t.get_feature_names(["0"])
+                col_map[c] = []
+                for i in new_cols:
+                    _, value = i.split("_", 1)
+                    full_name = col_format.format(c, value,
+                            column=c, value=value)
+                    col_map[c].append(full_name)
+                if new_cols:
+                    col_map[c] = tuple(col_map[c])
+        return col_map
+
 
 class SklearnColumnsWrapper(ColumnsTransformer):
 
@@ -302,16 +341,15 @@ class SklearnColumnsWrapper(ColumnsTransformer):
 
     def _fit(self, df, y=None):
         self.sk_transformer.fit(df[self.cols].values)
-        return self
 
     def _transform_columns(self, df, cols):
         return self.sk_transformer.transform(df[cols].values)
 
     def _get_column_mapping(self):
         # Check if SKLearn object has features index.
-        # This is common in transformers like MissingIndicator with param
-        # features="missing-only", that is, transformers that do not return
-        # all the input features we pass to them.
+        # "features_" is common in transformers like MissingIndicator with
+        # the parameter features="missing-only", that is, transformers that do
+        # not return all the input features we pass to them.
         if hasattr(self.sk_transformer, "features_"):
             self.cols = [self.cols[i] for i in self.sk_transformer.features_]
 

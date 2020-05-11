@@ -343,10 +343,56 @@ class PandasScalerTest(TestCase):
         self.assertTrue(df_out.equals(df_expected))
 
 
+class SklearnColumnWrapperTest(TestCase):
+
+    def _test_get_column_map_features_selected(self, selected, features):
+        sk1 = SklearnTransformerMock()
+        if features:
+            sk1.features_ = [0] if selected else []
+        sk2 = SklearnTransformerMock()
+        sk2.features_ = [0]
+        t = r.SklearnColumnWrapper(None)
+        t.transformers = {"amount": sk1, "color": sk2}
+        t.cols = ["amount", "color"]
+        t._get_column_mapping()
+        cols_expected = ["amount", "color"] if selected else ["color"]
+        self.assertListEqual(t.cols, cols_expected)
+
+    def test_get_column_map_features_selected(self):
+        """Both features selected. """
+
+        self._test_get_column_map_features_selected(True, True)
+
+    def test_get_column_map_features_non_selected(self):
+        """One feature selected but not the other. """
+
+        self._test_get_column_map_features_selected(False, True)
+
+    def test_get_column_map_features_mix(self):
+        """One transformer with features_ and other without it. """
+
+        self._test_get_column_map_features_selected(True, False)
+
+    def test_get_column_map_features_name_mix(self):
+        """One transformer with get_feature_names and other without. """
+
+        sk1 = SklearnTransformerMock()
+        sk1.get_feature_names = MagicMock(return_value=["0_blue", "0_red"])
+        sk2 = SklearnTransformerMock()
+        t = r.SklearnColumnWrapper(None)
+        t.transformers = {"color": sk1, "amount": sk2}
+        t.cols = ["color", "amount"]
+        d = t._get_column_mapping()
+        d_expected = {
+                "color": tuple(["color=blue", "color=red"]),
+                "amount": "amount"}
+        self.assertDictEqual(d, d_expected)
+
+
 class SklearnColumnsWrapperTest(TestCase):
 
     def test_get_column_map_features_changes_cols(self):
-        sk = MagicMock()
+        sk = SklearnTransformerMock()
         sk.features_ = [1]
         t = r.SklearnColumnsWrapper(sk)
         t.cols = ["amount", "color"]

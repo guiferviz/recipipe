@@ -23,6 +23,7 @@ from recipipe.transformers import SelectTransformer
 from recipipe.transformers import SimpleImputerCreator
 from recipipe.transformers import SklearnCreator
 from recipipe.transformers import SklearnColumnsWrapper
+from recipipe.transformers import SklearnColumnWrapper
 
 from recipipe._version import __version__
 
