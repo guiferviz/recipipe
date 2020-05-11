@@ -3,6 +3,7 @@ import abc
 import collections
 import copy
 import fnmatch
+import inspect
 
 import numpy as np
 
@@ -273,18 +274,35 @@ class SklearnCreator(object):
     """
 
     def __init__(self, sk_transformer, **kwargs):
-        self.trans = sk_transformer
+        self.sk_transformer = sk_transformer
         self.kwargs = kwargs
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, wrapper="columns", **kwargs):
         """Instantiate a SKLearn wrapper using a copy of the given transformer.
 
         It's important to make this copy to avoid fitting several times the
         same transformer.
         """
-        t = clone(self.trans)
+
+        assert wrapper in ["column", "columns"]
+
+        # SKLearn transformer params.
+        signature = inspect.signature(self.sk_transformer.__init__)
+        params = [i.name for i in signature.parameters.values()]
+        sk_params = {}
+        for i in params:
+            if i in kwargs:
+                sk_params[i] = kwargs[i]
+                del kwargs[i]
+        t = clone(self.sk_transformer)
+        t.set_params(**sk_params)
+
+        # Recipipe transformer params.
         kwargs = default_params(kwargs, **self.kwargs)
-        return SklearnColumnsWrapper(t, *args, **kwargs)
+
+        if wrapper == "columns":
+            return SklearnColumnsWrapper(t, *args, **kwargs)
+        return SklearnColumnWrapper(t, *args, **kwargs)
 
 
 class SklearnColumnWrapper(ColumnTransformer):
