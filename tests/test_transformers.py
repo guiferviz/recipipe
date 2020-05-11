@@ -121,6 +121,7 @@ class ColumnTransformerTest(TestCase):
     def test_not_N_to_1_relationship(self):
         class C(r.ColumnTransformer):
             def _get_column_mapping(self):
+                # 2 input cols and 3 output cols, but still N to N.
                 return {
                         tuple(["color", "price"]): "color_price",
                         "color": tuple(["color1", "color2"])
@@ -128,6 +129,23 @@ class ColumnTransformerTest(TestCase):
         t = C("color", "price")
         with self.assertRaisesRegex(ValueError, "Only 1 to N relationships.*"):
             t.fit(create_df_all())
+
+    def test_transform_column_1_N(self):
+        t = r.ColumnTransformer("color")
+        t._get_column_mapping = MagicMock(return_value={
+            "color": ["color1", "color2"]})
+        t._transform_column = MagicMock(return_value=[[1,2],[1,2],[1,2]])
+        df = create_df_all()
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({
+            "color1": [1,1,1], "color2": [2,2,2],
+            "price": [1.5,2.5,3.5],
+            "amount": [1,2,3]})
+        calls = [call(df, "color")]
+        t._transform_column.assert_has_calls(calls, any_order=True)
+        print(df_out)
+        print(df_expected)
+        self.assertTrue(df_out.equals(df_expected))
 
     def _test_transform_column_calls(self, col_format):
         t = r.ColumnTransformer("color", "price", col_format=col_format)
@@ -193,6 +211,24 @@ class ColumnTransformerTest(TestCase):
             "color": [2,2,2], "price": [2,2,2], "amount": [1,2,3]})
         self.assertTrue(df_out.equals(df_expected))
         self.assertFalse(df.equals(df_expected))  # No changes on input df.
+
+    def test_inverse_transform_column_1_N(self):
+        t = r.ColumnTransformer("color")
+        t._get_column_mapping = MagicMock(return_value={
+            "color": ["color1", "color2"]})
+        t._inverse_transform_column = MagicMock(return_value=[1,1,1])
+        df = create_df_all()
+        t.fit(df)
+        df_in = pd.DataFrame({
+            "color1": [1,1,1], "color2": [2,2,2],
+            "price": [1.5,2.5,3.5], "amount": [1,2,3]})
+        df_out = t.inverse_transform(df_in)
+        df_expected = pd.DataFrame({
+            "color": [1,1,1], "price": [1.5,2.5,3.5], "amount": [1,2,3]})
+        calls = [call(df_in, ["color1", "color2"])]
+        t._inverse_transform_column.assert_has_calls(calls)
+        self.assertTrue(df_out.equals(df_expected))
+
 
 
 class ColumnsTransformerTest(TestCase):
