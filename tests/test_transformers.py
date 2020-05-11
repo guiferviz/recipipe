@@ -172,8 +172,8 @@ class ColumnTransformerTest(TestCase):
         df = create_df_all()
         df = t.fit_transform(df)
         t.inverse_transform(df)
-        calls = [call(df, col_format.format("price")),
-                 call(df, col_format.format("color"))]
+        calls = [call(df, [col_format.format("price")]),
+                 call(df, [col_format.format("color")])]
         t._inverse_transform_column.assert_has_calls(calls, any_order=True)
 
     def test_inverse_column_transform_calls(self):

@@ -116,23 +116,45 @@ class ColumnTransformer(RecipipeTransformer):
         pass
 
     def _transform(self, df_in):
-        df_out = pd.DataFrame(index=df_in.index, columns=self.cols_out)
+        dfs_out = []
         for i in self.cols:
-            c = self.col_map_1_n[i][0]
-            df_out[c] = self._transform_column(df_in, i)
+            c = self.col_map_1_n[i]
+            np_out = self._transform_column(df_in, i)
+            df = pd.DataFrame(np_out, index=df_in.index, columns=c)
+            dfs_out.append(df)
+        df_out = pd.concat(dfs_out, axis=1)
         return df_out
 
     def _transform_column(self, df, column_name):  # pragma: no cover
         return df[column_name]
 
-    def _inverse_transform_column(self, df, column_name):  # pragma: no cover
-        return df[column_name]
+    def _inverse_transform_column(self, df, column_names):  # pragma: no cover
+        """Inverse the transform on the given columns.
+
+        `column_names` can receive more than one column name because the
+        column transformer accepts 1 to N transformations.
+        Note that if you are working with a 1 to 1 transformation, this
+        argument is going to be a also a list (with one element, but a list).
+
+        Args:
+            df (:obj:`pandas.DataFrame`): Input DataFrame to transform.
+            column_names (:obj:`list`): List of columns names to inverse
+                transform.
+
+        Returns:
+            A DataFrame or a :obj:`numpy.ndarray` of one column.
+            By default, it returns `df[column_names]`, so it could fail when
+            used with 1 to N transformers as it will return more than one
+            column.
+        """
+
+        return df[column_names]
 
     def _inverse_transform(self, df_in):
-        df_out = pd.DataFrame(index=df_in.index)
-        for i in self.cols_out:
-            c = self.col_map_1_n_inverse[i][0]
-            df_out[c] = self._inverse_transform_column(df_in, i)
+        df_out = pd.DataFrame(index=df_in.index, columns=self.cols)
+        for i in self.cols:
+            c = self.col_map_1_n[i]
+            df_out[i] = self._inverse_transform_column(df_in, c)
         return df_out
 
 
@@ -159,12 +181,12 @@ class ColumnsTransformer(RecipipeTransformer):
         df_out = pd.DataFrame(np_out, columns=self.cols_out, index=df_in.index)
         return df_out
 
-    def _transform_columns(self, df, columns_name):
+    def _transform_columns(self, df, column_names):
         """Transform the given columns.
 
         Args:
             df (:obj:`pandas.DataFrame`): Input DataFrame.
-            columns_name (:obj:`list`): List of columns. `df` can contain more
+            column_names (:obj:`list`): List of columns. `df` can contain more
                 columns apart from the ones in `columns_name`.
 
         Returns:
@@ -210,6 +232,7 @@ class CategoryEncoder(ColumnTransformer):
         return encoded.codes
 
     def _inverse_transform_column(self, df, col):
+        col = col[0]
         return self.categories[col][df[col].values]
 
 
@@ -229,7 +252,8 @@ class PandasScaler(ColumnTransformer):
     def _transform_column(self, df, c):
         return (df[c] - self.means[c]) / self.stds[c] * self.factor
 
-    def _inverse_transform_column(self, df, c):
+    def _inverse_transform_column(self, df, column_names):
+        c = column_names[0]
         return (df[c] * self.stds[c] / self.factor) + self.means[c]
 
 
