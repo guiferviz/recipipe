@@ -677,7 +677,7 @@ class GroupByTransformerTest(TestCase):
         df_in = pd.DataFrame({
             "color": ["red", "red", "red", "blue", "blue", "blue"],
             "other": [1, 2, 3, 4, 5, 6],
-            "amount": [5, 6, 7, 1, 2, 3],
+            "amount": [5., 6, 7, 1, 2, 3],
             "index": [3, 4, 5, 0, 1, 2]
         })
         # Set an unordered index to check the correct order of the output.
@@ -695,4 +695,9 @@ class GroupByTransformerTest(TestCase):
         t = r.GroupByTransformer("color", r.PandasScaler("amount"))
         df_out = t.fit_transform(df_in)
         self.assertTrue(df_out.equals(df_expected))
+
+        df_in_out = t.inverse_transform(df_out)
+        print(df_in_out)
+        print(df_in)
+        self.assertTrue(df_in_out.equals(df_in))
 
