@@ -388,6 +388,16 @@ class SklearnColumnWrapperTest(TestCase):
                 "amount": "amount"}
         self.assertDictEqual(d, d_expected)
 
+    def test_fit_transform(self):
+        sk = SklearnTransformerMock()
+        t = r.SklearnColumnWrapper(sk)
+        t.fit_transform(create_df_cat())
+        # Original transformer should not be fitted, only copies.
+        self.assertEqual(sk.n_fit, 0)
+        self.assertTrue("color" in t.transformers)
+        self.assertEqual(t.transformers["color"].n_fit, 1)
+        self.assertEqual(t.transformers["color"].n_transform, 1)
+
 
 class SklearnColumnsWrapperTest(TestCase):
 

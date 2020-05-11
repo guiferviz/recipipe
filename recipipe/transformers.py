@@ -297,7 +297,7 @@ class SklearnColumnWrapper(ColumnTransformer):
     def _fit_column(self, df, column_name):
         t = clone(self.original_transformer)
         t.fit(df[column_name].values)
-        self.transformers[c] = t
+        self.transformers[column_name] = t
 
     def _transform_column(self, df, c):
         return self.transformers[c].transform(df[c].values)
