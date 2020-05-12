@@ -111,13 +111,41 @@ class DropTransformerTest(TestCase):
 
 class ColumnTransformerTest(TestCase):
 
-    def test_not_1_to_1_relationship(self):
+    def test_allow_1_to_N_relationship(self):
         class C(r.ColumnTransformer):
             def _get_column_mapping(self):
                 return {"color": ["color1", "color2"], "price": "price"}
         t = C("color", "price")
-        with self.assertRaises(ValueError):
+        t.fit(create_df_all())
+
+    def test_not_N_to_1_relationship(self):
+        class C(r.ColumnTransformer):
+            def _get_column_mapping(self):
+                # 2 input cols and 3 output cols, but still N to N.
+                return {
+                        tuple(["color", "price"]): "color_price",
+                        "color": tuple(["color1", "color2"])
+                }
+        t = C("color", "price")
+        with self.assertRaisesRegex(ValueError, "Only 1 to N relationships.*"):
             t.fit(create_df_all())
+
+    def test_transform_column_1_N(self):
+        t = r.ColumnTransformer("color")
+        t._get_column_mapping = MagicMock(return_value={
+            "color": ["color1", "color2"]})
+        t._transform_column = MagicMock(return_value=[[1,2],[1,2],[1,2]])
+        df = create_df_all()
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({
+            "color1": [1,1,1], "color2": [2,2,2],
+            "price": [1.5,2.5,3.5],
+            "amount": [1,2,3]})
+        calls = [call(df, "color")]
+        t._transform_column.assert_has_calls(calls, any_order=True)
+        print(df_out)
+        print(df_expected)
+        self.assertTrue(df_out.equals(df_expected))
 
     def _test_transform_column_calls(self, col_format):
         t = r.ColumnTransformer("color", "price", col_format=col_format)
@@ -162,8 +190,8 @@ class ColumnTransformerTest(TestCase):
         df = create_df_all()
         df = t.fit_transform(df)
         t.inverse_transform(df)
-        calls = [call(df, col_format.format("price")),
-                 call(df, col_format.format("color"))]
+        calls = [call(df, [col_format.format("price")]),
+                 call(df, [col_format.format("color")])]
         t._inverse_transform_column.assert_has_calls(calls, any_order=True)
 
     def test_inverse_column_transform_calls(self):
@@ -183,6 +211,24 @@ class ColumnTransformerTest(TestCase):
             "color": [2,2,2], "price": [2,2,2], "amount": [1,2,3]})
         self.assertTrue(df_out.equals(df_expected))
         self.assertFalse(df.equals(df_expected))  # No changes on input df.
+
+    def test_inverse_transform_column_1_N(self):
+        t = r.ColumnTransformer("color")
+        t._get_column_mapping = MagicMock(return_value={
+            "color": ["color1", "color2"]})
+        t._inverse_transform_column = MagicMock(return_value=[1,1,1])
+        df = create_df_all()
+        t.fit(df)
+        df_in = pd.DataFrame({
+            "color1": [1,1,1], "color2": [2,2,2],
+            "price": [1.5,2.5,3.5], "amount": [1,2,3]})
+        df_out = t.inverse_transform(df_in)
+        df_expected = pd.DataFrame({
+            "color": [1,1,1], "price": [1.5,2.5,3.5], "amount": [1,2,3]})
+        calls = [call(df_in, ["color1", "color2"])]
+        t._inverse_transform_column.assert_has_calls(calls)
+        self.assertTrue(df_out.equals(df_expected))
+
 
 
 class ColumnsTransformerTest(TestCase):
@@ -297,12 +343,68 @@ class PandasScalerTest(TestCase):
         self.assertTrue(df_out.equals(df_expected))
 
 
-class SklearnWrapperTest(TestCase):
+class SklearnColumnWrapperTest(TestCase):
+
+    def _test_get_column_map_features_selected(self, selected, features):
+        sk1 = SklearnTransformerMock()
+        if features:
+            sk1.features_ = [0] if selected else []
+        sk2 = SklearnTransformerMock()
+        sk2.features_ = [0]
+        t = r.SklearnColumnWrapper(None)
+        t.transformers = {"amount": sk1, "color": sk2}
+        t.cols = ["amount", "color"]
+        t._get_column_mapping()
+        cols_expected = ["amount", "color"] if selected else ["color"]
+        self.assertListEqual(t.cols, cols_expected)
+
+    def test_get_column_map_features_selected(self):
+        """Both features selected. """
+
+        self._test_get_column_map_features_selected(True, True)
+
+    def test_get_column_map_features_non_selected(self):
+        """One feature selected but not the other. """
+
+        self._test_get_column_map_features_selected(False, True)
+
+    def test_get_column_map_features_mix(self):
+        """One transformer with features_ and other without it. """
+
+        self._test_get_column_map_features_selected(True, False)
+
+    def test_get_column_map_features_name_mix(self):
+        """One transformer with get_feature_names and other without. """
+
+        sk1 = SklearnTransformerMock()
+        sk1.get_feature_names = MagicMock(return_value=["0_blue", "0_red"])
+        sk2 = SklearnTransformerMock()
+        t = r.SklearnColumnWrapper(None)
+        t.transformers = {"color": sk1, "amount": sk2}
+        t.cols = ["color", "amount"]
+        d = t._get_column_mapping()
+        d_expected = {
+                "color": tuple(["color=blue", "color=red"]),
+                "amount": "amount"}
+        self.assertDictEqual(d, d_expected)
+
+    def test_fit_transform(self):
+        sk = SklearnTransformerMock()
+        t = r.SklearnColumnWrapper(sk)
+        t.fit_transform(create_df_cat())
+        # Original transformer should not be fitted, only copies.
+        self.assertEqual(sk.n_fit, 0)
+        self.assertTrue("color" in t.transformers)
+        self.assertEqual(t.transformers["color"].n_fit, 1)
+        self.assertEqual(t.transformers["color"].n_transform, 1)
+
+
+class SklearnColumnsWrapperTest(TestCase):
 
     def test_get_column_map_features_changes_cols(self):
-        sk = MagicMock()
+        sk = SklearnTransformerMock()
         sk.features_ = [1]
-        t = r.SklearnWrapper(sk)
+        t = r.SklearnColumnsWrapper(sk)
         t.cols = ["amount", "color"]
         t._get_column_mapping()
         self.assertListEqual(t.cols, ["color"])
@@ -310,7 +412,7 @@ class SklearnWrapperTest(TestCase):
     def test_get_column_map_features(self):
         sk = SklearnTransformerMock()
         sk.features_ = [1]
-        t = r.SklearnWrapper(sk)
+        t = r.SklearnColumnsWrapper(sk)
         t.cols = ["amount", "color"]
         d = t._get_column_mapping()
         d_expected = {"color": "color"}
@@ -320,9 +422,9 @@ class SklearnWrapperTest(TestCase):
         sk = SklearnTransformerMock()
         sk.get_feature_names = MagicMock(return_value=["0_blue", "0_red"])
         if col_format is not None:
-            t = r.SklearnWrapper(sk, col_format=col_format)
+            t = r.SklearnColumnsWrapper(sk, col_format=col_format)
         else:
-            t = r.SklearnWrapper(sk)
+            t = r.SklearnColumnsWrapper(sk)
         t.cols = ["color"]
         d = t._get_column_mapping()
         d_expected = {"color": tuple(expected)}
@@ -347,7 +449,7 @@ class SklearnWrapperTest(TestCase):
         sk.get_feature_names = MagicMock(return_value=["0_blue", "0_red"])
         return_value = np.array([[1,2,3], [3,2,1]]).T
         sk.transform = MagicMock(return_value=return_value)
-        t = r.SklearnWrapper(sk, "color")
+        t = r.SklearnColumnsWrapper(sk, "color")
         df_out = t.fit_transform(create_df_all())
         df_expected = pd.DataFrame({
             "color=blue": [1,2,3],
@@ -358,8 +460,90 @@ class SklearnWrapperTest(TestCase):
         self.assertTrue(df_out.equals(df_expected))
 
 
+class SklearnCreatorTest(TestCase):
+
+    class T(SklearnTransformerMock):
+        def __init__(self, a=0, b=1):
+            self.a, self.b = a, b
+
+    def test_default_sklearn_params(self):
+
+        tt = r.SklearnCreator(SklearnCreatorTest.T(a=2))
+        t = tt()
+        d = t.sk_transformer.get_params()
+        d_expected = {"a": 2, "b": 1}
+        self.assertEqual(d, d_expected)
+
+    def test_default_sklearn_params_call(self):
+
+        tt = r.SklearnCreator(SklearnCreatorTest.T(a=2), keep_original=True)
+        t = tt(a=3)
+        d = t.sk_transformer.get_params()
+        d_expected = {"a": 3, "b": 1}
+        self.assertDictEqual(d, d_expected)
+
+    def test_default_recipipe_params(self):
+        """By default keep_original is False, test that True is maintained. """
+
+        tt = r.SklearnCreator(SklearnCreatorTest.T(), keep_original=True)
+        t = tt()
+        self.assertTrue(t.keep_original)
+
+    def test_default_recipipe_params_call(self):
+        """Call recipipe params should overwrite existing default params. """
+
+        tt = r.SklearnCreator(SklearnCreatorTest.T(), keep_original=True)
+        t = tt(keep_original=False)
+        self.assertFalse(t.keep_original)
+
+    def test_method_default(self):
+
+        tt = r.SklearnCreator(SklearnCreatorTest.T())
+        t = tt()
+        self.assertTrue(isinstance(t, r.SklearnColumnsWrapper))
+
+    def test_method_column(self):
+
+        tt = r.SklearnCreator(SklearnCreatorTest.T())
+        t = tt(wrapper="column")
+        self.assertTrue(isinstance(t, r.SklearnColumnWrapper))
+
+    def test_method_error(self):
+
+        tt = r.SklearnCreator(SklearnCreatorTest.T())
+        with self.assertRaisesRegex(ValueError, "Wrapper method not in.*"):
+            t = tt(wrapper="daisy")
+
+    def test_param_collision(self):
+        """Use recipipe_params when an Sklearn object has the same attr. """
+
+        class T(SklearnTransformerMock):
+            def __init__(self, keep_original=0):
+                self.keep_original = keep_original
+        tt = r.SklearnCreator(T())
+        t = tt(keep_original=2, recipipe_params=dict(keep_original=3))
+        self.assertEqual(t.sk_transformer.keep_original, 2)
+        self.assertEqual(t.keep_original, 3)
+
+
+class MissingIndicatorTest(TestCase):
+
+    def test_fit_transform_inverse(self):
+        df = pd.DataFrame({"a": [1, 2, None, 4]})
+        t = r.indicator()
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({
+            "INDICATOR(a)": [False, False, True, False]})
+        print(df_out)
+        print(df_expected)
+        self.assertTrue(df_out.equals(df_expected))
+
+
 class OneHotTransformerTest(TestCase):
-    """OneHot transformer test suite. """
+    """OneHot transformer test suite.
+
+    All test suite, kind of integration tests.
+    """
 
     def test_onehot_columns_names(self):
         """Check the name of the columns after applying onehot encoding.
@@ -556,7 +740,13 @@ class QueryTransformerTest(TestCase):
 
 class ReplaceTransformerTest(TestCase):
 
-    def test__transform_columns_text(self):
+    def test_fit(self):
+        t = r.ReplaceTransformer(values={None: "i"})
+        t._fit(None)
+        d_expected = {"i": None}
+        self.assertDictEqual(t.inverse_values, d_expected)
+
+    def test_transform_text(self):
         df_in = pd.DataFrame({
             "vowels": ["a", "e", None, "o", "u"]
         })
@@ -567,6 +757,18 @@ class ReplaceTransformerTest(TestCase):
         })
         self.assertTrue(expected.equals(df_out))
 
+    def test_inverse_transform_text(self):
+        t = r.ReplaceTransformer(values={None: "i"})
+        df_in = pd.DataFrame({
+            "vowels": ["a", "e", "i", "o", "u"]
+        })
+        t.fit(df_in)
+        df_out = t.inverse_transform(df_in)
+        df_expected = pd.DataFrame({
+            "vowels": ["a", "e", None, "o", "u"]
+        })
+        self.assertTrue(df_out.equals(df_expected))
+
 
 class GroupByTransformerTest(TestCase):
 
@@ -575,7 +777,7 @@ class GroupByTransformerTest(TestCase):
         df_in = pd.DataFrame({
             "color": ["red", "red", "red", "blue", "blue", "blue"],
             "other": [1, 2, 3, 4, 5, 6],
-            "amount": [5, 6, 7, 1, 2, 3],
+            "amount": [5., 6, 7, 1, 2, 3],
             "index": [3, 4, 5, 0, 1, 2]
         })
         # Set an unordered index to check the correct order of the output.
@@ -593,4 +795,9 @@ class GroupByTransformerTest(TestCase):
         t = r.GroupByTransformer("color", r.PandasScaler("amount"))
         df_out = t.fit_transform(df_in)
         self.assertTrue(df_out.equals(df_expected))
+
+        df_in_out = t.inverse_transform(df_out)
+        print(df_in_out)
+        print(df_in)
+        self.assertTrue(df_in_out.equals(df_in))
 

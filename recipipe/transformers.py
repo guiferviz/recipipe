@@ -3,6 +3,7 @@ import abc
 import collections
 import copy
 import fnmatch
+import inspect
 
 import numpy as np
 
@@ -90,50 +91,70 @@ class DropTransformer(RecipipeTransformer):
 class ColumnTransformer(RecipipeTransformer):
     """Apply an operation per each input column.
 
-    This transformer only allows 1 to 1 relationships between input and output
+    This transformer only allows 1 to N relationships between input and output
     columns.
-    If you want to concat one column to another (that is, creating a column
-    from two existing ones) or splitting a column (creating more than one
-    column from one input column) this transformer is not for you.
+    If you want to create a column from two existing ones (like concatenate one
+    column to another) this transformer is not for you.
 
     Note that the output number of rows of this transformer should be the same
     as in the input DataFrame. No deletes are supported here.
     """
 
     def fit(self, df, y=None):
-        r = super().fit(df, y)
-        if len(self.cols) != len(self.cols_out):
-            raise ValueError("Only 1 to 1 relationships between input and "
+        super().fit(df, y)
+        if any(len(i) > 1 for i in self.col_map_1_n_inverse.values()):
+            raise ValueError("Only 1 to N relationships between input and "
                              "output columns are supported by the "
                              "ColumnTransformer")
-        return r
+        return self
 
     def _fit(self, df):
         for i in self.cols:
             self._fit_column(df, i)
-        return self
 
     def _fit_column(self, df, column_name):
         pass
 
     def _transform(self, df_in):
-        df_out = pd.DataFrame(index=df_in.index, columns=self.cols_out)
+        dfs_out = []
         for i in self.cols:
-            c = self.col_map_1_n[i][0]
-            df_out[c] = self._transform_column(df_in, i)
+            c = self.col_map_1_n[i]
+            np_out = self._transform_column(df_in, i)
+            df = pd.DataFrame(np_out, index=df_in.index, columns=c)
+            dfs_out.append(df)
+        df_out = pd.concat(dfs_out, axis=1)
         return df_out
 
     def _transform_column(self, df, column_name):  # pragma: no cover
         return df[column_name]
 
-    def _inverse_transform_column(self, df, column_name):  # pragma: no cover
-        return df[column_name]
+    def _inverse_transform_column(self, df, column_names):  # pragma: no cover
+        """Inverse the transform on the given columns.
+
+        `column_names` can receive more than one column name because the
+        column transformer accepts 1 to N transformations.
+        Note that if you are working with a 1 to 1 transformation, this
+        argument is going to be a also a list (with one element, but a list).
+
+        Args:
+            df (:obj:`pandas.DataFrame`): Input DataFrame to transform.
+            column_names (:obj:`list`): List of columns names to inverse
+                transform.
+
+        Returns:
+            A DataFrame or a :obj:`numpy.ndarray` of one column.
+            By default, it returns `df[column_names]`, so it could fail when
+            used with 1 to N transformers as it will return more than one
+            column.
+        """
+
+        return df[column_names]
 
     def _inverse_transform(self, df_in):
-        df_out = pd.DataFrame(index=df_in.index)
-        for i in self.cols_out:
-            c = self.col_map_1_n_inverse[i][0]
-            df_out[c] = self._inverse_transform_column(df_in, i)
+        df_out = pd.DataFrame(index=df_in.index, columns=self.cols)
+        for i in self.cols:
+            c = self.col_map_1_n[i]
+            df_out[i] = self._inverse_transform_column(df_in, c)
         return df_out
 
 
@@ -150,9 +171,6 @@ class ColumnsTransformer(RecipipeTransformer):
     """
 
     def _fit(self, df, y=None):
-        self._fit_columns(df, self.cols)
-
-    def _fit_columns(self, df, column_name):
         pass
 
     def _transform(self, df_in):
@@ -160,12 +178,12 @@ class ColumnsTransformer(RecipipeTransformer):
         df_out = pd.DataFrame(np_out, columns=self.cols_out, index=df_in.index)
         return df_out
 
-    def _transform_columns(self, df, columns_name):
+    def _transform_columns(self, df, column_names):
         """Transform the given columns.
 
         Args:
             df (:obj:`pandas.DataFrame`): Input DataFrame.
-            columns_name (:obj:`list`): List of columns. `df` can contain more
+            column_names (:obj:`list`): List of columns. `df` can contain more
                 columns apart from the ones in `columns_name`.
 
         Returns:
@@ -180,7 +198,7 @@ class ColumnsTransformer(RecipipeTransformer):
         df_out = pd.DataFrame(np_out, columns=self.cols, index=df_in.index)
         return df_out
 
-    def _inverse_transform_columns(self, df, columns_name):
+    def _inverse_transform_columns(self, df, columns_name):  # pragma: no cover
         pass
 
 
@@ -211,6 +229,7 @@ class CategoryEncoder(ColumnTransformer):
         return encoded.codes
 
     def _inverse_transform_column(self, df, col):
+        col = col[0]
         return self.categories[col][df[col].values]
 
 
@@ -230,7 +249,8 @@ class PandasScaler(ColumnTransformer):
     def _transform_column(self, df, c):
         return (df[c] - self.means[c]) / self.stds[c] * self.factor
 
-    def _inverse_transform_column(self, df, c):
+    def _inverse_transform_column(self, df, column_names):
+        c = column_names[0]
         return (df[c] * self.stds[c] / self.factor) + self.means[c]
 
 
@@ -254,20 +274,89 @@ class SklearnCreator(object):
     """
 
     def __init__(self, sk_transformer, **kwargs):
-        self.trans = sk_transformer
+        self.sk_transformer = sk_transformer
         self.kwargs = kwargs
 
-    def __call__(self, *args, **kwargs):
-        """Instantiate a SklearnWrapper using a copy of the given transformer.
+    def __call__(self, *args, wrapper="columns", **kwargs):
+        """Instantiate a SKLearn wrapper using a copy of the given transformer.
 
         It's important to make this copy to avoid fitting several times the
         same transformer.
         """
+
+        wrapping_methods = ["column", "columns"]
+        if wrapper not in wrapping_methods:
+            raise ValueError("Wrapper method not in {wrapping_methods}")
+
+        # SKLearn transformer params.
+        signature = inspect.signature(self.sk_transformer.__init__)
+        params = [i.name for i in signature.parameters.values()]
+        sk_params = {}
+        for i in params:
+            if i in kwargs:
+                sk_params[i] = kwargs[i]
+                del kwargs[i]
+        t = clone(self.sk_transformer)
+        t.set_params(**sk_params)
+
+        # Recipipe transformer params.
+        if "recipipe_params" in kwargs:
+            kwargs = default_params(kwargs, kwargs["recipipe_params"])
+            del kwargs["recipipe_params"]
         kwargs = default_params(kwargs, **self.kwargs)
-        return SklearnWrapper(clone(self.trans), *args, **kwargs)
+
+        if wrapper == "columns":
+            return SklearnColumnsWrapper(t, *args, **kwargs)
+        return SklearnColumnWrapper(t, *args, **kwargs)
 
 
-class SklearnWrapper(ColumnsTransformer):
+class SklearnColumnWrapper(ColumnTransformer):
+
+    def __init__(self, sk_transformer, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.original_transformer = sk_transformer
+        self.transformers = {}
+
+    def _fit_column(self, df, column_name):
+        t = clone(self.original_transformer)
+        t.fit(df[column_name].values)
+        self.transformers[column_name] = t
+
+    def _transform_column(self, df, c):
+        return self.transformers[c].transform(df[c].values)
+
+    def _get_column_mapping(self):
+        # Check if SKLearn object has features index.
+        # "features_" is common in transformers like MissingIndicator with
+        # the parameter features="missing-only", that is, transformers that do
+        # not return all the input features we pass to them.
+        cols = []
+        for c, t in self.transformers.items():
+            if hasattr(t, "features_"):
+                if t.features_:
+                    cols.append(c)
+            else:
+                cols.append(c)
+        self.cols = cols
+
+        col_map = super()._get_column_mapping()
+        for c, t in self.transformers.items():
+            if hasattr(t, "get_feature_names"):
+                col_format = self.col_format
+                if col_format == "{}": col_format = "{column}={value}"
+                new_cols = t.get_feature_names(["0"])
+                col_map[c] = []
+                for i in new_cols:
+                    _, value = i.split("_", 1)
+                    full_name = col_format.format(c, value,
+                            column=c, value=value)
+                    col_map[c].append(full_name)
+                if new_cols:
+                    col_map[c] = tuple(col_map[c])
+        return col_map
+
+
+class SklearnColumnsWrapper(ColumnsTransformer):
 
     def __init__(self, sk_transformer, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -275,16 +364,15 @@ class SklearnWrapper(ColumnsTransformer):
 
     def _fit(self, df, y=None):
         self.sk_transformer.fit(df[self.cols].values)
-        return self
 
     def _transform_columns(self, df, cols):
         return self.sk_transformer.transform(df[cols].values)
 
     def _get_column_mapping(self):
         # Check if SKLearn object has features index.
-        # This is common in transformers like MissingIndicator with param
-        # features="missing-only", that is, transformers that do not return
-        # all the input features we pass to them.
+        # "features_" is common in transformers like MissingIndicator with
+        # the parameter features="missing-only", that is, transformers that do
+        # not return all the input features we pass to them.
         if hasattr(self.sk_transformer, "features_"):
             self.cols = [self.cols[i] for i in self.sk_transformer.features_]
 
@@ -315,64 +403,22 @@ class SklearnWrapper(ColumnsTransformer):
         return col_map
 
 
-class MissingIndicatorCreator(object):
-    """Helper class for creating missing indicator transformers. """
-
-    def __init__(self):
-        self.kwargs = dict(col_format="INDICATOR({})")
-
-    def __call__(self, *args, missing_values=np.nan, features="missing-only",
-                 sparse="auto", error_on_new=True, **kwargs):
-        """Create an SKLearn MissingIndicator using an SKLearnWrapper.
-
-        Read the `sklearn.impute.MissingIndicator` documentation to get more
-        information about the parameters.
-
-        Returns:
-            SklearnWrapper transformer with MissingIndicator as sklearn
-            transformer.
-        """
-        kwargs = default_params(kwargs, **self.kwargs)
-        mi = sklearn.impute.MissingIndicator(missing_values=missing_values,
-                                             features=features,
-                                             sparse=sparse,
-                                             error_on_new=error_on_new)
-        return SklearnWrapper(mi, *args, **kwargs)
-
-
-class SimpleImputerCreator(object):
-    """Helper class for creating simple imputer transformers. """
-
-    def __call__(self, *args, missing_values=np.nan, strategy="mean",
-                 fill_value=None, verbose=0, copy=True, **kwargs):
-        """Create an SKLearn SimpleImputer using an SKLearnWrapper.
-
-        Read the `sklearn.impute.SimpleImputer` documentation to get more
-        information about the parameters.
-
-        Returns:
-            SklearnWrapper transformer with SimpleImputer as sklearn
-            transformer.
-        """
-        if fill_value is not None:
-            strategy = "constant"
-        mi = sklearn.impute.SimpleImputer(missing_values=missing_values,
-                                          strategy=strategy,
-                                          fill_value=fill_value,
-                                          verbose=verbose,
-                                          copy=copy)
-        return SklearnWrapper(mi, *args, **kwargs)
-
-
-class ReplaceTransformer(ColumnsTransformer):
+class ReplaceTransformer(RecipipeTransformer):
 
     def __init__(self, *args, values=None, **kwargs):
         assert values is not None
         super().__init__(*args, **kwargs)
         self.values = values
+        self.inverse_values = None
 
-    def _transform_columns(self, df, columns_name):
-        return df[columns_name].replace(self.values)
+    def _fit(self, df):
+        self.inverse_values = {v: k for k, v in self.values.items()}
+
+    def _transform(self, df):
+        return df[self.cols].replace(self.values)
+
+    def _inverse_transform(self, df):
+        return df[self.cols_out].replace(self.inverse_values)
 
 
 class QueryTransformer(RecipipeTransformer):
