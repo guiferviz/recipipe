@@ -284,7 +284,9 @@ class SklearnCreator(object):
         same transformer.
         """
 
-        assert wrapper in ["column", "columns"]
+        wrapping_methods = ["column", "columns"]
+        if wrapper not in wrapping_methods:
+            raise ValueError("Wrapper method not in {wrapping_methods}")
 
         # SKLearn transformer params.
         signature = inspect.signature(self.sk_transformer.__init__)
@@ -298,6 +300,9 @@ class SklearnCreator(object):
         t.set_params(**sk_params)
 
         # Recipipe transformer params.
+        if "recipipe_params" in kwargs:
+            kwargs = default_params(kwargs, kwargs["recipipe_params"])
+            del kwargs["recipipe_params"]
         kwargs = default_params(kwargs, **self.kwargs)
 
         if wrapper == "columns":
