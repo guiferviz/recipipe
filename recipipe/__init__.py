@@ -49,7 +49,7 @@ replace = ReplaceTransformer
 groupby = GroupByTransformer
 
 
-def greet():
+def greet():  # pragma: no cover
     """Print a silly sentence to stdout. """
 
     # https://upjoke.com/recipe-jokes
