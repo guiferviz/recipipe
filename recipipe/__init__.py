@@ -43,7 +43,7 @@ onehot = from_sklearn(
 scale = from_sklearn(StandardScaler())
 binarizer = from_sklearn(Binarizer())
 indicator = from_sklearn(MissingIndicator(), col_format="INDICATOR({})")
-impute = from_sklearn(SimpleImputer())
+impute = from_sklearn(SimpleImputer(strategy="constant"))
 query = QueryTransformer
 replace = ReplaceTransformer
 groupby = GroupByTransformer
