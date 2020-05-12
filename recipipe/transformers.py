@@ -319,11 +319,11 @@ class SklearnColumnWrapper(ColumnTransformer):
 
     def _fit_column(self, df, column_name):
         t = clone(self.original_transformer)
-        t.fit(df[column_name].values)
+        t.fit(df[column_name].values.reshape(-1, 1))
         self.transformers[column_name] = t
 
     def _transform_column(self, df, c):
-        return self.transformers[c].transform(df[c].values)
+        return self.transformers[c].transform(df[c].values.reshape(-1, 1))
 
     def _get_column_mapping(self):
         # Check if SKLearn object has features index.
