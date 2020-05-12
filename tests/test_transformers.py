@@ -377,7 +377,8 @@ class SklearnColumnWrapperTest(TestCase):
         """One transformer with get_feature_names and other without. """
 
         sk1 = SklearnTransformerMock()
-        sk1.get_feature_names = MagicMock(return_value=["0_blue", "0_red"])
+        return_value = np.array(["0_blue", "0_red"])
+        sk1.get_feature_names = MagicMock(return_value=return_value)
         sk2 = SklearnTransformerMock()
         t = r.SklearnColumnWrapper(None)
         t.transformers = {"color": sk1, "amount": sk2}

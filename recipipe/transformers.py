@@ -351,7 +351,7 @@ class SklearnColumnWrapper(ColumnTransformer):
                     full_name = col_format.format(c, value,
                             column=c, value=value)
                     col_map[c].append(full_name)
-                if new_cols:
+                if len(new_cols) > 0:
                     col_map[c] = tuple(col_map[c])
         return col_map
 
