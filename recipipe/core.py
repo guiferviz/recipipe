@@ -225,7 +225,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
 
         return df
 
-    def _inverse_transform(self, df):
+    def _inverse_transform(self, df):  # pragma: no cover
         return df
 
     def fit(self, df, y=None):
