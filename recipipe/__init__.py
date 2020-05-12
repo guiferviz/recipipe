@@ -47,6 +47,12 @@ impute = from_sklearn(SimpleImputer())
 query = QueryTransformer
 replace = ReplaceTransformer
 groupby = GroupByTransformer
+# Alias for SKLearn transformers.
+sk_indicator = MissingIndicator
+sk_inputer = SimpleImputer
+sk_onehot = OneHotEncoder
+sk_scale = StandardScaler
+sk_binarizer = Binarizer
 
 
 def greet():  # pragma: no cover
