@@ -30,6 +30,7 @@ from recipipe._version import __version__
 
 __author__ = "guiferviz"
 
+
 ##############################################
 #  Define aliases to make it easier to use.  #
 ##############################################
@@ -37,16 +38,16 @@ recipipe = Recipipe
 category = CategoryEncoder
 select = SelectTransformer
 drop = DropTransformer
+query = QueryTransformer
+replace = ReplaceTransformer
+groupby = GroupByTransformer
+# SKLearn recipipe transformer.
 from_sklearn = SklearnCreator
-onehot = from_sklearn(
-    OneHotEncoder(sparse=False, handle_unknown="ignore"))
+onehot = from_sklearn(OneHotEncoder(sparse=False, handle_unknown="ignore"))
 scale = from_sklearn(StandardScaler())
 binarizer = from_sklearn(Binarizer())
 indicator = from_sklearn(MissingIndicator(), col_format="INDICATOR({})")
 impute = from_sklearn(SimpleImputer(strategy="constant"))
-query = QueryTransformer
-replace = ReplaceTransformer
-groupby = GroupByTransformer
 # Alias for SKLearn transformers.
 sk_indicator = MissingIndicator
 sk_inputer = SimpleImputer
