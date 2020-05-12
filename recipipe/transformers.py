@@ -403,64 +403,22 @@ class SklearnColumnsWrapper(ColumnsTransformer):
         return col_map
 
 
-class MissingIndicatorCreator(object):
-    """Helper class for creating missing indicator transformers. """
-
-    def __init__(self):
-        self.kwargs = dict(col_format="INDICATOR({})")
-
-    def __call__(self, *args, missing_values=np.nan, features="missing-only",
-                 sparse="auto", error_on_new=True, **kwargs):
-        """Create an SKLearn MissingIndicator using an SKLearnWrapper.
-
-        Read the `sklearn.impute.MissingIndicator` documentation to get more
-        information about the parameters.
-
-        Returns:
-            SklearnColumnsWrapper transformer with MissingIndicator as sklearn
-            transformer.
-        """
-        kwargs = default_params(kwargs, **self.kwargs)
-        mi = sklearn.impute.MissingIndicator(missing_values=missing_values,
-                                             features=features,
-                                             sparse=sparse,
-                                             error_on_new=error_on_new)
-        return SklearnColumnsWrapper(mi, *args, **kwargs)
-
-
-class SimpleImputerCreator(object):
-    """Helper class for creating simple imputer transformers. """
-
-    def __call__(self, *args, missing_values=np.nan, strategy="mean",
-                 fill_value=None, verbose=0, copy=True, **kwargs):
-        """Create an SKLearn SimpleImputer using an SKLearnWrapper.
-
-        Read the `sklearn.impute.SimpleImputer` documentation to get more
-        information about the parameters.
-
-        Returns:
-            SklearnColumnsWrapper transformer with SimpleImputer as sklearn
-            transformer.
-        """
-        if fill_value is not None:
-            strategy = "constant"
-        mi = sklearn.impute.SimpleImputer(missing_values=missing_values,
-                                          strategy=strategy,
-                                          fill_value=fill_value,
-                                          verbose=verbose,
-                                          copy=copy)
-        return SklearnColumnsWrapper(mi, *args, **kwargs)
-
-
-class ReplaceTransformer(ColumnsTransformer):
+class ReplaceTransformer(RecipipeTransformer):
 
     def __init__(self, *args, values=None, **kwargs):
         assert values is not None
         super().__init__(*args, **kwargs)
         self.values = values
+        self.inverse_values = None
 
-    def _transform_columns(self, df, columns_name):
-        return df[columns_name].replace(self.values)
+    def _fit(self, df):
+        self.inverse_values = {v: k for k, v in self.values.items()}
+
+    def _transform(self, df):
+        return df[self.cols].replace(self.values)
+
+    def _inverse_transform(self, df):
+        return df[self.cols_out].replace(self.inverse_values)
 
 
 class QueryTransformer(RecipipeTransformer):

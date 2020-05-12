@@ -225,6 +225,9 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
 
         return df
 
+    def _inverse_transform(self, df):
+        return df
+
     def fit(self, df, y=None):
         """Fit the transformer.
 

@@ -526,8 +526,24 @@ class SklearnCreatorTest(TestCase):
         self.assertEqual(t.keep_original, 3)
 
 
+class MissingIndicatorTest(TestCase):
+
+    def test_fit_transform_inverse(self):
+        df = pd.DataFrame({"a": [1, 2, None, 4]})
+        t = r.indicator()
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({
+            "INDICATOR(a)": [False, False, True, False]})
+        print(df_out)
+        print(df_expected)
+        self.assertTrue(df_out.equals(df_expected))
+
+
 class OneHotTransformerTest(TestCase):
-    """OneHot transformer test suite. """
+    """OneHot transformer test suite.
+
+    All test suite, kind of integration tests.
+    """
 
     def test_onehot_columns_names(self):
         """Check the name of the columns after applying onehot encoding.
@@ -724,7 +740,13 @@ class QueryTransformerTest(TestCase):
 
 class ReplaceTransformerTest(TestCase):
 
-    def test__transform_columns_text(self):
+    def test_fit(self):
+        t = r.ReplaceTransformer(values={None: "i"})
+        t._fit(None)
+        d_expected = {"i": None}
+        self.assertDictEqual(t.inverse_values, d_expected)
+
+    def test_transform_text(self):
         df_in = pd.DataFrame({
             "vowels": ["a", "e", None, "o", "u"]
         })
@@ -734,6 +756,18 @@ class ReplaceTransformerTest(TestCase):
             "vowels": ["a", "e", "i", "o", "u"]
         })
         self.assertTrue(expected.equals(df_out))
+
+    def test_inverse_transform_text(self):
+        t = r.ReplaceTransformer(values={None: "i"})
+        df_in = pd.DataFrame({
+            "vowels": ["a", "e", "i", "o", "u"]
+        })
+        t.fit(df_in)
+        df_out = t.inverse_transform(df_in)
+        df_expected = pd.DataFrame({
+            "vowels": ["a", "e", None, "o", "u"]
+        })
+        self.assertTrue(df_out.equals(df_expected))
 
 
 class GroupByTransformerTest(TestCase):
