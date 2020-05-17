@@ -15,6 +15,7 @@ from sklearn.base import TransformerMixin, clone
 
 from recipipe.utils import default_params
 from recipipe.utils import flatten_list
+from recipipe.utils import fit_columns
 from recipipe.core import RecipipeTransformer
 
 
@@ -254,62 +255,6 @@ class PandasScaler(ColumnTransformer):
         return (df[c] * self.stds[c] / self.factor) + self.means[c]
 
 
-class SklearnCreator(object):
-    """Utility class to generate SKLearn wrappers.
-
-    Use this class to reuse any existing SKLearn transformer in your
-    recipipe pipelines.
-
-    Args:
-        sk_transformer (sklearn.TransformerMixin): Any instance of an
-            SKLearn transformer you want to incorporate in the recipipes
-            pipelines.
-
-    Example::
-
-        # Create a onehot encoder using the SKLearn OneHotEncoder class.
-        onehot = SklearnCreator(OneHotEncoder(sparse=False))
-        # Now you can use the onehot variable as a transformer in a recipipe.
-        recipipe() + onehot(dtype="string")
-    """
-
-    def __init__(self, sk_transformer, **kwargs):
-        self.sk_transformer = sk_transformer
-        self.kwargs = kwargs
-
-    def __call__(self, *args, wrapper="columns", **kwargs):
-        """Instantiate a SKLearn wrapper using a copy of the given transformer.
-
-        It's important to make this copy to avoid fitting several times the
-        same transformer.
-        """
-
-        wrapping_methods = ["column", "columns"]
-        if wrapper not in wrapping_methods:
-            raise ValueError("Wrapper method not in {wrapping_methods}")
-
-        # SKLearn transformer params.
-        signature = inspect.signature(self.sk_transformer.__init__)
-        params = [i.name for i in signature.parameters.values()]
-        sk_params = {}
-        for i in params:
-            if i in kwargs:
-                sk_params[i] = kwargs[i]
-                del kwargs[i]
-        t = clone(self.sk_transformer)
-        t.set_params(**sk_params)
-
-        # Recipipe transformer params.
-        if "recipipe_params" in kwargs:
-            kwargs = default_params(kwargs, kwargs["recipipe_params"])
-            del kwargs["recipipe_params"]
-        kwargs = default_params(kwargs, **self.kwargs)
-
-        if wrapper == "columns":
-            return SklearnColumnsWrapper(t, *args, **kwargs)
-        return SklearnColumnWrapper(t, *args, **kwargs)
-
-
 class SklearnColumnWrapper(ColumnTransformer):
 
     def __init__(self, sk_transformer, *args, **kwargs):
@@ -403,6 +348,82 @@ class SklearnColumnsWrapper(ColumnsTransformer):
         return col_map
 
 
+class SklearnFitOneWrapper(SklearnColumnWrapper):
+    """Fit in a concatenation of all the columns, apply one by one.
+
+    This is useful when we have two or more columns that are very related.
+    For example, if all those columns share the same category type.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def _fit(self, df):
+        one_col = df[self.cols].stack()
+        self.original_transformer.fit(one_col.values.reshape(-1, 1))
+        self.transformers = {c: self.original_transformer for c in self.cols}
+
+
+class SklearnCreator(object):
+    """Utility class to generate SKLearn wrappers.
+
+    Use this class to reuse any existing SKLearn transformer in your
+    recipipe pipelines.
+
+    Args:
+        sk_transformer (sklearn.TransformerMixin): Any instance of an
+            SKLearn transformer you want to incorporate in the recipipes
+            pipelines.
+
+    Example::
+
+        # Create a onehot encoder using the SKLearn OneHotEncoder class.
+        onehot = SklearnCreator(OneHotEncoder(sparse=False))
+        # Now you can use the onehot variable as a transformer in a recipipe.
+        recipipe() + onehot(dtype="string")
+    """
+
+    WRAPPERS = {
+            "column": SklearnColumnWrapper,
+            "columns": SklearnColumnsWrapper,
+            "fit_one_col": SklearnFitOneWrapper,
+    }
+
+    def __init__(self, sk_transformer, **kwargs):
+        self.sk_transformer = sk_transformer
+        self.kwargs = kwargs
+
+    def __call__(self, *args, wrapper="columns", **kwargs):
+        """Instantiate a SKLearn wrapper using a copy of the given transformer.
+
+        It's important to make this copy to avoid fitting several times the
+        same transformer.
+        """
+
+        wrapping_methods = SklearnCreator.WRAPPERS.keys()
+        if wrapper not in wrapping_methods:
+            raise ValueError("Wrapper method not in {wrapping_methods}")
+
+        # SKLearn transformer params.
+        signature = inspect.signature(self.sk_transformer.__init__)
+        params = [i.name for i in signature.parameters.values()]
+        sk_params = {}
+        for i in params:
+            if i in kwargs:
+                sk_params[i] = kwargs[i]
+                del kwargs[i]
+        t = clone(self.sk_transformer)
+        t.set_params(**sk_params)
+
+        # Recipipe transformer params.
+        if "recipipe_params" in kwargs:
+            kwargs = default_params(kwargs, kwargs["recipipe_params"])
+            del kwargs["recipipe_params"]
+        kwargs = default_params(kwargs, **self.kwargs)
+
+        return SklearnCreator.WRAPPERS[wrapper](t, *args, **kwargs)
+
+
 class ReplaceTransformer(RecipipeTransformer):
 
     def __init__(self, *args, values=None, **kwargs):
@@ -480,4 +501,63 @@ class GroupByTransformer(RecipipeTransformer):
             dfs.append(self.inverse_transform_group(name, group))
         df_out = pd.concat(dfs, axis=0)
         return df_out.loc[df_in.index, :]
+
+
+class DropNARowsTransformer(RecipipeTransformer):
+
+    def __init__(self, *args, inplace=False, how="any", thresh=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dropna_params = dict(axis="index", inplace=inplace)
+
+    def transform(self, df, y=None):
+        return df.dropna(subset=self.cols, **self.dropna_params)
+
+    def inverse_transform(self, df):
+        return df
+
+
+class ColumnGroupsTransformer(RecipipeTransformer):
+    """Apply a N to 1 transformation to a group of columns. """
+
+    def __init__(self, *args, **kwargs):
+        self.cols_groups = [flatten_list([c]) for c in args]
+        super().__init__(*args, **kwargs)
+
+    def _fit(self, df):
+        self.cols_groups = [fit_columns(df, c) for c in self.cols_groups]
+        if not self.cols_groups:
+            self.cols_groups = self.cols
+
+    def _get_column_mapping(self):
+        col_map = {}
+        for c in zip(*self.cols_groups):
+            new_col = self._get_column_name(c)
+            col_map[tuple(c)] = new_col
+        return col_map
+
+    def _get_column_name(self, c):
+        import re
+        return re.sub(r"\s*\d\s*", "", c[0])
+
+    def _transform(self, df):
+        df_out = pd.DataFrame(index=df.index, columns=self.cols_out)
+        for c in zip(*self.cols_groups):
+            col_out = self.col_map[tuple(c)]
+            df_out[col_out] = self._transform_group(df, list(c))
+        return df_out
+
+    def _transform_group(self, df, group_cols):  # pragma: no cover
+        raise NotImplementedError()
+
+    def _inverse_transform(self, df):
+        df_out = pd.DataFrame(index=df.index, columns=self.cols_out)
+        for c in zip(*self.cols_groups):
+            col_out = self.col_map[tuple(c)]
+            col_out_value = self._inverse_transform_group(df, col_out)
+            for i in c:
+                df_out[i] = col_out_value
+        return df_out
+
+    def _inverse_transform_group(self, df, col):  # pragma: no cover
+        return df[col]
 

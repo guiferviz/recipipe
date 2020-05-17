@@ -461,6 +461,20 @@ class SklearnColumnsWrapperTest(TestCase):
         self.assertTrue(df_out.equals(df_expected))
 
 
+class SklearnFitOneWrapperTest(TestCase):
+
+    def test_fit(self):
+        sk = SklearnTransformerMock()
+        sk.fit = MagicMock()
+        t = r.SklearnFitOneWrapper(sk, "price", "amount")
+        df_out = t.fit(create_df_all())
+        a = np.array([1.5,1,2.5,2,3.5,3]).reshape(-1, 1)
+        a_out = sk.fit.call_args_list[0][0][0]
+        self.assertEqual(a.shape, a_out.shape)
+        # flatten() is not really needed.
+        self.assertListEqual(list(a.flatten()), list(a_out.flatten()))
+
+
 class SklearnCreatorTest(TestCase):
 
     class T(SklearnTransformerMock):
@@ -801,4 +815,67 @@ class GroupByTransformerTest(TestCase):
         print(df_in_out)
         print(df_in)
         self.assertTrue(df_in_out.equals(df_in))
+
+
+class DropNARowsTransformerTest(TestCase):
+
+    def test_init_fit_transform(self):
+        t = r.DropNARowsTransformer("a", "b")
+        df_in = pd.DataFrame({"a": [3,None,1], "b": [1,2,3], "c": None})
+        df_out = t.fit_transform(df_in)
+        df_expected = pd.DataFrame({
+            "index": [0,2],
+            "a": [3.,1],  # Float because if None is present it's cast to float
+            "b": [1,3],
+            "c": None})
+        df_expected.set_index("index", inplace=True)
+        self.assertTrue(df_out.equals(df_expected))
+        self.assertFalse(df_in.equals(df_out))
+
+    def test_inverse(self):
+        t = r.DropNARowsTransformer("a", "b")
+        df_in = pd.DataFrame({"a": [3,None,1], "b": [1,2,3], "c": None})
+        t.fit_transform(df_in)
+        df_out = pd.DataFrame({"a": [3,1], "b": [1,3], "c": None})
+        df_out = t.inverse_transform(df_out)
+        df_expected = pd.DataFrame({"a": [3,1], "b": [1,3], "c": None})
+        self.assertTrue(df_out.equals(df_expected))
+
+
+class ColumnGroupsTransformerTest(TestCase):
+
+    def test_get_column_name(self):
+        c = r.ColumnGroupsTransformer._get_column_name(
+                None,  # self is not needed to test this function.
+                ["Type 1", "Type 2"])
+        self.assertEqual(c, "Type")
+
+    def test_get_column_name_no_match(self):
+        """When no numbers in names, the first column is used. """
+
+        c = r.ColumnGroupsTransformer._get_column_name(
+                None,  # self is not needed to test this function.
+                ["Type", "ExtraType"])
+        self.assertEqual(c, "Type")
+
+    def test_fit_transform_group_cols_none(self):
+        """If no cols are specify, all the columns are in one group. """
+
+        t = r.ColumnGroupsTransformer()
+        t._transform_group = MagicMock(return_value=np.array([4,5,6]))
+        df = pd.DataFrame({"a": [1,2,3], "b": [3,2,1]})
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({"a": [4,5,6]})
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_inverse_transform(self):
+        """By default inverse copy the output per each input col. """
+
+        t = r.ColumnGroupsTransformer()
+        t._transform_group = MagicMock(return_value=np.array([4,5,6]))
+        df = pd.DataFrame({"a": [1,2,3], "b": [3,2,1]})
+        df_out = t.fit_transform(df)
+        df_out = t.inverse_transform(df_out)
+        df_expected = pd.DataFrame({"a": [4,5,6], "b": [4,5,6]})
+        self.assertTrue(df_out.equals(df_expected))
 
