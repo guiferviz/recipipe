@@ -461,6 +461,20 @@ class SklearnColumnsWrapperTest(TestCase):
         self.assertTrue(df_out.equals(df_expected))
 
 
+class SklearnFitOneWrapperTest(TestCase):
+
+    def test_fit(self):
+        sk = SklearnTransformerMock()
+        sk.fit = MagicMock()
+        t = r.SklearnFitOneWrapper(sk, "price", "amount")
+        df_out = t.fit(create_df_all())
+        a = np.array([1.5,1,2.5,2,3.5,3]).reshape(-1, 1)
+        a_out = sk.fit.call_args_list[0][0][0]
+        self.assertEqual(a.shape, a_out.shape)
+        # flatten() is not really needed.
+        self.assertListEqual(list(a.flatten()), list(a_out.flatten()))
+
+
 class SklearnCreatorTest(TestCase):
 
     class T(SklearnTransformerMock):

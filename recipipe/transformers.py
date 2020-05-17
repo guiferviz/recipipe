@@ -254,62 +254,6 @@ class PandasScaler(ColumnTransformer):
         return (df[c] * self.stds[c] / self.factor) + self.means[c]
 
 
-class SklearnCreator(object):
-    """Utility class to generate SKLearn wrappers.
-
-    Use this class to reuse any existing SKLearn transformer in your
-    recipipe pipelines.
-
-    Args:
-        sk_transformer (sklearn.TransformerMixin): Any instance of an
-            SKLearn transformer you want to incorporate in the recipipes
-            pipelines.
-
-    Example::
-
-        # Create a onehot encoder using the SKLearn OneHotEncoder class.
-        onehot = SklearnCreator(OneHotEncoder(sparse=False))
-        # Now you can use the onehot variable as a transformer in a recipipe.
-        recipipe() + onehot(dtype="string")
-    """
-
-    def __init__(self, sk_transformer, **kwargs):
-        self.sk_transformer = sk_transformer
-        self.kwargs = kwargs
-
-    def __call__(self, *args, wrapper="columns", **kwargs):
-        """Instantiate a SKLearn wrapper using a copy of the given transformer.
-
-        It's important to make this copy to avoid fitting several times the
-        same transformer.
-        """
-
-        wrapping_methods = ["column", "columns"]
-        if wrapper not in wrapping_methods:
-            raise ValueError("Wrapper method not in {wrapping_methods}")
-
-        # SKLearn transformer params.
-        signature = inspect.signature(self.sk_transformer.__init__)
-        params = [i.name for i in signature.parameters.values()]
-        sk_params = {}
-        for i in params:
-            if i in kwargs:
-                sk_params[i] = kwargs[i]
-                del kwargs[i]
-        t = clone(self.sk_transformer)
-        t.set_params(**sk_params)
-
-        # Recipipe transformer params.
-        if "recipipe_params" in kwargs:
-            kwargs = default_params(kwargs, kwargs["recipipe_params"])
-            del kwargs["recipipe_params"]
-        kwargs = default_params(kwargs, **self.kwargs)
-
-        if wrapper == "columns":
-            return SklearnColumnsWrapper(t, *args, **kwargs)
-        return SklearnColumnWrapper(t, *args, **kwargs)
-
-
 class SklearnColumnWrapper(ColumnTransformer):
 
     def __init__(self, sk_transformer, *args, **kwargs):
@@ -401,6 +345,82 @@ class SklearnColumnsWrapper(ColumnsTransformer):
             col_map = {tuple(c): tuple(self.new_cols_list)}
         """
         return col_map
+
+
+class SklearnFitOneWrapper(SklearnColumnWrapper):
+    """Fit in a concatenation of all the columns, apply one by one.
+
+    This is useful when we have two or more columns that are very related.
+    For example, if all those columns share the same category type.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def _fit(self, df):
+        one_col = df[self.cols].stack()
+        self.original_transformer.fit(one_col.values.reshape(-1, 1))
+        self.transformers = {c: self.original_transformer for c in self.cols}
+
+
+class SklearnCreator(object):
+    """Utility class to generate SKLearn wrappers.
+
+    Use this class to reuse any existing SKLearn transformer in your
+    recipipe pipelines.
+
+    Args:
+        sk_transformer (sklearn.TransformerMixin): Any instance of an
+            SKLearn transformer you want to incorporate in the recipipes
+            pipelines.
+
+    Example::
+
+        # Create a onehot encoder using the SKLearn OneHotEncoder class.
+        onehot = SklearnCreator(OneHotEncoder(sparse=False))
+        # Now you can use the onehot variable as a transformer in a recipipe.
+        recipipe() + onehot(dtype="string")
+    """
+
+    WRAPPERS = {
+            "column": SklearnColumnWrapper,
+            "columns": SklearnColumnsWrapper,
+            "fit_one_col": SklearnFitOneWrapper,
+    }
+
+    def __init__(self, sk_transformer, **kwargs):
+        self.sk_transformer = sk_transformer
+        self.kwargs = kwargs
+
+    def __call__(self, *args, wrapper="columns", **kwargs):
+        """Instantiate a SKLearn wrapper using a copy of the given transformer.
+
+        It's important to make this copy to avoid fitting several times the
+        same transformer.
+        """
+
+        wrapping_methods = SklearnCreator.WRAPPERS.keys()
+        if wrapper not in wrapping_methods:
+            raise ValueError("Wrapper method not in {wrapping_methods}")
+
+        # SKLearn transformer params.
+        signature = inspect.signature(self.sk_transformer.__init__)
+        params = [i.name for i in signature.parameters.values()]
+        sk_params = {}
+        for i in params:
+            if i in kwargs:
+                sk_params[i] = kwargs[i]
+                del kwargs[i]
+        t = clone(self.sk_transformer)
+        t.set_params(**sk_params)
+
+        # Recipipe transformer params.
+        if "recipipe_params" in kwargs:
+            kwargs = default_params(kwargs, kwargs["recipipe_params"])
+            del kwargs["recipipe_params"]
+        kwargs = default_params(kwargs, **self.kwargs)
+
+        return SklearnCreator.WRAPPERS[wrapper](t, *args, **kwargs)
 
 
 class ReplaceTransformer(RecipipeTransformer):
