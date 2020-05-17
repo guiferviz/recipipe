@@ -816,4 +816,14 @@ class DropNARowsTransformerTest(TestCase):
             "c": None})
         df_expected.set_index("index", inplace=True)
         self.assertTrue(df_out.equals(df_expected))
+        self.assertFalse(df_in.equals(df_out))
+
+    def test_inverse(self):
+        t = r.DropNARowsTransformer("a", "b")
+        df_in = pd.DataFrame({"a": [3,None,1], "b": [1,2,3], "c": None})
+        t.fit_transform(df_in)
+        df_out = pd.DataFrame({"a": [3,1], "b": [1,3], "c": None})
+        df_out = t.inverse_transform(df_out)
+        df_expected = pd.DataFrame({"a": [3,1], "b": [1,3], "c": None})
+        self.assertTrue(df_out.equals(df_expected))
 

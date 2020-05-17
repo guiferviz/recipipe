@@ -491,3 +491,6 @@ class DropNARowsTransformer(RecipipeTransformer):
     def transform(self, df, y=None):
         return df.dropna(subset=self.cols, **self.dropna_params)
 
+    def inverse_transform(self, df):
+        return df
+
