@@ -841,3 +841,41 @@ class DropNARowsTransformerTest(TestCase):
         df_expected = pd.DataFrame({"a": [3,1], "b": [1,3], "c": None})
         self.assertTrue(df_out.equals(df_expected))
 
+
+class ColumnGroupsTransformerTest(TestCase):
+
+    def test_get_column_name(self):
+        c = r.ColumnGroupsTransformer._get_column_name(
+                None,  # self is not needed to test this function.
+                ["Type 1", "Type 2"])
+        self.assertEqual(c, "Type")
+
+    def test_get_column_name_no_match(self):
+        """When no numbers in names, the first column is used. """
+
+        c = r.ColumnGroupsTransformer._get_column_name(
+                None,  # self is not needed to test this function.
+                ["Type", "ExtraType"])
+        self.assertEqual(c, "Type")
+
+    def test_fit_transform_group_cols_none(self):
+        """If no cols are specify, all the columns are in one group. """
+
+        t = r.ColumnGroupsTransformer()
+        t._transform_group = MagicMock(return_value=np.array([4,5,6]))
+        df = pd.DataFrame({"a": [1,2,3], "b": [3,2,1]})
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({"a": [4,5,6]})
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_inverse_transform(self):
+        """By default inverse copy the output per each input col. """
+
+        t = r.ColumnGroupsTransformer()
+        t._transform_group = MagicMock(return_value=np.array([4,5,6]))
+        df = pd.DataFrame({"a": [1,2,3], "b": [3,2,1]})
+        df_out = t.fit_transform(df)
+        df_out = t.inverse_transform(df_out)
+        df_expected = pd.DataFrame({"a": [4,5,6], "b": [4,5,6]})
+        self.assertTrue(df_out.equals(df_expected))
+

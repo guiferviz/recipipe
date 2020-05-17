@@ -15,6 +15,7 @@ from sklearn.base import TransformerMixin, clone
 
 from recipipe.utils import default_params
 from recipipe.utils import flatten_list
+from recipipe.utils import fit_columns
 from recipipe.core import RecipipeTransformer
 
 
@@ -513,4 +514,50 @@ class DropNARowsTransformer(RecipipeTransformer):
 
     def inverse_transform(self, df):
         return df
+
+
+class ColumnGroupsTransformer(RecipipeTransformer):
+    """Apply a N to 1 transformation to a group of columns. """
+
+    def __init__(self, *args, **kwargs):
+        self.cols_groups = [flatten_list([c]) for c in args]
+        super().__init__(*args, **kwargs)
+
+    def _fit(self, df):
+        self.cols_groups = [fit_columns(df, c) for c in self.cols_groups]
+        if not self.cols_groups:
+            self.cols_groups = self.cols
+
+    def _get_column_mapping(self):
+        col_map = {}
+        for c in zip(*self.cols_groups):
+            new_col = self._get_column_name(c)
+            col_map[tuple(c)] = new_col
+        return col_map
+
+    def _get_column_name(self, c):
+        import re
+        return re.sub(r"\s*\d\s*", "", c[0])
+
+    def _transform(self, df):
+        df_out = pd.DataFrame(index=df.index, columns=self.cols_out)
+        for c in zip(*self.cols_groups):
+            col_out = self.col_map[tuple(c)]
+            df_out[col_out] = self._transform_group(df, list(c))
+        return df_out
+
+    def _transform_group(self, df, group_cols):  # pragma: no cover
+        raise NotImplementedError()
+
+    def _inverse_transform(self, df):
+        df_out = pd.DataFrame(index=df.index, columns=self.cols_out)
+        for c in zip(*self.cols_groups):
+            col_out = self.col_map[tuple(c)]
+            col_out_value = self._inverse_transform_group(df, col_out)
+            for i in c:
+                df_out[i] = col_out_value
+        return df_out
+
+    def _inverse_transform_group(self, df, col):  # pragma: no cover
+        return df[col]
 

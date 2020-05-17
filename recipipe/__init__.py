@@ -14,6 +14,7 @@ from recipipe.core import RecipipeTransformer
 
 from recipipe.transformers import CategoryEncoder
 from recipipe.transformers import ColumnTransformer
+from recipipe.transformers import ColumnGroupsTransformer
 from recipipe.transformers import ColumnsTransformer
 from recipipe.transformers import DropTransformer
 from recipipe.transformers import DropNARowsTransformer
