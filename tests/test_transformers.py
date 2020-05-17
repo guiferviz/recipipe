@@ -802,3 +802,18 @@ class GroupByTransformerTest(TestCase):
         print(df_in)
         self.assertTrue(df_in_out.equals(df_in))
 
+
+class DropNARowsTransformerTest(TestCase):
+
+    def test_init_fit_transform(self):
+        t = r.DropNARowsTransformer("a", "b")
+        df_in = pd.DataFrame({"a": [3,None,1], "b": [1,2,3], "c": None})
+        df_out = t.fit_transform(df_in)
+        df_expected = pd.DataFrame({
+            "index": [0,2],
+            "a": [3.,1],  # Float because if None is present it's cast to float
+            "b": [1,3],
+            "c": None})
+        df_expected.set_index("index", inplace=True)
+        self.assertTrue(df_out.equals(df_expected))
+

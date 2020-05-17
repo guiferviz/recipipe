@@ -16,6 +16,7 @@ from recipipe.transformers import CategoryEncoder
 from recipipe.transformers import ColumnTransformer
 from recipipe.transformers import ColumnsTransformer
 from recipipe.transformers import DropTransformer
+from recipipe.transformers import DropNARowsTransformer
 from recipipe.transformers import GroupByTransformer
 from recipipe.transformers import PandasScaler
 from recipipe.transformers import QueryTransformer
@@ -38,6 +39,8 @@ recipipe = Recipipe
 category = CategoryEncoder
 select = SelectTransformer
 drop = DropTransformer
+dropna = DropNARowsTransformer
+dropna_rows = DropNARowsTransformer
 query = QueryTransformer
 replace = ReplaceTransformer
 groupby = GroupByTransformer

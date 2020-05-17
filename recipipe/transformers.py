@@ -481,3 +481,13 @@ class GroupByTransformer(RecipipeTransformer):
         df_out = pd.concat(dfs, axis=0)
         return df_out.loc[df_in.index, :]
 
+
+class DropNARowsTransformer(RecipipeTransformer):
+
+    def __init__(self, *args, inplace=False, how="any", thresh=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dropna_params = dict(axis="index", inplace=inplace)
+
+    def transform(self, df, y=None):
+        return df.dropna(subset=self.cols, **self.dropna_params)
+
