@@ -26,6 +26,12 @@ Install the package in a dev environment with:
 All the dependencies will be installed automatically.
 
 
+## Getting started tutorial
+
+Learn how to use Recipipe analyzing data from weird creatures from another planet:
+[Recipipe getting started tutorial](examples/paranoids.ipynb).
+
+
 ## Running the tests
 
 Run all the test using:
