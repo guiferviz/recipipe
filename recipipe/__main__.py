@@ -1,30 +1,22 @@
 
-import logging as l
-
-from recipipe._argument_parser import parse_args
 from recipipe import greet
+from recipipe import __author__
+from recipipe import __version__
 
-
-def set_logging(args):
-    """Set logging parameters. """
-    # Transform args.log_level string to int.
-    level = getattr(l, args.log_level)
-    l.basicConfig(format=args.log_format,
-                  filename=args.log_file,
-                  level=level)
 
 def main():
     """Main entry point.
 
     This function is called when you execute the module
     (for example using `recipipe` or `python -m recipipe`).
+    At the moment, nothing interesting is done here.
     """
-    args = parse_args()
-    set_logging(args)
+    greet()
+    print()
+    print(f"Recipipe, {__version__}")
+    print(f"Made with love by {__author__}")
 
-    if args.command == "hello":
-        greet()
 
-
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()
+
