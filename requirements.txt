@@ -4,11 +4,12 @@
 #
 #    pip-compile requirements.in
 #
-joblib==0.14.1            # via scikit-learn
-numpy==1.18.3             # via pandas, scikit-learn, scipy
+joblib==0.15.1            # via scikit-learn
+numpy==1.18.4             # via pandas, scikit-learn, scipy
 pandas==1.0.3             # via -r requirements.in
 python-dateutil==2.8.1    # via pandas
 pytz==2020.1              # via pandas
-scikit-learn==0.22.2.post1  # via -r requirements.in
+scikit-learn==0.23.0      # via -r requirements.in
 scipy==1.4.1              # via scikit-learn
 six==1.14.0               # via python-dateutil
+threadpoolctl==2.0.0      # via scikit-learn
