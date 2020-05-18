@@ -1,0 +1,20 @@
+name,type 1,type 2,type 3,width,height,length,weight,cute
+Scucioid,Ground,Flying,"",11.04,10.1147,14.2144,843.777,False
+Trelvisoid,Ground,Flying,Water,13.5695,7.07998,13.2144,1175.05,False
+Dovanoid,Flying,"","",20.2368,13.9882,27.6025,6691.82,False
+Pilinoid,Water,"","",9.66392,5.85685,13.5306,775.836,True
+Arkanoid,Fire,Flying,"",6.35188,8.05839,7.03025,340.162,False
+Pinkfloid,Water,"","",7.55713,9.75967,10.9433,770.964,True
+Redathoid,Fire,Ground,"",5.68892,7.86451,7.22494,462.44,False
+Nebidoid,Ground,"","",10.5557,5.92844,15.1795,698.283,True
+Golukoid,Flying,Fire,"",9.2818,10.019,10.5873,1208.4,True
+Oid,Water,"","",13.4964,8.88992,7.03398,685.878,True
+Dickydoid,Flying,"","",9.94806,12.2776,13.2197,1400.68,True
+Bugoid,Flying,"","",15.8765,21.2376,14.1462,2925.11,False
+Uglioid,Flying,Ground,Water,15.3891,11.1511,8.78153,800.91,False
+Viscuoid,Flying,Ground,"",13.9204,19.6997,9.85045,1807,True
+Odriloid,Electric,"","",12.5167,6.273,6.9206,319.572,False
+Raxoid,Flying,"","",23.0389,23.7935,21.1743,9991.27,False
+Kikkoid,Fire,"","",8.97374,13.2759,4.63856,623.952,True
+Thormolipirisodifoloid,Flying,Electric,"",3.2533,2.3991,3.06284,34.6145,False
+Qurikoid,Water,"","",18.19,10.5338,17.3254,3601.3,True

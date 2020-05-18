@@ -520,11 +520,11 @@ class ColumnGroupsTransformer(RecipipeTransformer):
     """Apply a N to 1 transformation to a group of columns. """
 
     def __init__(self, *args, **kwargs):
-        self.cols_groups = [flatten_list([c]) for c in args]
+        self.cols_groups_init = [flatten_list([c]) for c in args]
         super().__init__(*args, **kwargs)
 
     def _fit(self, df):
-        self.cols_groups = [fit_columns(df, c) for c in self.cols_groups]
+        self.cols_groups = [fit_columns(df, c) for c in self.cols_groups_init]
         if not self.cols_groups:
             self.cols_groups = self.cols
 
