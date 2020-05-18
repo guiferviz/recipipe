@@ -21,7 +21,7 @@ with open(PACKAGE_NAME + "/_version.py") as file:
     exec(file.read())
 
 # Read requirements.
-req = parse_requirements("requirements.txt", session="hack")
+req = parse_requirements("requirements.in", session="hack")
 REQUIREMENTS = []
 for i in req:
     if getattr(i, "req", None) is not None:
