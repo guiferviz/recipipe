@@ -3,8 +3,6 @@
 SKLearn pipelines easy to declare and Pandas-compatible.
 """
 
-import sklearn.utils._pprint
-sklearn.utils._pprint._changed_params = lambda e: e.get_params(deep=False)
 from sklearn.impute import MissingIndicator
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder

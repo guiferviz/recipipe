@@ -108,6 +108,25 @@ class Recipipe(sklearn.pipeline.Pipeline):
         return self
 
 
+"""
+The next lines are really nasty, but they avoid an error with:
+
+    from sklearn import set_config
+
+    set_config(display='diagram')
+    <any-recipipe-transformer-here>
+
+executed in a notebook.
+The reason to overwrite an SKLearn function is because we have params that do
+not need to be used as __init__ params.
+That function avoids showing all the params of an estimator, only shows those
+params with a non-default value.
+Overwriting it will print extra information, but nothing bad (I suppose :).
+"""
+import sklearn.utils._pprint
+sklearn.utils._pprint._changed_params = lambda e: e.get_params(deep=False)
+
+
 class RecipipeTransformer(BaseEstimator, TransformerMixin):
     """Base class of all Recipipe transformers.
 
