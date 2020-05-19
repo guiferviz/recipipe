@@ -124,6 +124,10 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
         My modifications are indicated by comments with two ##.
         """
 
+        parent_params = []
+        if cls.__name__ != RecipipeTransformer.__name__:
+            for i in cls.__bases__:
+                parent_params += i._get_param_names()
         # fetch the constructor or the original constructor before
         # deprecation wrapping if any
         init = getattr(cls.__init__, 'deprecated_original', cls.__init__)
@@ -136,15 +140,19 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
         # to represent
         init_signature = inspect.signature(init)
         # Consider the constructor parameters excluding 'self'
-        parameters = [p for p in init_signature.parameters.values()
+        ## Taking p.name instead of p.
+        parameters = [p.name for p in init_signature.parameters.values()
                       if p.name != 'self' and p.kind != p.VAR_KEYWORD
                                           ## No positional vars (*args).
                                           and p.kind != p.VAR_POSITIONAL]
         ## No RuntimeError raised here!
+        ## Adding super params.
+        parameters += parent_params
+        parameters = set(parameters)
         # Extract and sort argument names excluding 'self'
-        return sorted([p.name for p in parameters])
+        return sorted(parameters)
 
-    def __init__(self, *args, cols=None, dtype=None, name=None,
+    def __init__(self, *args, cols_init=None, dtype=None, name=None,
                  keep_original=False, col_format="{}",
                  cols_not_found_error=False):
         """Create a new transformer.
@@ -155,9 +163,9 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
         Args:
             *args (:obj:`list` of :obj:`str`): List of columns the transformer
                 will work on.
-            cols (:obj:`list` of :obj:`str`):  List of columns the transformer
-                will work on. If `*args` are provided, the column array is
-                going to be appended at the end.
+            cols_init (:obj:`list` of :obj:`str`): List of columns the
+                transformer will work on. If `*args` are provided, this list
+                of columns is going to be appended at the end.
             dtype (dtype, str, list[dtype] or list[str]): This value is passed
                 to :obj:`pandas.DataFrame.select_dtypes`. The columns returned
                 by this method (executed in the dataframe passed to the fit
@@ -181,12 +189,12 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
                 Default: `False`.
         """
 
-        if cols:
-            args = (args, cols)
-        cols = flatten_list(args)
+        if cols_init:
+            args = (args, cols_init)
+        cols_init = flatten_list(args)
 
         # Set values.
-        self.cols_init = cols
+        self.cols_init = cols_init
         self.dtype = dtype
         self.keep_original = keep_original
         self.name = name

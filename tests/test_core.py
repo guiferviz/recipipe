@@ -122,19 +122,32 @@ class RecipipeTransformerTest(TestCase):
 
         TestTransformer()
 
-    def test_inheritance_var_args_sklearn_params(self):
-        """Init params are used as SKLearn estimator params. """
+    def test_inheritance_var_args_sklearn_params_no_init(self):
+        class T(r.RecipipeTransformer):
+            pass
 
-        class TestTransformer(r.RecipipeTransformer):
+        print(T(keep_original=False))
+
+    def test_inheritance_var_args_sklearn_params(self):
+        """Params are used as SKLearn estimator params (they are inherit). """
+
+        class T1(r.RecipipeTransformer):
             def __init__(self, *args, param1=1, **kwargs):
                 self.param1 = param1
                 super().__init__(*args, **kwargs)
+        class T2(T1):
+            def __init__(self, *args, param1=7, param2=2, **kwargs):
+                self.param2 = param2
+                super().__init__(*args, param1=param1, **kwargs)
 
-        params = TestTransformer(1, 2, param1=3, name="The Dude").get_params()
-        self.assertDictEqual(params, {"param1": 3})
+        params = T2(1, 2, param1=3, param2=4, name="The Dude").get_params()
+        params_expected = dict(param1=3, param2=4, name="The Dude",
+                col_format='{}', cols_init=[1, 2], cols_not_found_error=False,
+		dtype=None, keep_original=False)
+        self.assertDictEqual(params, params_expected)
 
     def test_init_cols_mix(self):
-        t = RecipipeTransformerMock(cols=[
+        t = RecipipeTransformerMock(cols_init=[
             "c1", ["c2"], set(["c3"]), ("c4", "c5")])
         self.assertEqual(len(t.cols_init), 5)
 
@@ -147,7 +160,7 @@ class RecipipeTransformerTest(TestCase):
     def test_init_cols_args(self):
         """Cols is appended to args. """
 
-        t = RecipipeTransformerMock("c1", cols=["c2"])
+        t = RecipipeTransformerMock("c1", cols_init=["c2"])
         self.assertListEqual(t.cols_init, ["c1", "c2"])
 
     def test_fit_cols(self):
