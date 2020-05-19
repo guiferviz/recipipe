@@ -211,8 +211,6 @@ class RecipipeTransformerTest(TestCase):
         t = RecipipeTransformerMock()
         df = create_df_3dtypes()
         t.fit(df)
-        print(t.col_map)
-        print(t.col_map_1_n)
         df = t.transform(df)
         self.assertListEqual(list(df.columns), ["c1", "c2", "t1"])
 
@@ -295,6 +293,17 @@ class RecipipeTransformerTest(TestCase):
         df = t.transform(df)
         out_cols = ["c1", "c1t1", "c2"]
         self.assertListEqual(list(df.columns), out_cols)
+
+    def test_cols_taken_from_col_map(self):
+        """If no cols are given, the col_map should be used to obtain them. """
+
+        class C(r.RecipipeTransformer):
+            def _get_column_mapping(self):
+                return {"c1": ["hi", "bye"]}
+
+        t = C()
+        t.fit(create_df_3dtypes())
+        self.assertListEqual(t.cols, ["c1"])
 
     def test_inverse_transform_cols_map_tuples(self):
 

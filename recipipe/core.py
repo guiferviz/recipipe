@@ -240,6 +240,10 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
         self._fit(df)
         # Save column maps and lists.
         self.col_map = self._get_column_mapping()
+        # Recreate cols, just in case you overwrite the _get_column_mapping
+        # but you didn't specify any cols_init.
+        self.cols = list(collections.OrderedDict.fromkeys(
+            flatten_list(self.col_map.keys())))
         col_map_1_n, col_map_1_n_inverse = {}, {}
         for k, v in self.col_map.items():
             add_to_map_dict(col_map_1_n, k, v)
