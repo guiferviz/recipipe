@@ -44,6 +44,7 @@ release = __version__
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx.ext.coverage",
     "sphinx.ext.mathjax",
@@ -55,9 +56,9 @@ extensions = [
 autodoc_default_flags = [
     "members",
     "undoc-members",
-    #"private-members",
+    "private-members",
     "special-members",
-    #"inherited-members",
+    "inherited-members",
     "show-inheritance"
 ]
 
