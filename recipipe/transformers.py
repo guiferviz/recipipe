@@ -259,11 +259,11 @@ class SklearnColumnWrapper(ColumnTransformer):
 
     def __init__(self, sk_transformer, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.original_transformer = sk_transformer
+        self.sk_transformer = sk_transformer
         self.transformers = {}
 
     def _fit_column(self, df, column_name):
-        t = clone(self.original_transformer)
+        t = clone(self.sk_transformer)
         t.fit(df[column_name].values.reshape(-1, 1))
         self.transformers[column_name] = t
 
@@ -360,8 +360,8 @@ class SklearnFitOneWrapper(SklearnColumnWrapper):
 
     def _fit(self, df):
         one_col = df[self.cols].stack()
-        self.original_transformer.fit(one_col.values.reshape(-1, 1))
-        self.transformers = {c: self.original_transformer for c in self.cols}
+        self.sk_transformer.fit(one_col.values.reshape(-1, 1))
+        self.transformers = {c: self.sk_transformer for c in self.cols}
 
 
 class SklearnCreator(object):
