@@ -25,6 +25,7 @@ author = "guiferviz"
 
 # Creates a __version__ variable.
 # Similar to "from recipipe import __version__" but without importing the module.
+__version__ = None  # declared here to avoid linter errors.
 with open("../recipipe/_version.py") as file:
     exec(file.read())
 # The short X.Y version
