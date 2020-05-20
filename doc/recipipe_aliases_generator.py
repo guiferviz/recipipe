@@ -3,7 +3,9 @@ import inspect
 import os
 import parser
 import symbol
+import sys
 
+sys.path.insert(0, os.path.abspath(".."))
 import recipipe
 
 
@@ -38,7 +40,7 @@ st = parser.suite(code)
 st_list = parser.st2list(st)
 assign_expr = find_expr_stmt(st_list)
 
-filename = os.path.join(os.path.dirname(__file__), "recipipe_aliases.csv")
+filename = os.path.join(os.path.dirname(__file__), "_generated/recipipe_aliases.csv")
 with open(filename, "w") as f:
     f.write("Alias,Definition\n")
     for i, j in assign_expr:
@@ -46,7 +48,9 @@ with open(filename, "w") as f:
             j = j.replace('"', "'")
             o = getattr(recipipe, i)
             if inspect.isclass(o):
-                m = ".".join([i for i in o.__module__.split(".") if i[0] != "_"])
+                # Remove modules starting from '_' to avoid wrong references
+                # to the SKLearn documentation.
+                m = ".".join([i for i in o.__module__.split(".") if i[0]!="_"])
                 f.write(f'{i},":obj:`{m}.{o.__qualname__}`"\n')
             else:
                 f.write(f'{i},"`{j}`"\n')

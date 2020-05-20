@@ -18,7 +18,7 @@ The recipipe package contains many aliases for ease of use.
 Here is a complete table with all the aliases.
 
 .. csv-table::
-   :file: recipipe_aliases.csv
+   :file: _generated/recipipe_aliases.csv
    :widths: 30, 70
 
 
