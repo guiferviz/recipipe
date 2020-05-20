@@ -13,6 +13,8 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+    - name: Install dependencies
+      run: pip install -r requirements.in
     - name: Generate pre-build data
       run: cd doc/ && make generate_data
     - uses: ammaraskar/sphinx-action@master
