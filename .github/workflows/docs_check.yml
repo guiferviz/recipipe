@@ -14,7 +14,7 @@ jobs:
       with:
         python-version: 3.7
     - name: Install dependencies
-      run: pip install -r requirements.in
+      run: pip install -r requirements_dev.in
     - name: Generate pre-build data
       run: cd doc/ && make generate_data
     - uses: ammaraskar/sphinx-action@master
