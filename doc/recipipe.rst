@@ -1,8 +1,26 @@
+
 recipipe package
 ================
 
-Submodules
-----------
+.. automodule:: recipipe
+    :members:
+    :undoc-members:
+    :private-members:
+    :show-inheritance:
+    :inherited-members:
+    :special-members:
+
+
+recipipe aliases
+----------------
+
+The recipipe package contains many aliases for ease of use.
+Here is a complete table with all the aliases.
+
+.. csv-table::
+   :file: _generated/recipipe_aliases.csv
+   :widths: 30, 70
+
 
 recipipe.core module
 --------------------
@@ -14,10 +32,22 @@ recipipe.core module
     :special-members:
 
 
-Module contents
----------------
+recipipe.transformers module
+----------------------------
 
-.. automodule:: recipipe
+.. automodule:: recipipe.transformers
     :members:
     :undoc-members:
     :show-inheritance:
+    :special-members:
+
+
+recipipe.utils module
+----------------------------
+
+.. automodule:: recipipe.utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :special-members:
+

@@ -39,9 +39,10 @@ tests and generating docs):
 
     pip install -r requirements_dev.in
 
-The installation is not really needed for running tests.
-If you want to install it, it's recommended to install it using the `-e`/
-`--editable` mode (i.e. setuptools "develop mode"):
+Installing the recipipe package is not really needed for running tests.
+
+If you are developing, it's recommended to install it using the
+`-e`/`-\\-editable` mode (i.e. *setuptools* "develop mode"):
 
 .. code-block:: bash
 
@@ -56,4 +57,18 @@ Install them using:
 .. code-block:: bash
 
     pip install -r <requirements-filename>
+
+
+Test the installation
+---------------------
+
+Execute the :obj:`recipipe.greet` method to test that everything is working
+properly:
+
+.. code-block:: bash
+
+    python -c "import recipipe; recipipe.greet()"
+
+You should see something similar to a joke on the screen and the version of
+the program.
 
