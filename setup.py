@@ -16,8 +16,9 @@ AUTHOR = "guiferviz"
 LICENSE = "MIT, Copyright " + AUTHOR
 
 
-# Creates a __version__ variable.
-with open(PACKAGE_NAME + "/_version.py") as file:
+# Creates a __version__ variable read from _version.
+__version__ = None  # declared here to avoid linter errors.
+with open(join(PACKAGE_NAME, "_version.py")) as file:
     exec(file.read())
 
 # Read requirements.
