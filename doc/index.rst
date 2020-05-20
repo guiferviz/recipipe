@@ -14,6 +14,7 @@ Welcome to Recipipe's documentation!
 
     installation.rst
     recipipe.rst
+    diagrams.rst
 
 
 Indices
