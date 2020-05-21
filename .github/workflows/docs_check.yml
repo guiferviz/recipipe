@@ -19,6 +19,5 @@ jobs:
         pip install -r requirements_dev.in
     - name: Generate pre-build data
       run: cd doc/ && make generate_data
-    - uses: ammaraskar/sphinx-action@master
-      with:
-        docs-folder: "doc/"
+    - name: Build docs
+      run: cd doc/ && make html
