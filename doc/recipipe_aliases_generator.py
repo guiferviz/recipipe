@@ -40,7 +40,10 @@ st = parser.suite(code)
 st_list = parser.st2list(st)
 assign_expr = find_expr_stmt(st_list)
 
-filename = os.path.join(os.path.dirname(__file__), "_generated/recipipe_aliases.csv")
+if len(sys.argv) < 2:
+    raise ValueError("Required output file as a parameter.")
+filename = sys.argv[1]
+filename = os.path.join(os.path.dirname(__file__), filename)
 with open(filename, "w") as f:
     f.write("Alias,Definition\n")
     for i, j in assign_expr:
