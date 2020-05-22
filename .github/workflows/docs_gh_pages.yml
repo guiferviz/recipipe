@@ -1,0 +1,34 @@
+name: "Build Docs"
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        sudo apt-get install graphviz
+        pip install -r requirements_dev.txt
+    - name: Generate pre-build data
+      run: |
+        cd doc/
+        make generate_data
+    - name: Build docs
+      run: |
+        cd doc/
+        make html
+        touch _build/html/.nojekyll  # needed to deploy folders starting with "_" in gh-pages
+    - name: Deploy to gh-pages
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        BRANCH: gh-pages  # the branch the action should deploy to.
+        FOLDER: doc/_build/html  # the folder the action should deploy.
