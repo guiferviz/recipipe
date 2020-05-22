@@ -1,0 +1,428 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>recipipe.utils &mdash; Recipipe 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipipe.html">recipipe package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../diagrams.html">Diagrams</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Recipipe</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../recipipe.html">recipipe</a> &raquo;</li>
+        
+      <li>recipipe.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for recipipe.utils</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">fnmatch</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="default_params"><a class="viewcode-back" href="../../recipipe.html#recipipe.utils.default_params">[docs]</a><span class="k">def</span> <span class="nf">default_params</span><span class="p">(</span><span class="n">fun_kwargs</span><span class="p">,</span> <span class="n">default_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add to kwargs and/or default_dict the values of fun_kwargs.</span>
+<span class="sd">    </span>
+<span class="sd">    This function allows the user to overwrite default values of some</span>
+<span class="sd">    parameters. For example, in the next example the user cannot give a value</span>
+<span class="sd">    to the param `a` because you will be passing the param `a` twice to the</span>
+<span class="sd">    function `another_fun`::</span>
+
+<span class="sd">        &gt;&gt;&gt; def fun(**kwargs):</span>
+<span class="sd">        ...     return another_fun(a=&quot;a&quot;, **kwargs)</span>
+
+<span class="sd">    You can solve this in two ways. The fist one::</span>
+
+<span class="sd">        &gt;&gt;&gt; def fun(a=&quot;a&quot;, **kwargs):</span>
+<span class="sd">        ...     return another_fun(a=a, **kwargs)</span>
+<span class="sd"> </span>
+<span class="sd">    Or using default_params::</span>
+
+<span class="sd">        &gt;&gt;&gt; def fun(**kwargs):</span>
+<span class="sd">        ...    kwargs = default_params(kwargs, a=&quot;a&quot;)</span>
+<span class="sd">        ...    return another_fun(**kwargs)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">default_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">default_dict</span> <span class="o">=</span> <span class="n">kwargs</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">default_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">default_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fun_kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">default_dict</span></div>
+
+
+<div class="viewcode-block" id="reduce_memory_usage"><a class="viewcode-back" href="../../recipipe.html#recipipe.utils.reduce_memory_usage">[docs]</a><span class="k">def</span> <span class="nf">reduce_memory_usage</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">object_to_category</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Change datatypes in order to reduce memory usage.</span>
+
+<span class="sd">    This function iterates all the columns of the dataframe and</span>
+<span class="sd">    for numeric types checks if there is another datatype that</span>
+<span class="sd">    occupies less memory and can store all the numbers of the</span>
+<span class="sd">    column.</span>
+
+<span class="sd">    Another way to reduce memory usage of Pandas dataframes is</span>
+<span class="sd">    creating categories. This function in verbose mode shows</span>
+<span class="sd">    if there are columns of type object that could be converted</span>
+<span class="sd">    to category. It is not always possible to save memory by</span>
+<span class="sd">    converting to a category. The ideal columns to convert to</span>
+<span class="sd">    category are those with few different values. Converting a</span>
+<span class="sd">    column that has all unique values (like and ID column) will</span>
+<span class="sd">    surely occupy more as a category.</span>
+<span class="sd">    In a dataframe there may also be numeric columns that can be</span>
+<span class="sd">    converted to categorical (especially columns of integer</span>
+<span class="sd">    types). This category conversions must be done by the user.</span>
+
+<span class="sd">    All the conversions are made in place, so the original dataframe</span>
+<span class="sd">    will be overwritten.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (pandas.DataFrame): Dataframe to change data types.</span>
+<span class="sd">        deep (bool): When `verbose=True` the percentage of memory reduced</span>
+<span class="sd">            by the conversion is shown of the screen. It&#39;s computed</span>
+<span class="sd">            using the `pandas.DataFrame.memory_usage` method. `deep` is</span>
+<span class="sd">            an argument of this method. `deep=True` is more slow but it&#39;s</span>
+<span class="sd">            more accurate.</span>
+<span class="sd">        verbose (bool): Prints informative information about the process on</span>
+<span class="sd">            the screen.</span>
+<span class="sd">        object_to_category (bool): If `True` this method automatically converts</span>
+<span class="sd">            object to the pandas category type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># All types that we want to change for &quot;lighter&quot; ones.</span>
+    <span class="c1"># int8 and float16 are not include because we cannot reduce</span>
+    <span class="c1"># those data types.</span>
+    <span class="c1"># float32 is not include because float16 has too low precision.</span>
+    <span class="n">numeric2reduce</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;int16&quot;</span><span class="p">,</span> <span class="s2">&quot;int32&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">]</span>
+    <span class="n">start_mem</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">start_mem</span> <span class="o">=</span> <span class="n">memory_usage_mb</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="n">deep</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">col_type</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="n">best_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">col_type</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">object_to_category</span><span class="p">:</span>
+                <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>
+            <span class="n">best_type</span> <span class="o">=</span> <span class="s2">&quot;category&quot;</span>
+        <span class="k">elif</span> <span class="n">col_type</span> <span class="ow">in</span> <span class="n">numeric2reduce</span><span class="p">:</span>
+            <span class="n">downcast</span> <span class="o">=</span> <span class="s2">&quot;integer&quot;</span> <span class="k">if</span> <span class="s2">&quot;int&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">col_type</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;float&quot;</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">downcast</span><span class="o">=</span><span class="n">downcast</span><span class="p">)</span>
+            <span class="n">best_type</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span>
+        <span class="c1"># Log the conversion performed.</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">best_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">best_type</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">col_type</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">&#39; of type </span><span class="si">{</span><span class="n">col_type</span><span class="si">}</span><span class="s2"> may be better as &quot;</span>
+                  <span class="sa">f</span><span class="s2">&quot;type </span><span class="si">{</span><span class="n">best_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">end_mem</span> <span class="o">=</span> <span class="n">memory_usage_mb</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="n">deep</span><span class="p">)</span>
+        <span class="n">diff_mem</span> <span class="o">=</span> <span class="n">start_mem</span> <span class="o">-</span> <span class="n">end_mem</span>
+        <span class="n">percent_mem</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">diff_mem</span> <span class="o">/</span> <span class="n">start_mem</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Memory usage decreased from&quot;</span>
+              <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">start_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">MB to </span><span class="si">{</span><span class="n">end_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">MB&quot;</span>
+              <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">diff_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">MB, </span><span class="si">{</span><span class="n">percent_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">% reduction)&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="memory_usage_mb"><a class="viewcode-back" href="../../recipipe.html#recipipe.utils.memory_usage_mb">[docs]</a><span class="k">def</span> <span class="nf">memory_usage_mb</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Dataframe memory usage in MB. &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="is_categorical"><a class="viewcode-back" href="../../recipipe.html#recipipe.utils.is_categorical">[docs]</a><span class="k">def</span> <span class="nf">is_categorical</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if a pandas Series or a column in a DataFrame is categorical.</span>
+<span class="sd">    </span>
+<span class="sd">    s (pandas.Series or pandas.DataFrame): Series to check or dataframe with</span>
+<span class="sd">        column to check.</span>
+<span class="sd">    column (str): Column name. If a column name is given it is assumed that</span>
+<span class="sd">        `s` is a `pandas.DataFrame`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">column</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># s is not a Series, it is a DataFrame.</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;category&quot;</span></div>
+
+
+<div class="viewcode-block" id="flatten_list"><a class="viewcode-back" href="../../recipipe.html#recipipe.utils.flatten_list">[docs]</a><span class="k">def</span> <span class="nf">flatten_list</span><span class="p">(</span><span class="n">cols_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Take a list of lists and return a flattened list.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cols_list: an iterable of any quantity of str/tuple/list/set.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; flatten_list([&quot;a&quot;, (&quot;b&quot;, set([&quot;c&quot;])), [[&quot;d&quot;]]])</span>
+<span class="sd">        [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cols</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cols_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">cols</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">flatten_list</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>  <span class="c1"># Flatten all the levels recursively.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cols</span></div>
+
+
+<div class="viewcode-block" id="fit_columns"><a class="viewcode-back" href="../../recipipe.html#recipipe.utils.fit_columns">[docs]</a><span class="k">def</span> <span class="nf">fit_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">drop_duplicates</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fit columns to a DataFrame.</span>
+
+<span class="sd">    If no `cols` and not `dtype` are given, `df.columns` is returned.</span>
+<span class="sd">    If both `cols` and `dtype` are given, first `cols` are applied and `dtype`</span>
+<span class="sd">    is applied over the resulting columns.</span>
+
+<span class="sd">    Note than an empty list can be returned if `df` does not contain columns.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (:obj:`pandas.DataFrame`): DataFrame that is been fitted.</span>
+<span class="sd">        cols (:obj:`list`): List of columns to fit. The names may contain</span>
+<span class="sd">            Unix filename pattern matching (:obj:`fnmatch`) symbols.</span>
+<span class="sd">        dtype: Any value suported by :obj:`pandas.DataFrame.select_dtypes`.</span>
+<span class="sd">        raise_error (:obj:`bool`): If `True` and not column in `df` match the</span>
+<span class="sd">            given column in `cols`, an exception is raised.</span>
+<span class="sd">        drop_duplicates (:obj:`bool`): Remove duplicates keeping the order.</span>
+<span class="sd">            Default: `True`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of existing columns in df that satisfy the constrains of `dtype`</span>
+<span class="sd">        and `cols`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        :obj:`ValueError` if the patter in `cols` does not match any column and</span>
+<span class="sd">        `raise_error` is set to `True`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cols_fitted</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">df_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cols</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dtype</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">df_cols</span>
+
+    <span class="k">if</span> <span class="n">cols</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
+            <span class="n">cols_match</span> <span class="o">=</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">df_cols</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">raise_error</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cols_match</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No column match &#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&#39; in dataframe&quot;</span><span class="p">)</span>
+            <span class="n">cols_fitted</span> <span class="o">+=</span> <span class="n">cols_match</span>
+
+    <span class="k">if</span> <span class="n">dtype</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cols_fitted</span><span class="p">:</span>
+            <span class="c1"># dtype is applied after cols.</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">cols_fitted</span><span class="p">]</span>
+        <span class="n">cols_fitted</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">drop_duplicates</span><span class="p">:</span>
+        <span class="n">cols_fitted</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">cols_fitted</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">cols_fitted</span></div>
+
+
+<div class="viewcode-block" id="add_to_map_dict"><a class="viewcode-back" href="../../recipipe.html#recipipe.utils.add_to_map_dict">[docs]</a><span class="k">def</span> <span class="nf">add_to_map_dict</span><span class="p">(</span><span class="n">col_map</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Stores `k` and `v` in the given `col_map`.</span>
+
+<span class="sd">    If `k` is a string, `col_map[k] += list(v)`.</span>
+<span class="sd">    If `k` is a tuple, `for each i in k: col_map[k] += list(v)`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        col_map (:obj:`dict`): Dictionary in which the keys and values will</span>
+<span class="sd">            be stored.</span>
+<span class="sd">        k (:obj:`str` or :obj:`tuple`): Tuples will be split and `col_map`</span>
+<span class="sd">            will contain a string key with a list of values taken from `v`.</span>
+<span class="sd">        v (:obj:`str` or :obj:`tuple`): Value appended to each of the keys</span>
+<span class="sd">            in `k`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Convert v to list, and k to tuple.</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span><span class="p">,)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">k</span>
+
+    <span class="c1"># Iterate the tuple keys and append values.</span>
+    <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">col_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kk</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">l</span> <span class="o">+=</span> <span class="n">v</span>
+        <span class="n">col_map</span><span class="p">[</span><span class="n">kk</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, guiferviz
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
