@@ -7,6 +7,7 @@
 [![Build Status](https://travis-ci.org/guiferviz/recipipe.png)](https://travis-ci.org/guiferviz/recipipe)
 [![Coverage Status](https://coveralls.io/repos/github/guiferviz/recipipe/badge.svg?branch=master)](https://coveralls.io/github/guiferviz/recipipe?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/recipipe/badge/?version=latest)](https://recipipe.readthedocs.io/?badge=latest)
+[![Build Docs](https://github.com/guiferviz/recipipe/workflows/Build%20Docs/badge.svg)](https://guiferviz.com/recipipe/)
 
 Improved pipelines for data science projects.
 
