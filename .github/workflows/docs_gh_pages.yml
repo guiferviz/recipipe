@@ -23,7 +23,7 @@ jobs:
       run: |
         cd doc/
         make html
-        touch doc/_build/html/.nojekyll  # needed for deploy folders starting with "_"
+        touch _build/html/.nojekyll  # needed for deploy folders starting with "_"
     - name: Deploy to gh-pages
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
