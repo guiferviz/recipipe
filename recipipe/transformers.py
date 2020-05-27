@@ -229,8 +229,8 @@ class CategoryEncoder(ColumnTransformer):
             encoded = encoded.fillna(self.unknown_value)
         return encoded.codes
 
-    def _inverse_transform_column(self, df, col):
-        col = col[0]
+    def _inverse_transform_column(self, df, cols):
+        col = cols[0]
         return self.categories[col][df[col].values]
 
 
