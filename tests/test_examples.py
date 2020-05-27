@@ -13,6 +13,10 @@ import unittest
 
 
 ROOT_DIR = os.path.abspath(".")
+# Add the root dir to PYTHONPATH to avoid errors importing recipipe from
+# notebooks. In this way you do not really need to install recipipe to run
+# the tests.
+os.environ['PYTHONPATH'] = ROOT_DIR
 NOTEBOOKS = glob.glob("./examples/*.ipynb")
 
 RE_UUID = re.compile(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', re.I)
