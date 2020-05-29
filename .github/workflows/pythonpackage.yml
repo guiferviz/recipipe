@@ -29,8 +29,28 @@ jobs:
         pip install -r requirements_dev.in
     - name: Linter
       run: |
-        # Stop the build if there are syntax errors or some basic mistakes
+        # Stop the build if there are syntax errors or some basic mistakes.
         pylint recipipe tests
-    - name: Test with pytest
+    - name: Run tests
       run: |
-        pytest
+        pytest --cov-report=html:coverage/html --cov=recipipe
+    - name: Test coverage
+      run: |
+        # Never coverage under 100%!
+        coverage report --fail-under=100
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.ACCESS_TOKEN }}
+        flag-name: run-${{ matrix.python-version }}
+        parallel: true
+
+  deploy_results:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.ACCESS_TOKEN }}
+        parallel-finished: true
