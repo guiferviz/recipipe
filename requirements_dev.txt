@@ -13,9 +13,11 @@ bleach==3.1.5             # via nbconvert
 certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
 click==7.1.2              # via pip-tools
-coverage==5.1             # via -r requirements_dev.in
+coverage==5.1             # via -r requirements_dev.in, coveralls
+coveralls==2.0.0          # via -r requirements_dev.in
 decorator==4.4.2          # via ipython, traitlets
 defusedxml==0.6.0         # via nbconvert
+docopt==0.6.2             # via coveralls
 docutils==0.16            # via sphinx
 entrypoints==0.3          # via nbconvert
 idna==2.9                 # via requests
@@ -60,7 +62,7 @@ pytest==5.4.2             # via -r requirements_dev.in
 python-dateutil==2.8.1    # via jupyter-client, pandas
 pytz==2020.1              # via babel, pandas
 pyzmq==19.0.1             # via jupyter-client, notebook
-requests==2.23.0          # via sphinx
+requests==2.23.0          # via coveralls, sphinx
 scikit-learn==0.23.1      # via -r requirements.in
 scipy==1.4.1              # via scikit-learn
 send2trash==1.5.0         # via notebook

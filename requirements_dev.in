@@ -5,6 +5,7 @@
 pylint
 pytest
 coverage
+coveralls
 
 # Documentation.
 sphinx

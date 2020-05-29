@@ -37,11 +37,11 @@ jobs:
         # Never coverage under 100%!
         coverage report --fail-under=100
     - name: Coveralls parallel
-      uses: AndreMiras/coveralls-python-action@develop
-      with:
-        github-token: ${{ secrets.ACCESS_TOKEN }}
-        parallel: true
-        debug: true
+    - env:
+      COVERALLS_PARALLEL: true
+      COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        coveralls
 
   coveralls_finish:
     needs: build
