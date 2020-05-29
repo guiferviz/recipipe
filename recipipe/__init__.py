@@ -21,12 +21,16 @@ from recipipe.transformers import DropNARowsTransformer
 from recipipe.transformers import GroupByTransformer
 from recipipe.transformers import PandasScaler
 from recipipe.transformers import QueryTransformer
+from recipipe.transformers import ReduceMemoryTransformer
 from recipipe.transformers import ReplaceTransformer
 from recipipe.transformers import SelectTransformer
 from recipipe.transformers import SklearnCreator
 from recipipe.transformers import SklearnColumnsWrapper
 from recipipe.transformers import SklearnColumnWrapper
 from recipipe.transformers import SklearnFitOneWrapper
+
+from recipipe.utils import fit_columns
+from recipipe.utils import flatten_list
 
 from recipipe._version import __version__
 
@@ -46,6 +50,7 @@ dropna_rows = DropNARowsTransformer
 query = QueryTransformer
 replace = ReplaceTransformer
 groupby = GroupByTransformer
+reduce_memory = ReduceMemoryTransformer
 # SKLearn recipipe transformer.
 from_sklearn = SklearnCreator
 onehot = from_sklearn(OneHotEncoder(sparse=False, handle_unknown="ignore"))

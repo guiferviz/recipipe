@@ -879,3 +879,18 @@ class ColumnGroupsTransformerTest(TestCase):
         df_expected = pd.DataFrame({"a": [4,5,6], "b": [4,5,6]})
         self.assertTrue(df_out.equals(df_expected))
 
+
+class ReduceMemoryTransformerTest(TestCase):
+
+    def test_init(self):
+        t = r.ReduceMemoryTransformer(verbose=True)
+        df = create_df_all()
+        t.fit_transform(df)
+        dtypes_expected = {
+            "color": pd.CategoricalDtype(["blue", "red"]),
+            "amount": np.dtype("int8"),
+            "price": np.dtype("float32"),
+        }
+        # This transformer modifies df in place!
+        self.assertDictEqual(df.dtypes.to_dict(), dtypes_expected)
+
