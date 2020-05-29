@@ -17,6 +17,7 @@ from recipipe.utils import default_params
 from recipipe.utils import flatten_list
 from recipipe.utils import fit_columns
 from recipipe.utils import memory_usage_mb
+from recipipe.utils import is_categorical
 from recipipe.core import RecipipeTransformer
 
 
@@ -214,7 +215,10 @@ class CategoryEncoder(ColumnTransformer):
         self.unknown_value = unknown_value
 
     def _fit_column(self, df, col):
-        cat = df[col].astype("category").cat.categories
+        if is_categorical(df, col):
+            cat = df[col].cat.categories
+        else:
+            cat = df[col].astype("category").cat.categories
         if self.unknown_value is not None:
             cat = cat.insert(0, self.unknown_value)
         # Save category values for the transformation phase.
