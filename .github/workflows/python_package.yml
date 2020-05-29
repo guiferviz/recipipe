@@ -11,12 +11,10 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [ 3.6, 3.7, 3.8 ]
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -33,7 +31,7 @@ jobs:
         pylint recipipe tests
     - name: Run tests
       run: |
-        coverage run -m pytest --cov=recipipe
+        coverage run --source=recipipe -m pytest
     - name: Test coverage
       run: |
         # Never coverage under 100%!
