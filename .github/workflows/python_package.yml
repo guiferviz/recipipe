@@ -40,7 +40,7 @@ jobs:
       env:
         COVERALLS_PARALLEL: true
       run: |
-        coveralls
+        coveralls debug
 
   coveralls_finish:
     needs: build
