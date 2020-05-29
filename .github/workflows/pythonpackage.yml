@@ -33,7 +33,7 @@ jobs:
         pylint recipipe tests
     - name: Run tests
       run: |
-        pytest --cov-report=html:coverage/html --cov=recipipe
+        pytest --cov=recipipe
     - name: Test coverage
       run: |
         # Never coverage under 100%!
@@ -42,7 +42,6 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.ACCESS_TOKEN }}
-        flag-name: run-${{ matrix.python-version }}
         parallel: true
 
   deploy_results:
