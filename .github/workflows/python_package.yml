@@ -37,7 +37,7 @@ jobs:
         # Never coverage under 100%!
         coverage report --fail-under=100
     - name: Coveralls parallel
-      - env:
+      env:
         COVERALLS_PARALLEL: true
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
