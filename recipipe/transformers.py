@@ -16,6 +16,7 @@ from sklearn.base import TransformerMixin, clone
 from recipipe.utils import default_params
 from recipipe.utils import flatten_list
 from recipipe.utils import fit_columns
+from recipipe.utils import memory_usage_mb
 from recipipe.core import RecipipeTransformer
 
 
