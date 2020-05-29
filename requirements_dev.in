@@ -5,7 +5,6 @@
 pylint
 pytest
 pytest-cov
-coveralls
 
 # Documentation.
 sphinx

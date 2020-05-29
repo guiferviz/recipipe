@@ -33,7 +33,7 @@ jobs:
         pylint recipipe tests
     - name: Run tests
       run: |
-        coverage run -m pytest
+        coverage run -m pytest --cov=recipipe
     - name: Test coverage
       run: |
         # Never coverage under 100%!
