@@ -88,25 +88,25 @@ class UtilsTest(TestCase):
         cols = fit_columns(df, ["c*"])
         self.assertListEqual(cols, ["c2", "c1"])
 
-    def test_add_to_map_dict_str(self):
+    def test_add_to_map_dict_1_to_1(self):
 
         d = {}
         add_to_map_dict(d, "a", "b")
         self.assertDictEqual(d, {"a": ["b"]})
 
-    def test_add_to_map_dict_str(self):
+    def test_add_to_map_dict_N_to_1(self):
 
         d = {}
         add_to_map_dict(d, ("a", "b"), "c")
         self.assertDictEqual(d, {"a": ["c"], "b": ["c"]})
 
-    def test_add_to_map_dict_str(self):
+    def test_add_to_map_dict_1_to_N(self):
 
         d = {}
         add_to_map_dict(d, "a", ("b", "c"))
         self.assertDictEqual(d, {"a": ["b", "c"]})
 
-    def test_add_to_map_dict_tuples(self):
+    def test_add_to_map_dict_N_to_N(self):
 
         d = {}
         add_to_map_dict(d, ("a", "b"), ("c", "d"))

@@ -1,17 +1,11 @@
 
-import abc
 import collections
 import copy
-import fnmatch
 import inspect
-
-import numpy as np
 
 import pandas as pd
 
-import sklearn
-import sklearn.impute
-from sklearn.base import TransformerMixin, clone
+from sklearn.base import clone
 
 from recipipe.utils import default_params
 from recipipe.utils import flatten_list
@@ -194,7 +188,7 @@ class ColumnsTransformer(RecipipeTransformer):
             transformed columns.
         """
 
-        pass
+        return df
 
     def _inverse_transform(self, df_in):
         np_out = self._inverse_transform_columns(df_in, self.cols_out)
@@ -202,7 +196,7 @@ class ColumnsTransformer(RecipipeTransformer):
         return df_out
 
     def _inverse_transform_columns(self, df, columns_name):  # pragma: no cover
-        pass
+        return df
 
 
 class CategoryEncoder(ColumnTransformer):

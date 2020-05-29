@@ -6,7 +6,6 @@ import pandas as pd
 from unittest import TestCase
 from unittest.mock import call
 from unittest.mock import MagicMock
-from unittest.mock import Mock
 
 from tests.fixtures import SklearnTransformerMock
 from tests.fixtures import create_df_all

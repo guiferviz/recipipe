@@ -2,8 +2,6 @@
 import fnmatch
 import collections
 
-import pandas as pd
-
 
 def default_params(fun_kwargs, default_dict=None, **kwargs):
     """Add to kwargs and/or default_dict the values of fun_kwargs.
