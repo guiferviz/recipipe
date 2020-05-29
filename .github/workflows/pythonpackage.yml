@@ -33,24 +33,23 @@ jobs:
         pylint recipipe tests
     - name: Run tests
       run: |
-        pytest --cov=recipipe
+        pytest --cov-report= --cov=recipipe
     - name: Test coverage
       run: |
         # Never coverage under 100%!
         coverage report --fail-under=100
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
+    - name: Coveralls parallel
+      uses: AndreMiras/coveralls-python-action@develop
       with:
         github-token: ${{ secrets.ACCESS_TOKEN }}
-        path-to-lcov: .coverage
         parallel: true
 
-  deploy_results:
+  coveralls_finish:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@master
+    - name: Coveralls finished
+      uses: AndreMiras/coveralls-python-action@develop
       with:
         github-token: ${{ secrets.ACCESS_TOKEN }}
         parallel-finished: true
