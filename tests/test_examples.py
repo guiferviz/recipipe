@@ -46,10 +46,11 @@ def test_notebook(notebook):
     os.chdir(ROOT_DIR)
     nb = read_notebook(notebook)
     nb_original = read_notebook(notebook)  # Idk how to deep copy a notebook
-    # Execute nb.
+    # Execute nb using examples/ as working directory.
     os.chdir("./examples/")
     ep = ExecutePreprocessor(timeout=60, kernel_name='python3')  # 60s
     ep.preprocess(nb)
+    os.chdir(ROOT_DIR)  # Set working directory again.
     # Compare output cells.
     i = 0
     for co, c in zip(nb_original.cells, nb.cells):
