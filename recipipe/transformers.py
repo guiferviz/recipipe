@@ -561,3 +561,103 @@ class ColumnGroupsTransformer(RecipipeTransformer):
     def _inverse_transform_group(self, df, col):  # pragma: no cover
         return df[col]
 
+
+class ReduceMemoryTransformer(RecipipeTransformer):
+    """Change data types in order to reduce memory usage.
+
+    This transformer iterates all the columns of the DataFrame and for numeric
+    types checks if there is another datatype that occupies less memory and
+    can store all the numbers of the column.
+
+    Another way to reduce memory usage of Pandas DataFrame is creating
+    categories (:obj:`pandas.Categorical`).
+    It's not always possible to save memory by converting to a category.
+    The ideal columns to convert to category are those with few different
+    values.
+    Converting a column that has all unique values (like and ID column) will
+    surely occupy more as a category, so consider to drop those columns first
+    or not to apply the transformer on those columns.
+
+    In a DataFrame there may also be numeric columns that can be converted to
+    categorical (especially columns of integer types).
+    You should make those transformations manually if you want to have a 
+    column of category dtype from the numeric column.
+    Note that the :obj:`recipipe.transformers.CategoryEncoder` is not really
+    returning a Pandas category, is encoding the values into integer values.
+
+    You should also note that this transformation is done in place because
+    that's the objective of reducing memory.
+    Keeping a copy in memory does not make too much sense if you want to save
+    memory.
+    """
+
+    # All types that we want to change for "lighter" ones.
+    # int8 and float16 are not include because we cannot reduce
+    # those data types.
+    # float32 is not include because float16 has too low precision.
+    _NUMERIC_TO_REDUCE = ["int16", "int32", "int64", "float64"]
+
+    def __init__(self, *args, deep=True, verbose=False,
+            object_to_category=True, **kwargs):
+        """Create a new reduce memory transformer.
+
+        Args:
+            deep (bool): When `verbose=True` the percentage of memory reduced
+                by the conversion is shown on the screen.
+                It's computed using the :obj:`pandas.DataFrame.memory_usage`
+                method.
+                `deep` is the argument of this method.
+                `deep=True` is more slow but it's more accurate.
+                Note that it's really slow on big DataFrames.
+            verbose (bool): Prints informative information about the process on
+                the screen.
+                Shows the percentage of memory saved after the conversion.
+            object_to_category (bool): If `True` this method automatically
+                converts objects to the Pandas category type.
+        """
+
+        super().__init__(*args, **kwargs)
+        self.deep = deep
+        self.verbose = verbose
+        self.object_to_category = object_to_category
+        self.dtypes = None
+
+    def _fit(self, df, y=None):
+        dtypes = {}
+
+        # Find a new dtype for each of the columns.
+        for col in self.cols:
+            col_type = df[col].dtype
+            best_type = None
+            if col_type == "object":
+                if self.object_to_category:
+                    best_type = df[col].astype("category").dtype
+            elif col_type in ReduceMemoryTransformer._NUMERIC_TO_REDUCE:
+                downcast = "integer" if "int" in str(col_type) else "float"
+                best_type = pd.to_numeric(df[col], downcast=downcast).dtype
+
+            if best_type is not None and best_type != col_type:
+                dtypes[col] = best_type
+                # Log the conversion performed.
+                if self.verbose:
+                    print(f"Column '{col}' of type {col_type} may be better as"
+                          f" type {best_type}")
+
+        self.dtypes = dtypes
+
+    def transform(self, df, y=None):
+        start_mem = 0
+        if self.verbose:
+            start_mem = memory_usage_mb(df, deep=self.deep)
+
+        df[:] = df.astype(self.dtypes)
+
+        if self.verbose:
+            end_mem = memory_usage_mb(df, deep=self.deep)
+            diff_mem = start_mem - end_mem
+            percent_mem = 100 * diff_mem / start_mem
+            print(f"Memory usage decreased from"
+                  f" {start_mem:.2f}MB to {end_mem:.2f}MB"
+                  f" ({diff_mem:.2f}MB, {percent_mem:.2f}% reduction)")
+        return df
+

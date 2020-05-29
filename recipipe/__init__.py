@@ -21,6 +21,7 @@ from recipipe.transformers import DropNARowsTransformer
 from recipipe.transformers import GroupByTransformer
 from recipipe.transformers import PandasScaler
 from recipipe.transformers import QueryTransformer
+from recipipe.transformers import ReduceMemoryTransformer
 from recipipe.transformers import ReplaceTransformer
 from recipipe.transformers import SelectTransformer
 from recipipe.transformers import SklearnCreator
@@ -46,6 +47,7 @@ dropna_rows = DropNARowsTransformer
 query = QueryTransformer
 replace = ReplaceTransformer
 groupby = GroupByTransformer
+reduce_memory = ReduceMemoryTransformer
 # SKLearn recipipe transformer.
 from_sklearn = SklearnCreator
 onehot = from_sklearn(OneHotEncoder(sparse=False, handle_unknown="ignore"))
