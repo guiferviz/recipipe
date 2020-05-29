@@ -41,6 +41,7 @@ jobs:
       with:
         github-token: ${{ secrets.ACCESS_TOKEN }}
         parallel: true
+        debug: true
 
   coveralls_finish:
     needs: build
