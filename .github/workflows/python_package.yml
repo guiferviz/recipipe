@@ -39,7 +39,6 @@ jobs:
     - name: Coveralls parallel
       env:
         COVERALLS_PARALLEL: true
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
         coveralls
 
@@ -50,6 +49,5 @@ jobs:
     - name: Coveralls finished
       env:
         COVERALLS_PARALLEL_FINISHED: true
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
         coveralls
