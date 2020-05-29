@@ -173,6 +173,7 @@
 <span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">default_params</span>
 <span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">flatten_list</span>
 <span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">fit_columns</span>
+<span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">memory_usage_mb</span>
 <span class="kn">from</span> <span class="nn">recipipe.core</span> <span class="kn">import</span> <span class="n">RecipipeTransformer</span>
 
 
@@ -386,8 +387,8 @@
             <span class="n">encoded</span> <span class="o">=</span> <span class="n">encoded</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unknown_value</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">encoded</span><span class="o">.</span><span class="n">codes</span>
 
-    <span class="k">def</span> <span class="nf">_inverse_transform_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
-        <span class="n">col</span> <span class="o">=</span> <span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">_inverse_transform_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">cols</span><span class="p">):</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span></div>
 
 
@@ -717,6 +718,106 @@
 
     <span class="k">def</span> <span class="nf">_inverse_transform_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ReduceMemoryTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ReduceMemoryTransformer">[docs]</a><span class="k">class</span> <span class="nc">ReduceMemoryTransformer</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Change data types in order to reduce memory usage.</span>
+
+<span class="sd">    This transformer iterates all the columns of the DataFrame and for numeric</span>
+<span class="sd">    types checks if there is another datatype that occupies less memory and</span>
+<span class="sd">    can store all the numbers of the column.</span>
+
+<span class="sd">    Another way to reduce memory usage of Pandas DataFrame is creating</span>
+<span class="sd">    categories (:obj:`pandas.Categorical`).</span>
+<span class="sd">    It&#39;s not always possible to save memory by converting to a category.</span>
+<span class="sd">    The ideal columns to convert to category are those with few different</span>
+<span class="sd">    values.</span>
+<span class="sd">    Converting a column that has all unique values (like and ID column) will</span>
+<span class="sd">    surely occupy more as a category, so consider to drop those columns first</span>
+<span class="sd">    or not to apply the transformer on those columns.</span>
+
+<span class="sd">    In a DataFrame there may also be numeric columns that can be converted to</span>
+<span class="sd">    categorical (especially columns of integer types).</span>
+<span class="sd">    You should make those transformations manually if you want to have a </span>
+<span class="sd">    column of category dtype from the numeric column.</span>
+<span class="sd">    Note that the :obj:`recipipe.transformers.CategoryEncoder` is not really</span>
+<span class="sd">    returning a Pandas category, is encoding the values into integer values.</span>
+
+<span class="sd">    You should also note that this transformation is done in place because</span>
+<span class="sd">    that&#39;s the objective of reducing memory.</span>
+<span class="sd">    Keeping a copy in memory does not make too much sense if you want to save</span>
+<span class="sd">    memory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># All types that we want to change for &quot;lighter&quot; ones.</span>
+    <span class="c1"># int8 and float16 are not include because we cannot reduce</span>
+    <span class="c1"># those data types.</span>
+    <span class="c1"># float32 is not include because float16 has too low precision.</span>
+    <span class="n">_NUMERIC_TO_REDUCE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;int16&quot;</span><span class="p">,</span> <span class="s2">&quot;int32&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ReduceMemoryTransformer.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ReduceMemoryTransformer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">object_to_category</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a new reduce memory transformer.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            deep (bool): When `verbose=True` the percentage of memory reduced</span>
+<span class="sd">                by the conversion is shown on the screen.</span>
+<span class="sd">                It&#39;s computed using the :obj:`pandas.DataFrame.memory_usage`</span>
+<span class="sd">                method.</span>
+<span class="sd">                `deep` is the argument of this method.</span>
+<span class="sd">                `deep=True` is more slow but it&#39;s more accurate.</span>
+<span class="sd">                Note that it&#39;s really slow on big DataFrames.</span>
+<span class="sd">            verbose (bool): Prints informative information about the process on</span>
+<span class="sd">                the screen.</span>
+<span class="sd">                Shows the percentage of memory saved after the conversion.</span>
+<span class="sd">            object_to_category (bool): If `True` this method automatically</span>
+<span class="sd">                converts objects to the Pandas category type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deep</span> <span class="o">=</span> <span class="n">deep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object_to_category</span> <span class="o">=</span> <span class="n">object_to_category</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtypes</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">dtypes</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Find a new dtype for each of the columns.</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">:</span>
+            <span class="n">col_type</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span>
+            <span class="n">best_type</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">col_type</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_to_category</span><span class="p">:</span>
+                    <span class="n">best_type</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span>
+            <span class="k">elif</span> <span class="n">col_type</span> <span class="ow">in</span> <span class="n">ReduceMemoryTransformer</span><span class="o">.</span><span class="n">_NUMERIC_TO_REDUCE</span><span class="p">:</span>
+                <span class="n">downcast</span> <span class="o">=</span> <span class="s2">&quot;integer&quot;</span> <span class="k">if</span> <span class="s2">&quot;int&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">col_type</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;float&quot;</span>
+                <span class="n">best_type</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">downcast</span><span class="o">=</span><span class="n">downcast</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span>
+
+            <span class="k">if</span> <span class="n">best_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">best_type</span> <span class="o">!=</span> <span class="n">col_type</span><span class="p">:</span>
+                <span class="n">dtypes</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_type</span>
+                <span class="c1"># Log the conversion performed.</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">&#39; of type </span><span class="si">{</span><span class="n">col_type</span><span class="si">}</span><span class="s2"> may be better as&quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot; type </span><span class="si">{</span><span class="n">best_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtypes</span> <span class="o">=</span> <span class="n">dtypes</span>
+
+<div class="viewcode-block" id="ReduceMemoryTransformer.transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ReduceMemoryTransformer.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">start_mem</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">start_mem</span> <span class="o">=</span> <span class="n">memory_usage_mb</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deep</span><span class="p">)</span>
+
+        <span class="n">df</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">end_mem</span> <span class="o">=</span> <span class="n">memory_usage_mb</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deep</span><span class="p">)</span>
+            <span class="n">diff_mem</span> <span class="o">=</span> <span class="n">start_mem</span> <span class="o">-</span> <span class="n">end_mem</span>
+            <span class="n">percent_mem</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">diff_mem</span> <span class="o">/</span> <span class="n">start_mem</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Memory usage decreased from&quot;</span>
+                  <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">start_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">MB to </span><span class="si">{</span><span class="n">end_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">MB&quot;</span>
+                  <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">diff_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">MB, </span><span class="si">{</span><span class="n">percent_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">% reduction)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div></div>
 
 </pre></div>
 

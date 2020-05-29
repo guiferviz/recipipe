@@ -212,37 +212,40 @@ Here is a complete table with all the aliases.</p>
 <tr class="row-even"><td><p>groupby</p></td>
 <td><p><a class="reference internal" href="#recipipe.transformers.GroupByTransformer" title="recipipe.transformers.GroupByTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.GroupByTransformer</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>from_sklearn</p></td>
+<tr class="row-odd"><td><p>reduce_memory</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.ReduceMemoryTransformer" title="recipipe.transformers.ReduceMemoryTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.ReduceMemoryTransformer</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>from_sklearn</p></td>
 <td><p><a class="reference internal" href="#recipipe.transformers.SklearnCreator" title="recipipe.transformers.SklearnCreator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.SklearnCreator</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>onehot</p></td>
+<tr class="row-odd"><td><p>onehot</p></td>
 <td><p><cite>from_sklearn(OneHotEncoder(sparse=False,handle_unknown=’ignore’))</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>scale</p></td>
+<tr class="row-even"><td><p>scale</p></td>
 <td><p><cite>from_sklearn(StandardScaler())</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>binarizer</p></td>
+<tr class="row-odd"><td><p>binarizer</p></td>
 <td><p><cite>from_sklearn(Binarizer())</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>indicator</p></td>
+<tr class="row-even"><td><p>indicator</p></td>
 <td><p><cite>from_sklearn(MissingIndicator(),col_format=’INDICATOR({})’)</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>impute</p></td>
+<tr class="row-odd"><td><p>impute</p></td>
 <td><p><cite>from_sklearn(SimpleImputer(strategy=’constant’))</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>sk_indicator</p></td>
+<tr class="row-even"><td><p>sk_indicator</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.MissingIndicator.html#sklearn.impute.MissingIndicator" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.impute.MissingIndicator</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>sk_inputer</p></td>
+<tr class="row-odd"><td><p>sk_inputer</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html#sklearn.impute.SimpleImputer" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.impute.SimpleImputer</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>sk_onehot</p></td>
+<tr class="row-even"><td><p>sk_onehot</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html#sklearn.preprocessing.OneHotEncoder" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.OneHotEncoder</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>sk_scale</p></td>
+<tr class="row-odd"><td><p>sk_scale</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.StandardScaler</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>sk_binarizer</p></td>
+<tr class="row-even"><td><p>sk_binarizer</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.Binarizer.html#sklearn.preprocessing.Binarizer" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.Binarizer</span></code></a></p></td>
 </tr>
 </tbody>
@@ -369,7 +372,7 @@ will work on.</p></li>
 transformer will work on. If <cite>*args</cite> are provided, this list
 of columns is going to be appended at the end.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
-to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
 by this method (executed in the dataframe passed to the fit
 method) will be the columns that are going to be used in the
 transformation phase.</p></li>
@@ -405,7 +408,7 @@ Default: <cite>False</cite>.</p></li>
 <dd><p>Fit the transformer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><em>pandas.DataFrame</em></a>) – Dataframe used to fit the transformation.</p>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><em>pandas.DataFrame</em></a>) – Dataframe used to fit the transformation.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -421,7 +424,7 @@ Default: <cite>False</cite>.</p></li>
 <dd><p>Transform DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
+<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Transformed DataFrame.</p>
@@ -458,7 +461,7 @@ will work on.</p></li>
 transformer will work on. If <cite>*args</cite> are provided, this list
 of columns is going to be appended at the end.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
-to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
 by this method (executed in the dataframe passed to the fit
 method) will be the columns that are going to be used in the
 transformation phase.</p></li>
@@ -510,7 +513,7 @@ will work on.</p></li>
 transformer will work on. If <cite>*args</cite> are provided, this list
 of columns is going to be appended at the end.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
-to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
 by this method (executed in the dataframe passed to the fit
 method) will be the columns that are going to be used in the
 transformation phase.</p></li>
@@ -564,7 +567,7 @@ as in the input DataFrame. No deletes are supported here.</p>
 <dd><p>Fit the transformer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><em>pandas.DataFrame</em></a>) – Dataframe used to fit the transformation.</p>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><em>pandas.DataFrame</em></a>) – Dataframe used to fit the transformation.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -608,7 +611,7 @@ will work on.</p></li>
 transformer will work on. If <cite>*args</cite> are provided, this list
 of columns is going to be appended at the end.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
-to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
 by this method (executed in the dataframe passed to the fit
 method) will be the columns that are going to be used in the
 transformation phase.</p></li>
@@ -649,7 +652,7 @@ Default: <cite>False</cite>.</p></li>
 <dd><p>Transform DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
+<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Transformed DataFrame.</p>
@@ -684,7 +687,7 @@ this transformer in a pipeline.
 For that reason, the inverse in defined as the identity function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame to inverse transform.</p>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame to inverse transform.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><cite>df</cite> without modifications.</p>
@@ -701,7 +704,7 @@ For that reason, the inverse in defined as the identity function.</p>
 <dd><p>Drop the fitted columns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame to drop columns from.</p>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame to drop columns from.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Transformed DataFrame.</p>
@@ -737,7 +740,7 @@ will work on.</p></li>
 transformer will work on. If <cite>*args</cite> are provided, this list
 of columns is going to be appended at the end.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
-to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
 by this method (executed in the dataframe passed to the fit
 method) will be the columns that are going to be used in the
 transformation phase.</p></li>
@@ -773,7 +776,7 @@ Default: <cite>False</cite>.</p></li>
 <dd><p>Fit the transformer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><em>pandas.DataFrame</em></a>) – Dataframe used to fit the transformation.</p>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><em>pandas.DataFrame</em></a>) – Dataframe used to fit the transformation.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -799,7 +802,7 @@ Default: <cite>False</cite>.</p></li>
 <dd><p>Transform DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
+<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Transformed DataFrame.</p>
@@ -839,7 +842,7 @@ will work on.</p></li>
 transformer will work on. If <cite>*args</cite> are provided, this list
 of columns is going to be appended at the end.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
-to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
 by this method (executed in the dataframe passed to the fit
 method) will be the columns that are going to be used in the
 transformation phase.</p></li>
@@ -890,7 +893,7 @@ will work on.</p></li>
 transformer will work on. If <cite>*args</cite> are provided, this list
 of columns is going to be appended at the end.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
-to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
 by this method (executed in the dataframe passed to the fit
 method) will be the columns that are going to be used in the
 transformation phase.</p></li>
@@ -926,7 +929,83 @@ Default: <cite>False</cite>.</p></li>
 <dd><p>Transform DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
+<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed DataFrame.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Raise:</dt><dd><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a> if not <cite>cols</cite> fitted. Fit the transform to avoid
+this error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.ReduceMemoryTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">ReduceMemoryTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">deep</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">object_to_category</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ReduceMemoryTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ReduceMemoryTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.core.RecipipeTransformer" title="recipipe.core.RecipipeTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer</span></code></a></p>
+<p>Change data types in order to reduce memory usage.</p>
+<p>This transformer iterates all the columns of the DataFrame and for numeric
+types checks if there is another datatype that occupies less memory and
+can store all the numbers of the column.</p>
+<p>Another way to reduce memory usage of Pandas DataFrame is creating
+categories (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Categorical.html#pandas.Categorical" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.Categorical</span></code></a>).
+It’s not always possible to save memory by converting to a category.
+The ideal columns to convert to category are those with few different
+values.
+Converting a column that has all unique values (like and ID column) will
+surely occupy more as a category, so consider to drop those columns first
+or not to apply the transformer on those columns.</p>
+<p>In a DataFrame there may also be numeric columns that can be converted to
+categorical (especially columns of integer types).
+You should make those transformations manually if you want to have a
+column of category dtype from the numeric column.
+Note that the <a class="reference internal" href="#recipipe.transformers.CategoryEncoder" title="recipipe.transformers.CategoryEncoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.CategoryEncoder</span></code></a> is not really
+returning a Pandas category, is encoding the values into integer values.</p>
+<p>You should also note that this transformation is done in place because
+that’s the objective of reducing memory.
+Keeping a copy in memory does not make too much sense if you want to save
+memory.</p>
+<dl class="py method">
+<dt id="recipipe.transformers.ReduceMemoryTransformer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">deep</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">object_to_category</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ReduceMemoryTransformer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ReduceMemoryTransformer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new reduce memory transformer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – When <cite>verbose=True</cite> the percentage of memory reduced
+by the conversion is shown on the screen.
+It’s computed using the <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.memory_usage.html#pandas.DataFrame.memory_usage" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.memory_usage</span></code></a>
+method.
+<cite>deep</cite> is the argument of this method.
+<cite>deep=True</cite> is more slow but it’s more accurate.
+Note that it’s really slow on big DataFrames.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Prints informative information about the process on
+the screen.
+Shows the percentage of memory saved after the conversion.</p></li>
+<li><p><strong>object_to_category</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – If <cite>True</cite> this method automatically
+converts objects to the Pandas category type.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.ReduceMemoryTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.ReduceMemoryTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.ReduceMemoryTransformer.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ReduceMemoryTransformer.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ReduceMemoryTransformer.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Transformed DataFrame.</p>
@@ -960,7 +1039,7 @@ will work on.</p></li>
 transformer will work on. If <cite>*args</cite> are provided, this list
 of columns is going to be appended at the end.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
-to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
 by this method (executed in the dataframe passed to the fit
 method) will be the columns that are going to be used in the
 transformation phase.</p></li>
@@ -1012,7 +1091,7 @@ this transformer in a pipeline.
 For that reason, the inverse in defined as the identity function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame to inverse transform.</p>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame to inverse transform.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><cite>df</cite> without modifications.</p>
@@ -1029,7 +1108,7 @@ For that reason, the inverse in defined as the identity function.</p>
 <dd><p>Select the fitted columns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame to select columns from.</p>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame to select columns from.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Transformed DataFrame.</p>
@@ -1058,7 +1137,7 @@ will work on.</p></li>
 transformer will work on. If <cite>*args</cite> are provided, this list
 of columns is going to be appended at the end.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
-to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
 by this method (executed in the dataframe passed to the fit
 method) will be the columns that are going to be used in the
 transformation phase.</p></li>
@@ -1109,7 +1188,7 @@ will work on.</p></li>
 transformer will work on. If <cite>*args</cite> are provided, this list
 of columns is going to be appended at the end.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
-to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
 by this method (executed in the dataframe passed to the fit
 method) will be the columns that are going to be used in the
 transformation phase.</p></li>
@@ -1221,7 +1300,7 @@ will work on.</p></li>
 transformer will work on. If <cite>*args</cite> are provided, this list
 of columns is going to be appended at the end.</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
-to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
 by this method (executed in the dataframe passed to the fit
 method) will be the columns that are going to be used in the
 transformation phase.</p></li>
@@ -1312,10 +1391,10 @@ is applied over the resulting columns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame that is been fitted.</p></li>
+<li><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame that is been fitted.</p></li>
 <li><p><strong>cols</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) – List of columns to fit. The names may contain
 Unix filename pattern matching (<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>) symbols.</p></li>
-<li><p><strong>dtype</strong> – Any value suported by <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>.</p></li>
+<li><p><strong>dtype</strong> – Any value suported by <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>.</p></li>
 <li><p><strong>raise_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – If <cite>True</cite> and not column in <cite>df</cite> match the
 given column in <cite>cols</cite>, an exception is raised.</p></li>
 <li><p><strong>drop_duplicates</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Remove duplicates keeping the order.
@@ -1367,45 +1446,6 @@ and <cite>cols</cite>.</p>
 <dt id="recipipe.utils.memory_usage_mb">
 <code class="sig-prename descclassname">recipipe.utils.</code><code class="sig-name descname">memory_usage_mb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/utils.html#memory_usage_mb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.utils.memory_usage_mb" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dataframe memory usage in MB.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="recipipe.utils.reduce_memory_usage">
-<code class="sig-prename descclassname">recipipe.utils.</code><code class="sig-name descname">reduce_memory_usage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">deep</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">object_to_category</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/utils.html#reduce_memory_usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.utils.reduce_memory_usage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Change datatypes in order to reduce memory usage.</p>
-<p>This function iterates all the columns of the dataframe and
-for numeric types checks if there is another datatype that
-occupies less memory and can store all the numbers of the
-column.</p>
-<p>Another way to reduce memory usage of Pandas dataframes is
-creating categories. This function in verbose mode shows
-if there are columns of type object that could be converted
-to category. It is not always possible to save memory by
-converting to a category. The ideal columns to convert to
-category are those with few different values. Converting a
-column that has all unique values (like and ID column) will
-surely occupy more as a category.
-In a dataframe there may also be numeric columns that can be
-converted to categorical (especially columns of integer
-types). This category conversions must be done by the user.</p>
-<p>All the conversions are made in place, so the original dataframe
-will be overwritten.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><em>pandas.DataFrame</em></a>) – Dataframe to change data types.</p></li>
-<li><p><strong>deep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – When <cite>verbose=True</cite> the percentage of memory reduced
-by the conversion is shown of the screen. It’s computed
-using the <cite>pandas.DataFrame.memory_usage</cite> method. <cite>deep</cite> is
-an argument of this method. <cite>deep=True</cite> is more slow but it’s
-more accurate.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Prints informative information about the process on
-the screen.</p></li>
-<li><p><strong>object_to_category</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – If <cite>True</cite> this method automatically converts
-object to the pandas category type.</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 </div>
