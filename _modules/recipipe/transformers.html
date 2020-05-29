@@ -174,6 +174,7 @@
 <span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">flatten_list</span>
 <span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">fit_columns</span>
 <span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">memory_usage_mb</span>
+<span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">is_categorical</span>
 <span class="kn">from</span> <span class="nn">recipipe.core</span> <span class="kn">import</span> <span class="n">RecipipeTransformer</span>
 
 
@@ -371,7 +372,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">unknown_value</span> <span class="o">=</span> <span class="n">unknown_value</span></div>
 
     <span class="k">def</span> <span class="nf">_fit_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
-        <span class="n">cat</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span>
+        <span class="k">if</span> <span class="n">is_categorical</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+            <span class="n">cat</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cat</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unknown_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">cat</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unknown_value</span><span class="p">)</span>
         <span class="c1"># Save category values for the transformation phase.</span>
