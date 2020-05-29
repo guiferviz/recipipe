@@ -29,6 +29,9 @@ from recipipe.transformers import SklearnColumnsWrapper
 from recipipe.transformers import SklearnColumnWrapper
 from recipipe.transformers import SklearnFitOneWrapper
 
+from recipipe.utils import fit_columns
+from recipipe.utils import flatten_list
+
 from recipipe._version import __version__
 
 
