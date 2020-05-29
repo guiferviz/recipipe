@@ -40,14 +40,20 @@ jobs:
       env:
         COVERALLS_PARALLEL: true
       run: |
-        coveralls debug
+        coveralls
 
   coveralls_finish:
     needs: build
     runs-on: ubuntu-latest
     steps:
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements_dev.in
     - name: Coveralls finished
-      env:
-        COVERALLS_PARALLEL_FINISHED: true
       run: |
         coveralls
