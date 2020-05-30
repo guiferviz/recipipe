@@ -8,6 +8,8 @@ SPHINXAPIDOC  = sphinx-apidoc
 SOURCEDIR     = .
 BUILDDIR      = _build
 
+# DOC_DIR = current Makefile dir
+DOC_DIR=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 GENERATED_DIR=_generated
 GENERATED_FILES=$(GENERATED_DIR)/classes.png $(GENERATED_DIR)/classes.pdf $(GENERATED_DIR)/packages.pdf $(GENERATED_DIR)/packages.png $(GENERATED_DIR)/recipipe_aliases.csv 
 
@@ -21,10 +23,12 @@ $(GENERATED_FILES): ../recipipe/
 	# Generate recipipe_alises.csv all.
 	python ./recipipe_aliases_generator.py $(GENERATED_DIR)/recipipe_aliases.csv
 	# Generate class and package diagram.
-	pyreverse ../recipipe -o png -k
-	pyreverse ../recipipe -o pdf -f ALL -A
-	mv classes.* $(GENERATED_DIR)
-	mv packages.* $(GENERATED_DIR)
+	# pyreverse should be used in the root, if you use 'pyreverse ../recipipe'
+	# the generated diagram is not correct (a lot of missing connections).
+	cd .. && pyreverse recipipe -o png -k
+	cd .. && pyreverse recipipe -o pdf -f ALL -A
+	cd .. && mv classes.* $(DOC_DIR)/$(GENERATED_DIR)
+	cd .. && mv packages.* $(DOC_DIR)/$(GENERATED_DIR)
 
 generate_data: $(GENERATED_FILES)
 
