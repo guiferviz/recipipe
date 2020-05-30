@@ -20,7 +20,9 @@ jobs:
         # Substitute value in _version file.
         sed -i "s/0.0.0/$VERSION/" recipipe/_version.py
         # Save a version env variable to reuse it later (leading "v" included).
-        echo ::set-env name=RECIPIPE_VERSION::v$VERSION
+        # This variable is used by JamesIves/github-pages-deploy-action
+        # and indicates the output folder where the docs are going to be saved.
+        echo ::set-env name=TARGET_FOLDER::v$VERSION
     - name: Install dependencies
       run: |
         sudo apt-get install graphviz
@@ -40,4 +42,3 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         BRANCH: gh-pages  # the branch the action should deploy to.
         FOLDER: doc/_build/html  # the folder the action should deploy.
-        TARGET_FOLDER: $RECIPIPE_VERSION  # save in a folder named with the version.
