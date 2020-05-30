@@ -6,7 +6,6 @@ import pandas as pd
 from unittest import TestCase
 from unittest.mock import call
 from unittest.mock import MagicMock
-from unittest.mock import Mock
 
 from tests.fixtures import SklearnTransformerMock
 from tests.fixtures import create_df_all
@@ -322,6 +321,16 @@ class CategoryEncoderTest(TestCase):
         df_out = t.inverse_transform(df_in_inverse)
         df_expected = pd.DataFrame({
             "color": ["red","UNKNOWN"], "price": [1.5,2.5], "amount": [1,2]})
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_already_existing_category(self):
+        df = create_df_all()
+        df["color"] = df.color.astype("category")
+        t = r.CategoryEncoder("color")
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({
+            "color": [1,0,1], "price": [1.5,2.5,3.5], "amount": [1,2,3]})
+        df_expected["color"] = df_expected["color"].astype("int8")
         self.assertTrue(df_out.equals(df_expected))
 
 

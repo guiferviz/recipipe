@@ -11,12 +11,10 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [ 3.6, 3.7, 3.8 ]
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -27,13 +25,22 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install -r requirements_dev.in
-        pip install flake8
-    - name: Lint with flake8
+    - name: Linter
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
+        # Stop the build if there are syntax errors or some basic mistakes.
+        pylint recipipe tests
+    - name: Run tests
       run: |
-        pytest
+        coverage run --source=recipipe -m pytest
+    - name: Test coverage
+      run: |
+        # Never coverage under 100%!
+        coverage report --fail-under=100
+    - name: Coveralls upload
+      # It was impossible for me to upload parallel versions and
+      # merge them at the end. Errors everywhere.
+      # For the moment I'm going to upload only the 3.8 coverage.
+      if: matrix.python-version == '3.8'
+      run: |
+        coveralls debug
+        coveralls

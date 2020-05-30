@@ -1,6 +1,5 @@
 
 import collections
-import fnmatch
 import inspect
 
 import sklearn.pipeline

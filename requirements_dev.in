@@ -4,7 +4,8 @@
 # Tests and coverage.
 pylint
 pytest
-pytest-cov
+coverage
+PyYAML  # needed for reading .coveralls.yml
 coveralls
 
 # Documentation.
