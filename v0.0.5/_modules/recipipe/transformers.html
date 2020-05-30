@@ -1,0 +1,861 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>recipipe.transformers &mdash; Recipipe 0.0.5 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipipe.html">recipipe package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../diagrams.html">Diagrams</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Recipipe</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../recipipe.html">recipipe</a> &raquo;</li>
+        
+      <li>recipipe.transformers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for recipipe.transformers</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">clone</span>
+
+<span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">default_params</span>
+<span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">flatten_list</span>
+<span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">fit_columns</span>
+<span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">memory_usage_mb</span>
+<span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">is_categorical</span>
+<span class="kn">from</span> <span class="nn">recipipe.core</span> <span class="kn">import</span> <span class="n">RecipipeTransformer</span>
+
+
+<div class="viewcode-block" id="SelectTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SelectTransformer">[docs]</a><span class="k">class</span> <span class="nc">SelectTransformer</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Select the fitted columns and ignore the rest of them. &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SelectTransformer.transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SelectTransformer.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Select the fitted columns.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (:obj:`pandas.DataFrame`): DataFrame to select columns from.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Transformed DataFrame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols_not_found_error</span><span class="p">:</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="SelectTransformer.inverse_transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SelectTransformer.inverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;No inverse exists for a select operation but...</span>
+
+<span class="sd">        Obviously, there is no way to get back the non-selected columns, but</span>
+<span class="sd">        it&#39;s useful to have this operation defined to avoid errors when using</span>
+<span class="sd">        this transformer in a pipeline.</span>
+<span class="sd">        For that reason, the inverse in defined as the identity function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (:obj:`pandas.DataFrame`): DataFrame to inverse transform.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Identity function: `df` without modifications.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">df</span></div></div>
+
+
+<div class="viewcode-block" id="DropTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.DropTransformer">[docs]</a><span class="k">class</span> <span class="nc">DropTransformer</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Drop the fitted columns and continue with the reminded ones. &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DropTransformer.transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.DropTransformer.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Drop the fitted columns.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (:obj:`pandas.DataFrame`): DataFrame to drop columns from.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Transformed DataFrame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">errors</span> <span class="o">=</span> <span class="s2">&quot;raise&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols_not_found_error</span> <span class="k">else</span> <span class="s2">&quot;ignore&quot;</span>
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DropTransformer.inverse_transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.DropTransformer.inverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;No inverse exists for a drop operation but...</span>
+
+<span class="sd">        Obviously, there is no way to get back the dropped columns, but</span>
+<span class="sd">        it&#39;s useful to have this operation defined to avoid errors when using</span>
+<span class="sd">        this transformer in a pipeline.</span>
+<span class="sd">        For that reason, the inverse in defined as the identity function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (:obj:`pandas.DataFrame`): DataFrame to inverse transform.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Identity function: `df` without modifications.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">df</span></div></div>
+
+
+<div class="viewcode-block" id="ColumnTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ColumnTransformer">[docs]</a><span class="k">class</span> <span class="nc">ColumnTransformer</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply an operation per each input column.</span>
+
+<span class="sd">    This transformer only allows 1 to N relationships between input and output</span>
+<span class="sd">    columns.</span>
+<span class="sd">    If you want to create a column from two existing ones (like concatenate one</span>
+<span class="sd">    column to another) this transformer is not for you.</span>
+
+<span class="sd">    Note that the output number of rows of this transformer should be the same</span>
+<span class="sd">    as in the input DataFrame. No deletes are supported here.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ColumnTransformer.fit"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ColumnTransformer.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_map_1_n_inverse</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only 1 to N relationships between input and &quot;</span>
+                             <span class="s2">&quot;output columns are supported by the &quot;</span>
+                             <span class="s2">&quot;ColumnTransformer&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fit_column</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fit_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">column_name</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_in</span><span class="p">):</span>
+        <span class="n">dfs_out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_map_1_n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">np_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_column</span><span class="p">(</span><span class="n">df_in</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np_out</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">df_in</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">dfs_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df_out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs_out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df_out</span>
+
+    <span class="k">def</span> <span class="nf">_transform_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">column_name</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_inverse_transform_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">column_names</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="sd">&quot;&quot;&quot;Inverse the transform on the given columns.</span>
+
+<span class="sd">        `column_names` can receive more than one column name because the</span>
+<span class="sd">        column transformer accepts 1 to N transformations.</span>
+<span class="sd">        Note that if you are working with a 1 to 1 transformation, this</span>
+<span class="sd">        argument is going to be a also a list (with one element, but a list).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (:obj:`pandas.DataFrame`): Input DataFrame to transform.</span>
+<span class="sd">            column_names (:obj:`list`): List of columns names to inverse</span>
+<span class="sd">                transform.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A DataFrame or a :obj:`numpy.ndarray` of one column.</span>
+<span class="sd">            By default, it returns `df[column_names]`, so it could fail when</span>
+<span class="sd">            used with 1 to N transformers as it will return more than one</span>
+<span class="sd">            column.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">column_names</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_in</span><span class="p">):</span>
+        <span class="n">df_out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df_in</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_map_1_n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">df_out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_transform_column</span><span class="p">(</span><span class="n">df_in</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df_out</span></div>
+
+
+<div class="viewcode-block" id="ColumnsTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ColumnsTransformer">[docs]</a><span class="k">class</span> <span class="nc">ColumnsTransformer</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply an operation at all the input columns at the same time.</span>
+
+<span class="sd">    This class does not do that much... It&#39;s only particular useful when</span>
+<span class="sd">    working with transformers that return a :obj:`numpy.ndarray`, like the</span>
+<span class="sd">    ones in SKLearn. This class deals with the creation of a DataFrame so</span>
+<span class="sd">    yo do not need to create it by yourself.</span>
+
+<span class="sd">    Note that the output number of rows of this transformer should be the same</span>
+<span class="sd">    as in the input DataFrame. No deletes are supported here.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_in</span><span class="p">):</span>
+        <span class="n">np_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_columns</span><span class="p">(</span><span class="n">df_in</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">)</span>
+        <span class="n">df_out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np_out</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_out</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">df_in</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df_out</span>
+
+    <span class="k">def</span> <span class="nf">_transform_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">column_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Transform the given columns.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (:obj:`pandas.DataFrame`): Input DataFrame.</span>
+<span class="sd">            column_names (:obj:`list`): List of columns. `df` can contain more</span>
+<span class="sd">                columns apart from the ones in `columns_name`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A :obj:`numpy.ndarray` or :obj:`pandas.DataFrame` with the</span>
+<span class="sd">            transformed columns.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">def</span> <span class="nf">_inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_in</span><span class="p">):</span>
+        <span class="n">np_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_transform_columns</span><span class="p">(</span><span class="n">df_in</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols_out</span><span class="p">)</span>
+        <span class="n">df_out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np_out</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">df_in</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df_out</span>
+
+    <span class="k">def</span> <span class="nf">_inverse_transform_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">columns_name</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="CategoryEncoder"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.CategoryEncoder">[docs]</a><span class="k">class</span> <span class="nc">CategoryEncoder</span><span class="p">(</span><span class="n">ColumnTransformer</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CategoryEncoder.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.CategoryEncoder.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">error_unknown</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unknown_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error_unknown</span> <span class="o">=</span> <span class="n">error_unknown</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unknown_value</span> <span class="o">=</span> <span class="n">unknown_value</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_categorical</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+            <span class="n">cat</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cat</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unknown_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cat</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unknown_value</span><span class="p">)</span>
+        <span class="c1"># Save category values for the transformation phase.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">cat</span>
+
+    <span class="k">def</span> <span class="nf">_transform_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+        <span class="n">encoded</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">categories</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+        <span class="c1"># Raise exception if unknown values.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_unknown</span> <span class="ow">and</span> <span class="n">encoded</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The column </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2"> has unknown categories&quot;</span><span class="p">)</span>
+        <span class="c1"># Fill unknown.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unknown_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">encoded</span> <span class="o">=</span> <span class="n">encoded</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unknown_value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">encoded</span><span class="o">.</span><span class="n">codes</span>
+
+    <span class="k">def</span> <span class="nf">_inverse_transform_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">cols</span><span class="p">):</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="PandasScaler"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.PandasScaler">[docs]</a><span class="k">class</span> <span class="nc">PandasScaler</span><span class="p">(</span><span class="n">ColumnTransformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Standard scaler implemented with Pandas operations. &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PandasScaler.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.PandasScaler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">means</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stds</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factor</span> <span class="o">=</span> <span class="n">factor</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">means</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stds</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_transform_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">means</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">stds</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor</span>
+
+    <span class="k">def</span> <span class="nf">_inverse_transform_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">column_names</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">column_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">stds</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">means</span><span class="p">[</span><span class="n">c</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SklearnColumnWrapper"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnColumnWrapper">[docs]</a><span class="k">class</span> <span class="nc">SklearnColumnWrapper</span><span class="p">(</span><span class="n">ColumnTransformer</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SklearnColumnWrapper.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnColumnWrapper.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sk_transformer</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span> <span class="o">=</span> <span class="n">sk_transformer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">column_name</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="p">)</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+
+    <span class="k">def</span> <span class="nf">_transform_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Check if SKLearn object has features index.</span>
+        <span class="c1"># &quot;features_&quot; is common in transformers like MissingIndicator with</span>
+        <span class="c1"># the parameter features=&quot;missing-only&quot;, that is, transformers that do</span>
+        <span class="c1"># not return all the input features we pass to them.</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;features_&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">features_</span><span class="p">:</span>
+                    <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">=</span> <span class="n">cols</span>
+
+        <span class="n">col_map</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_column_mapping</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;get_feature_names&quot;</span><span class="p">):</span>
+                <span class="n">col_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_format</span>
+                <span class="k">if</span> <span class="n">col_format</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">col_format</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{column}</span><span class="s2">=</span><span class="si">{value}</span><span class="s2">&quot;</span>
+                <span class="n">new_cols</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">([</span><span class="s2">&quot;0&quot;</span><span class="p">])</span>
+                <span class="n">col_map</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">new_cols</span><span class="p">:</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">full_name</span> <span class="o">=</span> <span class="n">col_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span>
+                            <span class="n">column</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+                    <span class="n">col_map</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_cols</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">col_map</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">col_map</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">col_map</span></div>
+
+
+<div class="viewcode-block" id="SklearnColumnsWrapper"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnColumnsWrapper">[docs]</a><span class="k">class</span> <span class="nc">SklearnColumnsWrapper</span><span class="p">(</span><span class="n">ColumnsTransformer</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SklearnColumnsWrapper.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnColumnsWrapper.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sk_transformer</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span> <span class="o">=</span> <span class="n">sk_transformer</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_transform_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">cols</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Check if SKLearn object has features index.</span>
+        <span class="c1"># &quot;features_&quot; is common in transformers like MissingIndicator with</span>
+        <span class="c1"># the parameter features=&quot;missing-only&quot;, that is, transformers that do</span>
+        <span class="c1"># not return all the input features we pass to them.</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="p">,</span> <span class="s2">&quot;features_&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="o">.</span><span class="n">features_</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="p">,</span> <span class="s2">&quot;get_feature_names&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_format</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_format</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{column}</span><span class="s2">=</span><span class="si">{value}</span><span class="s2">&quot;</span>
+            <span class="c1"># c_aux instead of self.cols to avoid splitting column names</span>
+            <span class="c1"># with &quot;_&quot;,</span>
+            <span class="c1"># This is important because SKLearn `get_feature_names` method</span>
+            <span class="c1"># returns names with &quot;_&quot; as a separator.</span>
+            <span class="n">c_aux</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">))))</span>
+            <span class="n">new_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">(</span><span class="n">c_aux</span><span class="p">)</span>
+            <span class="n">col_map</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">new_cols</span><span class="p">:</span>
+                <span class="n">col</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">col</span><span class="p">)]</span>
+                <span class="n">full_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span>
+                        <span class="n">column</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">col_map</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_name</span><span class="p">)</span>
+            <span class="n">col_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">col_map</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">col_map</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_column_mapping</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        else:</span>
+<span class="sd">            name = &quot;_&quot;.join(c)</span>
+<span class="sd">            self.cols_out = [f&quot;{name}_{i}&quot; for i in range(output_size)]</span>
+<span class="sd">            col_map = {tuple(c): tuple(self.new_cols_list)}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">col_map</span></div>
+
+
+<div class="viewcode-block" id="SklearnFitOneWrapper"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnFitOneWrapper">[docs]</a><span class="k">class</span> <span class="nc">SklearnFitOneWrapper</span><span class="p">(</span><span class="n">SklearnColumnWrapper</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fit in a concatenation of all the columns, apply one by one.</span>
+
+<span class="sd">    This is useful when we have two or more columns that are very related.</span>
+<span class="sd">    For example, if all those columns share the same category type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SklearnFitOneWrapper.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnFitOneWrapper.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="n">one_col</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">]</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">one_col</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="SklearnCreator"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnCreator">[docs]</a><span class="k">class</span> <span class="nc">SklearnCreator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Utility class to generate SKLearn wrappers.</span>
+
+<span class="sd">    Use this class to reuse any existing SKLearn transformer in your</span>
+<span class="sd">    recipipe pipelines.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sk_transformer (sklearn.TransformerMixin): Any instance of an</span>
+<span class="sd">            SKLearn transformer you want to incorporate in the recipipes</span>
+<span class="sd">            pipelines.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        # Create a onehot encoder using the SKLearn OneHotEncoder class.</span>
+<span class="sd">        onehot = SklearnCreator(OneHotEncoder(sparse=False))</span>
+<span class="sd">        # Now you can use the onehot variable as a transformer in a recipipe.</span>
+<span class="sd">        recipipe() + onehot(dtype=&quot;string&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">WRAPPERS</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;column&quot;</span><span class="p">:</span> <span class="n">SklearnColumnWrapper</span><span class="p">,</span>
+            <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="n">SklearnColumnsWrapper</span><span class="p">,</span>
+            <span class="s2">&quot;fit_one_col&quot;</span><span class="p">:</span> <span class="n">SklearnFitOneWrapper</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="SklearnCreator.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnCreator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sk_transformer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span> <span class="o">=</span> <span class="n">sk_transformer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span></div>
+
+<div class="viewcode-block" id="SklearnCreator.__call__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnCreator.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">wrapper</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Instantiate a SKLearn wrapper using a copy of the given transformer.</span>
+
+<span class="sd">        It&#39;s important to make this copy to avoid fitting several times the</span>
+<span class="sd">        same transformer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">wrapping_methods</span> <span class="o">=</span> <span class="n">SklearnCreator</span><span class="o">.</span><span class="n">WRAPPERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">wrapper</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">wrapping_methods</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrapper method not in </span><span class="si">{wrapping_methods}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># SKLearn transformer params.</span>
+        <span class="n">signature</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">signature</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">sk_params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">sk_params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="p">)</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">set_params</span><span class="p">(</span><span class="o">**</span><span class="n">sk_params</span><span class="p">)</span>
+
+        <span class="c1"># Recipipe transformer params.</span>
+        <span class="k">if</span> <span class="s2">&quot;recipipe_params&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="n">default_params</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;recipipe_params&quot;</span><span class="p">])</span>
+            <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;recipipe_params&quot;</span><span class="p">]</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">default_params</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SklearnCreator</span><span class="o">.</span><span class="n">WRAPPERS</span><span class="p">[</span><span class="n">wrapper</span><span class="p">](</span><span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ReplaceTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ReplaceTransformer">[docs]</a><span class="k">class</span> <span class="nc">ReplaceTransformer</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ReplaceTransformer.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ReplaceTransformer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inverse_values</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inverse_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_out</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inverse_values</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QueryTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.QueryTransformer">[docs]</a><span class="k">class</span> <span class="nc">QueryTransformer</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="p">):</span>
+
+<div class="viewcode-block" id="QueryTransformer.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.QueryTransformer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="o">=</span> <span class="n">query</span></div>
+
+<div class="viewcode-block" id="QueryTransformer.transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.QueryTransformer.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_in</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">df_in</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="GroupByTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.GroupByTransformer">[docs]</a><span class="k">class</span> <span class="nc">GroupByTransformer</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply a transformer on each group.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        # Normalize by group using the SKLearn StandardScaler.</span>
+<span class="sd">        scaler = SklearnCreator(StandardScaler())</span>
+<span class="sd">        Recipipe() + GroupByTransformer(&quot;group_column&quot;, scaler(&quot;num_column&quot;))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GroupByTransformer.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.GroupByTransformer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groupby</span><span class="p">,</span> <span class="n">transformer</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">groupby</span> <span class="o">=</span> <span class="n">groupby</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span> <span class="o">=</span> <span class="n">transformer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="GroupByTransformer.fit"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.GroupByTransformer.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">groupby</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit_group</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="GroupByTransformer.transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.GroupByTransformer.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_in</span><span class="p">):</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">groupby</span><span class="p">)</span>
+        <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_group</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
+            <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df_out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df_out</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_in</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span></div>
+
+<div class="viewcode-block" id="GroupByTransformer.fit_group"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.GroupByTransformer.fit_group">[docs]</a>    <span class="k">def</span> <span class="nf">fit_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transformer</span><span class="p">)</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span></div>
+
+<div class="viewcode-block" id="GroupByTransformer.transform_group"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.GroupByTransformer.transform_group">[docs]</a>    <span class="k">def</span> <span class="nf">transform_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GroupByTransformer.inverse_transform_group"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.GroupByTransformer.inverse_transform_group">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GroupByTransformer.inverse_transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.GroupByTransformer.inverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_in</span><span class="p">):</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">groupby</span><span class="p">)</span>
+        <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inverse_transform_group</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">group</span><span class="p">))</span>
+        <span class="n">df_out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df_out</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_in</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span></div></div>
+
+
+<div class="viewcode-block" id="DropNARowsTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.DropNARowsTransformer">[docs]</a><span class="k">class</span> <span class="nc">DropNARowsTransformer</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DropNARowsTransformer.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.DropNARowsTransformer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;any&quot;</span><span class="p">,</span> <span class="n">thresh</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropna_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="n">inplace</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DropNARowsTransformer.transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.DropNARowsTransformer.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">dropna_params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DropNARowsTransformer.inverse_transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.DropNARowsTransformer.inverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">df</span></div></div>
+
+
+<div class="viewcode-block" id="ColumnGroupsTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ColumnGroupsTransformer">[docs]</a><span class="k">class</span> <span class="nc">ColumnGroupsTransformer</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply a N to 1 transformation to a group of columns. &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ColumnGroupsTransformer.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ColumnGroupsTransformer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols_groups_init</span> <span class="o">=</span> <span class="p">[</span><span class="n">flatten_list</span><span class="p">([</span><span class="n">c</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">fit_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols_groups_init</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols_groups</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cols_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span>
+
+    <span class="k">def</span> <span class="nf">_get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">col_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_groups</span><span class="p">):</span>
+            <span class="n">new_col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_column_name</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">col_map</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">c</span><span class="p">)]</span> <span class="o">=</span> <span class="n">new_col</span>
+        <span class="k">return</span> <span class="n">col_map</span>
+
+    <span class="k">def</span> <span class="nf">_get_column_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">re</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*\d\s*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="n">df_out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_out</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_groups</span><span class="p">):</span>
+            <span class="n">col_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_map</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">c</span><span class="p">)]</span>
+            <span class="n">df_out</span><span class="p">[</span><span class="n">col_out</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_group</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">df_out</span>
+
+    <span class="k">def</span> <span class="nf">_transform_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">group_cols</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="n">df_out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_out</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_groups</span><span class="p">):</span>
+            <span class="n">col_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_map</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">c</span><span class="p">)]</span>
+            <span class="n">col_out_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_transform_group</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">col_out</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+                <span class="n">df_out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">col_out_value</span>
+        <span class="k">return</span> <span class="n">df_out</span>
+
+    <span class="k">def</span> <span class="nf">_inverse_transform_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ReduceMemoryTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ReduceMemoryTransformer">[docs]</a><span class="k">class</span> <span class="nc">ReduceMemoryTransformer</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Change data types in order to reduce memory usage.</span>
+
+<span class="sd">    This transformer iterates all the columns of the DataFrame and for numeric</span>
+<span class="sd">    types checks if there is another datatype that occupies less memory and</span>
+<span class="sd">    can store all the numbers of the column.</span>
+
+<span class="sd">    Another way to reduce memory usage of Pandas DataFrame is creating</span>
+<span class="sd">    categories (:obj:`pandas.Categorical`).</span>
+<span class="sd">    It&#39;s not always possible to save memory by converting to a category.</span>
+<span class="sd">    The ideal columns to convert to category are those with few different</span>
+<span class="sd">    values.</span>
+<span class="sd">    Converting a column that has all unique values (like and ID column) will</span>
+<span class="sd">    surely occupy more as a category, so consider to drop those columns first</span>
+<span class="sd">    or not to apply the transformer on those columns.</span>
+
+<span class="sd">    In a DataFrame there may also be numeric columns that can be converted to</span>
+<span class="sd">    categorical (especially columns of integer types).</span>
+<span class="sd">    You should make those transformations manually if you want to have a </span>
+<span class="sd">    column of category dtype from the numeric column.</span>
+<span class="sd">    Note that the :obj:`recipipe.transformers.CategoryEncoder` is not really</span>
+<span class="sd">    returning a Pandas category, is encoding the values into integer values.</span>
+
+<span class="sd">    You should also note that this transformation is done in place because</span>
+<span class="sd">    that&#39;s the objective of reducing memory.</span>
+<span class="sd">    Keeping a copy in memory does not make too much sense if you want to save</span>
+<span class="sd">    memory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># All types that we want to change for &quot;lighter&quot; ones.</span>
+    <span class="c1"># int8 and float16 are not include because we cannot reduce</span>
+    <span class="c1"># those data types.</span>
+    <span class="c1"># float32 is not include because float16 has too low precision.</span>
+    <span class="n">_NUMERIC_TO_REDUCE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;int16&quot;</span><span class="p">,</span> <span class="s2">&quot;int32&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ReduceMemoryTransformer.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ReduceMemoryTransformer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">object_to_category</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a new reduce memory transformer.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            deep (bool): When `verbose=True` the percentage of memory reduced</span>
+<span class="sd">                by the conversion is shown on the screen.</span>
+<span class="sd">                It&#39;s computed using the :obj:`pandas.DataFrame.memory_usage`</span>
+<span class="sd">                method.</span>
+<span class="sd">                `deep` is the argument of this method.</span>
+<span class="sd">                `deep=True` is more slow but it&#39;s more accurate.</span>
+<span class="sd">                Note that it&#39;s really slow on big DataFrames.</span>
+<span class="sd">            verbose (bool): Prints informative information about the process on</span>
+<span class="sd">                the screen.</span>
+<span class="sd">                Shows the percentage of memory saved after the conversion.</span>
+<span class="sd">            object_to_category (bool): If `True` this method automatically</span>
+<span class="sd">                converts objects to the Pandas category type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deep</span> <span class="o">=</span> <span class="n">deep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object_to_category</span> <span class="o">=</span> <span class="n">object_to_category</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtypes</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">dtypes</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Find a new dtype for each of the columns.</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">:</span>
+            <span class="n">col_type</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span>
+            <span class="n">best_type</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">col_type</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_to_category</span><span class="p">:</span>
+                    <span class="n">best_type</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span>
+            <span class="k">elif</span> <span class="n">col_type</span> <span class="ow">in</span> <span class="n">ReduceMemoryTransformer</span><span class="o">.</span><span class="n">_NUMERIC_TO_REDUCE</span><span class="p">:</span>
+                <span class="n">downcast</span> <span class="o">=</span> <span class="s2">&quot;integer&quot;</span> <span class="k">if</span> <span class="s2">&quot;int&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">col_type</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;float&quot;</span>
+                <span class="n">best_type</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">downcast</span><span class="o">=</span><span class="n">downcast</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span>
+
+            <span class="k">if</span> <span class="n">best_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">best_type</span> <span class="o">!=</span> <span class="n">col_type</span><span class="p">:</span>
+                <span class="n">dtypes</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_type</span>
+                <span class="c1"># Log the conversion performed.</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">&#39; of type </span><span class="si">{</span><span class="n">col_type</span><span class="si">}</span><span class="s2"> may be better as&quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot; type </span><span class="si">{</span><span class="n">best_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtypes</span> <span class="o">=</span> <span class="n">dtypes</span>
+
+<div class="viewcode-block" id="ReduceMemoryTransformer.transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ReduceMemoryTransformer.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">start_mem</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">start_mem</span> <span class="o">=</span> <span class="n">memory_usage_mb</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deep</span><span class="p">)</span>
+
+        <span class="n">df</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">end_mem</span> <span class="o">=</span> <span class="n">memory_usage_mb</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deep</span><span class="p">)</span>
+            <span class="n">diff_mem</span> <span class="o">=</span> <span class="n">start_mem</span> <span class="o">-</span> <span class="n">end_mem</span>
+            <span class="n">percent_mem</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">diff_mem</span> <span class="o">/</span> <span class="n">start_mem</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Memory usage decreased from&quot;</span>
+                  <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">start_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">MB to </span><span class="si">{</span><span class="n">end_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">MB&quot;</span>
+                  <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">diff_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">MB, </span><span class="si">{</span><span class="n">percent_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">% reduction)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, guiferviz
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
