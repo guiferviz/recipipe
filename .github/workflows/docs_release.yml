@@ -1,0 +1,43 @@
+name: "Build release docs"
+
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Update version
+      run: |
+        # Get version numbers form GITHUB_REF (without the leading "v").
+        VERSION=$(sed -n 's/.*\/v\(.*\)/\1/p' <<< $GITHUB_REF)
+        # Substitute value in _version file.
+        sed -i "s/0.0.0/$VERSION/" recipipe/_version.py
+        # Save a version env variable to reuse it later (leading "v" included).
+        echo ::set-env name=RECIPIPE_VERSION::v$VERSION
+    - name: Install dependencies
+      run: |
+        sudo apt-get install graphviz
+        pip install -r requirements_dev.txt
+    - name: Generate pre-build data
+      run: |
+        cd doc/
+        make generate_data
+    - name: Build docs
+      run: |
+        cd doc/
+        make html
+        touch _build/html/.nojekyll  # needed to deploy folders starting with "_" in gh-pages
+    - name: Deploy to gh-pages
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        BRANCH: gh-pages  # the branch the action should deploy to.
+        FOLDER: doc/_build/html  # the folder the action should deploy.
+        TARGET_FOLDER: $RECIPIPE_VERSION  # save in a folder named with the version.
