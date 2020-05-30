@@ -36,9 +36,11 @@ jobs:
       run: |
         # Never coverage under 100%!
         coverage report --fail-under=100
-    - name: Coveralls parallel
-      env:
-        COVERALLS_PARALLEL: true
+    - name: Coveralls upload
+      # It was impossible for me to upload parallel versions and
+      # merge them at the end. Errors everywhere.
+      # For the moment I'm going to upload only the 3.8 coverage.
+      if: ${{ matrix.python-version = "3.8" }}
       run: |
         coveralls debug
         coveralls
