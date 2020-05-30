@@ -40,7 +40,7 @@ jobs:
       # It was impossible for me to upload parallel versions and
       # merge them at the end. Errors everywhere.
       # For the moment I'm going to upload only the 3.8 coverage.
-      if: matrix.python-version == "3.8"
+      if: matrix.python-version == '3.8'
       run: |
         coveralls debug
         coveralls
