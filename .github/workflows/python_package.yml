@@ -40,4 +40,5 @@ jobs:
       env:
         COVERALLS_PARALLEL: true
       run: |
+        coveralls debug
         coveralls
