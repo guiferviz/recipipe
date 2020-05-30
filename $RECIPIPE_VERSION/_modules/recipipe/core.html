@@ -1,0 +1,591 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>recipipe.core &mdash; Recipipe 0.0.3 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html">
+          
+
+          
+            
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../recipipe.html">recipipe package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../diagrams.html">Diagrams</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Recipipe</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../recipipe.html">recipipe</a> &raquo;</li>
+        
+      <li>recipipe.core</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for recipipe.core</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="kn">import</span> <span class="nn">sklearn.pipeline</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">TransformerMixin</span>
+
+<span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">add_to_map_dict</span>
+<span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">flatten_list</span>
+<span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">fit_columns</span>
+
+
+<div class="viewcode-block" id="Recipipe"><a class="viewcode-back" href="../../recipipe.html#recipipe.core.Recipipe">[docs]</a><span class="k">class</span> <span class="nc">Recipipe</span><span class="p">(</span><span class="n">sklearn</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Recipipe pipeline.</span>
+
+<span class="sd">    A Recipipe pipeline is an extension of an SKLearn pipeline.</span>
+<span class="sd">    It adds some functionality that make the creation of pipelines less</span>
+<span class="sd">    painful.</span>
+<span class="sd">    For example, the `steps` param is not required at the construction time.</span>
+<span class="sd">    You can add your transformers to the pipeline anytime using</span>
+<span class="sd">    :obj:`recipipe.core.Recipipe.add`.</span>
+
+<span class="sd">    Attr:</span>
+<span class="sd">        Same attributes as :obj:`sklearn.pipeline.Pipeline`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Recipipe.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.core.Recipipe.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a Recipipe pipeline.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            steps (:obj:`list`): Same as in :obj:`sklearn.pipeline.Pipeline`.</span>
+<span class="sd">            kwargs: Same as in :obj:`sklearn.pipeline.Pipeline`: `memory`</span>
+<span class="sd">                and `verbose`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">steps</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Mock validate steps to avoid empty list validation.</span>
+            <span class="c1"># This method depends a lot of the hidden representation of the</span>
+            <span class="c1"># Pipeline class but it&#39;s better than using a dummy empty</span>
+            <span class="c1"># transformer.</span>
+            <span class="c1"># An empty transformer adds more complexity to make methods like</span>
+            <span class="c1"># __len__ work properly. Also it&#39;s impossible to control the use</span>
+            <span class="c1"># of self.steps from outside of the class.</span>
+            <span class="n">aux</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_steps</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_steps</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Unmock validation method if needed.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">steps</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_steps</span> <span class="o">=</span> <span class="n">aux</span></div>
+
+<div class="viewcode-block" id="Recipipe.__add__"><a class="viewcode-back" href="../../recipipe.html#recipipe.core.Recipipe.__add__">[docs]</a>    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a new step to the pipeline using the &#39;+&#39; operator.</span>
+
+<span class="sd">        Note that this is exactly the same as calling</span>
+<span class="sd">        :obj:`recipipe.core.Recipipe.add`.</span>
+<span class="sd">        The Recipipe object is going to be modified, that is `p = p + t` is</span>
+<span class="sd">        the same as `p + t`, where `p` is any Recipipe pipeline and `t` is any</span>
+<span class="sd">        transformer.</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :obj:`recipipe.core.Recipipe.add`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">transformer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Recipipe.add"><a class="viewcode-back" href="../../recipipe.html#recipipe.core.Recipipe.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a new step to the pipeline.</span>
+
+<span class="sd">        You can add steps even if the pipeline is already fitted, so be</span>
+<span class="sd">        careful.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            step (Transformer or tuple(`str`, Transformer)): The new step that</span>
+<span class="sd">                you want to add to the pipeline.</span>
+<span class="sd">                Any transformer is good (SKLearn transformer or</span>
+<span class="sd">                :obj:`recipipe.core.RecipipeTransformer`).</span>
+<span class="sd">                If a tuple is given, the fist element of the tuple is going to</span>
+<span class="sd">                be used as a name for the step in the pipeline.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The pipeline.</span>
+<span class="sd">            You can chain `add` methods: `pipe.add(...).add(...)...`.</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :obj:`recipipe.core.Recipipe.__add__`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">tuple</span><span class="p">:</span>
+            <span class="n">transformer</span> <span class="o">=</span> <span class="n">step</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transformer</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">transformer</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;step</span><span class="si">{</span><span class="n">idx</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">transformer</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div></div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The next lines are really nasty, but they avoid an error with:</span>
+
+<span class="sd">    from sklearn import set_config</span>
+
+<span class="sd">    set_config(display=&#39;diagram&#39;)</span>
+<span class="sd">    &lt;any-recipipe-transformer-here&gt;</span>
+
+<span class="sd">executed in a notebook.</span>
+<span class="sd">The reason to overwrite an SKLearn function is because we have params that do</span>
+<span class="sd">not need to be used as __init__ params.</span>
+<span class="sd">That function avoids showing all the params of an estimator, only shows those</span>
+<span class="sd">params with a non-default value.</span>
+<span class="sd">Overwriting it will print extra information, but nothing bad (I suppose :).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sklearn.utils._pprint</span>
+<span class="n">sklearn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">_pprint</span><span class="o">.</span><span class="n">_changed_params</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="RecipipeTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.core.RecipipeTransformer">[docs]</a><span class="k">class</span> <span class="nc">RecipipeTransformer</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">TransformerMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class of all Recipipe transformers.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name (str): Human-friendly name of the transformer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_param_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get parameter names for the estimator.</span>
+
+<span class="sd">        Taken from SKLearn with some extra modifications to allow the use of</span>
+<span class="sd">        var positional arguments (*args) in estimators.</span>
+<span class="sd">        My modifications are indicated by comments with two ##.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">parent_params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="n">RecipipeTransformer</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__bases__</span><span class="p">:</span>
+                <span class="n">parent_params</span> <span class="o">+=</span> <span class="n">i</span><span class="o">.</span><span class="n">_get_param_names</span><span class="p">()</span>
+        <span class="c1"># fetch the constructor or the original constructor before</span>
+        <span class="c1"># deprecation wrapping if any</span>
+        <span class="n">init</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span> <span class="s1">&#39;deprecated_original&#39;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">init</span> <span class="ow">is</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__init__</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="c1">## I don&#39;t know how to force this situation for testing...</span>
+            <span class="c1"># No explicit constructor to introspect</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="c1"># introspect the constructor arguments to find the model parameters</span>
+        <span class="c1"># to represent</span>
+        <span class="n">init_signature</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">init</span><span class="p">)</span>
+        <span class="c1"># Consider the constructor parameters excluding &#39;self&#39;</span>
+        <span class="c1">## Taking p.name instead of p.</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">init_signature</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                      <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;self&#39;</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="n">p</span><span class="o">.</span><span class="n">VAR_KEYWORD</span>
+                                          <span class="c1">## No positional vars (*args).</span>
+                                          <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="n">p</span><span class="o">.</span><span class="n">VAR_POSITIONAL</span><span class="p">]</span>
+        <span class="c1">## No RuntimeError raised here!</span>
+        <span class="c1">## Adding super params.</span>
+        <span class="n">parameters</span> <span class="o">+=</span> <span class="n">parent_params</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="c1"># Extract and sort argument names excluding &#39;self&#39;</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RecipipeTransformer.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.core.RecipipeTransformer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">cols_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">keep_original</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">col_format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+                 <span class="n">cols_not_found_error</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a new transformer.</span>
+
+<span class="sd">        Columns names can be use Unix filename pattern matching (</span>
+<span class="sd">        :obj:`fnmatch`).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args (:obj:`list` of :obj:`str`): List of columns the transformer</span>
+<span class="sd">                will work on.</span>
+<span class="sd">            cols_init (:obj:`list` of :obj:`str`): List of columns the</span>
+<span class="sd">                transformer will work on. If `*args` are provided, this list</span>
+<span class="sd">                of columns is going to be appended at the end.</span>
+<span class="sd">            dtype (dtype, str, list[dtype] or list[str]): This value is passed</span>
+<span class="sd">                to :obj:`pandas.DataFrame.select_dtypes`. The columns returned</span>
+<span class="sd">                by this method (executed in the dataframe passed to the fit</span>
+<span class="sd">                method) will be the columns that are going to be used in the</span>
+<span class="sd">                transformation phase.</span>
+<span class="sd">            name (:obj:`str`): Human-friendly name of the transformer.</span>
+<span class="sd">            keep_original (:obj:`bool`): `True` if you want to keep the input</span>
+<span class="sd">                columns used in the transformer in the transformed DataFrame,</span>
+<span class="sd">                `False` if not.</span>
+<span class="sd">                Note that, if the output column has the same name as the input</span>
+<span class="sd">                column, the output input column will not be included even if</span>
+<span class="sd">                `keep_original` is set to `True`.</span>
+<span class="sd">                Default: `False`.</span>
+<span class="sd">            col_format (:obj:`str`): New name of the columns. Use &quot;{}&quot; in to</span>
+<span class="sd">                substitute that placeholder by the column name. For example, if</span>
+<span class="sd">                you want to append the string &quot;_new&quot; at the end of all the</span>
+<span class="sd">                generated columns you must set `col_format=&quot;{}_new&quot;`.</span>
+<span class="sd">                Default: &quot;{}&quot;.</span>
+<span class="sd">            cols_not_found_error (:obj:`bool`): Raise an error if the isn&#39;t</span>
+<span class="sd">                any match for any of the specified columns.</span>
+<span class="sd">                Default: `False`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">cols_init</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">cols_init</span><span class="p">)</span>
+        <span class="n">cols_init</span> <span class="o">=</span> <span class="n">flatten_list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="c1"># Set values.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols_init</span> <span class="o">=</span> <span class="n">cols_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keep_original</span> <span class="o">=</span> <span class="n">keep_original</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">col_format</span> <span class="o">=</span> <span class="n">col_format</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">col_map</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># set in fit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># fitted columns, set in fit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols_out</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># set in fit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols_not_found_error</span> <span class="o">=</span> <span class="n">cols_not_found_error</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols_in_out</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># set in fit</span></div>
+
+    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="sd">&quot;&quot;&quot;Your fit code should be here.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (:obj:`pandas.DataFrame`): DataFrame used for fitting.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="sd">&quot;&quot;&quot;Your transform code should be here.</span>
+
+<span class="sd">        Abstract method that you should overwrite in your classes.</span>
+<span class="sd">        Remember that any transformation done here should be consistent with</span>
+<span class="sd">        the column mapping returned by</span>
+<span class="sd">        :obj:`recipipe.core.RecipipeTransformer._get_column_mapping`.</span>
+<span class="sd">        Ex: if your column mapping is `{&quot;c1&quot;: &quot;c1&quot;}` do not return in this</span>
+<span class="sd">        method a DataFrame with columns `c1` and `c2`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (:obj:`pandas.DataFrame`): DataFrame to transform.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            The transformer DataFrame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">def</span> <span class="nf">_inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+<div class="viewcode-block" id="RecipipeTransformer.fit"><a class="viewcode-back" href="../../recipipe.html#recipipe.core.RecipipeTransformer.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit the transformer.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (pandas.DataFrame): Dataframe used to fit the transformation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">=</span> <span class="n">fit_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cols_not_found_error</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="c1"># Save column maps and lists.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">col_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_column_mapping</span><span class="p">()</span>
+        <span class="c1"># Recreate cols, just in case you overwrite the _get_column_mapping</span>
+        <span class="c1"># but you didn&#39;t specify any cols_init.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span>
+            <span class="n">flatten_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+        <span class="n">col_map_1_n</span><span class="p">,</span> <span class="n">col_map_1_n_inverse</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">add_to_map_dict</span><span class="p">(</span><span class="n">col_map_1_n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="n">add_to_map_dict</span><span class="p">(</span><span class="n">col_map_1_n_inverse</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">col_map_1_n</span> <span class="o">=</span> <span class="n">col_map_1_n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">col_map_1_n_inverse</span> <span class="o">=</span> <span class="n">col_map_1_n_inverse</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols_out</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span>
+            <span class="n">flatten_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_map</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+        <span class="c1"># Cols in input columns and output columns should be removed from</span>
+        <span class="c1"># df_in during the transform phase.</span>
+        <span class="c1"># We join df_in with df_out, so we do not want duplicate column names.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols_in_out</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_out</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_original</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols_in_out</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Rename the output columns if you want to keep &quot;</span>
+                             <span class="s2">&quot;the original columns, name collisions in &quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_in_out</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="RecipipeTransformer.transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.core.RecipipeTransformer.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_in</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Transform DataFrame.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df_in (:obj:`pandas.DataFrame`): Input DataFrame.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Transformed DataFrame.</span>
+
+<span class="sd">        Raise:</span>
+<span class="sd">            :obj:`ValueError` if not `cols` fitted. Fit the transform to avoid</span>
+<span class="sd">            this error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No cols set. Transformer not fitted?&quot;</span><span class="p">)</span>
+
+        <span class="n">in_cols</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">df_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">df_in</span><span class="p">)</span>
+        <span class="n">df_in</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_in_out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Join input columns to output</span>
+        <span class="n">df_joined</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df_out</span><span class="p">)</span>
+
+        <span class="c1"># Reorder output columns and return.</span>
+        <span class="c1"># This cannot be precomputed during fit because we want to support</span>
+        <span class="c1"># any extra column not present during fit time. We also want to</span>
+        <span class="c1"># maintain the input column order.</span>
+        <span class="c1"># Ex: we can fit a df that contains a target column and transform dfs</span>
+        <span class="c1"># without that target.</span>
+        <span class="n">cols_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ordered_out_cols</span><span class="p">(</span><span class="n">in_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">col_map_1_n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_original</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df_joined</span><span class="p">[</span><span class="n">cols_out</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_ordered_out_cols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cols_in_all</span><span class="p">,</span> <span class="n">cols_in</span><span class="p">,</span> <span class="n">col_map_1_n</span><span class="p">,</span>
+            <span class="n">keep_original</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">cols_out</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cols_in_all</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cols_in</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">keep_original</span><span class="p">:</span>
+                    <span class="n">cols_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">cols_out</span> <span class="o">+=</span> <span class="n">col_map_1_n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cols_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="c1"># Remove duplicates.</span>
+        <span class="n">cols_out</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">cols_out</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cols_out</span>
+
+<div class="viewcode-block" id="RecipipeTransformer.inverse_transform"><a class="viewcode-back" href="../../recipipe.html#recipipe.core.RecipipeTransformer.inverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df_in</span><span class="p">):</span>
+        <span class="n">in_cols</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">columns</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_original</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="n">in_cols</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">):</span>
+            <span class="c1"># If keep original and all the original columns are present in</span>
+            <span class="c1"># df_in, we save computation removing output columns and returning</span>
+            <span class="c1"># original columns.</span>
+            <span class="n">df_in</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">df_in</span>
+
+        <span class="n">df_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inverse_transform</span><span class="p">(</span><span class="n">df_in</span><span class="p">)</span>
+        <span class="n">df_in</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_in_out</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_original</span><span class="p">:</span>
+            <span class="c1"># If we keep original cols, the best will be to just drop the</span>
+            <span class="c1"># transformed columns (look at the first if of this method), but I</span>
+            <span class="c1"># want it to work even without those columns.</span>
+            <span class="n">df_in</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">df_out</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="n">df_joined</span> <span class="o">=</span> <span class="n">df_in</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df_out</span><span class="p">)</span>
+
+        <span class="n">cols_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_ordered_out_cols</span><span class="p">(</span><span class="n">in_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols_out</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">col_map_1_n_inverse</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df_joined</span><span class="p">[</span><span class="n">cols_out</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the column mapping between the input and transformed DataFrame.</span>
+
+<span class="sd">        By default it returns a 1:1 map between the input and output columns.</span>
+<span class="sd">        Make sure your transformer is fitted before calling this function.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            A dict in which the keys are the input DataFrame column names and</span>
+<span class="sd">            the value is the output DataFrame column names.</span>
+<span class="sd">            Both key and values can be tuples, tuple:1 useful to indicate that</span>
+<span class="sd">            one output column has been created from a list of columns from the</span>
+<span class="sd">            input DataFrame, 1:tuple useful to indicate that a list of output</span>
+<span class="sd">            columns come from one specific column of the input DataFrame.</span>
+<span class="sd">            We use tuples and not lists because lists are not hashable, so they</span>
+<span class="sd">            cannot be keys in a dict.</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :obj:`recipipe.core.RecipipeTransformer.col_format`</span>
+
+<span class="sd">        Raise:</span>
+<span class="sd">            :obj:`ValueError` if `self.cols` is `None`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No columns. Transformer not fitted?&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">}</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, guiferviz
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

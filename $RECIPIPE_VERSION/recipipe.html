@@ -1,0 +1,1503 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>recipipe package &mdash; Recipipe 0.0.3 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Diagrams" href="diagrams.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html">
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">recipipe package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#recipipe-aliases">recipipe aliases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-recipipe.core">recipipe.core module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-recipipe.transformers">recipipe.transformers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-recipipe.utils">recipipe.utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Diagrams</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Recipipe</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>recipipe package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/recipipe.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-recipipe">
+<span id="recipipe-package"></span><h1>recipipe package<a class="headerlink" href="#module-recipipe" title="Permalink to this headline">¶</a></h1>
+<p>Improved pipelines for data science projects.</p>
+<p>SKLearn pipelines easy to declare and Pandas-compatible.</p>
+<dl class="py function">
+<dt id="recipipe.greet">
+<code class="sig-prename descclassname">recipipe.</code><code class="sig-name descname">greet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe.html#greet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.greet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print a silly sentence to stdout.</p>
+</dd></dl>
+
+<div class="section" id="recipipe-aliases">
+<h2>recipipe aliases<a class="headerlink" href="#recipipe-aliases" title="Permalink to this headline">¶</a></h2>
+<p>The recipipe package contains many aliases for ease of use.
+Here is a complete table with all the aliases.</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Alias</p></td>
+<td><p>Definition</p></td>
+</tr>
+<tr class="row-even"><td><p>recipipe</p></td>
+<td><p><a class="reference internal" href="#recipipe.core.Recipipe" title="recipipe.core.Recipipe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.core.Recipipe</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>category</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.CategoryEncoder" title="recipipe.transformers.CategoryEncoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.CategoryEncoder</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>select</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.SelectTransformer" title="recipipe.transformers.SelectTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.SelectTransformer</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>drop</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.DropTransformer" title="recipipe.transformers.DropTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.DropTransformer</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>dropna</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.DropNARowsTransformer" title="recipipe.transformers.DropNARowsTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.DropNARowsTransformer</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>dropna_rows</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.DropNARowsTransformer" title="recipipe.transformers.DropNARowsTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.DropNARowsTransformer</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>query</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.QueryTransformer" title="recipipe.transformers.QueryTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.QueryTransformer</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>replace</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.ReplaceTransformer" title="recipipe.transformers.ReplaceTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.ReplaceTransformer</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>groupby</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.GroupByTransformer" title="recipipe.transformers.GroupByTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.GroupByTransformer</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>reduce_memory</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.ReduceMemoryTransformer" title="recipipe.transformers.ReduceMemoryTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.ReduceMemoryTransformer</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>from_sklearn</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.SklearnCreator" title="recipipe.transformers.SklearnCreator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.SklearnCreator</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>onehot</p></td>
+<td><p><cite>from_sklearn(OneHotEncoder(sparse=False,handle_unknown=’ignore’))</cite></p></td>
+</tr>
+<tr class="row-even"><td><p>scale</p></td>
+<td><p><cite>from_sklearn(StandardScaler())</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p>binarizer</p></td>
+<td><p><cite>from_sklearn(Binarizer())</cite></p></td>
+</tr>
+<tr class="row-even"><td><p>indicator</p></td>
+<td><p><cite>from_sklearn(MissingIndicator(),col_format=’INDICATOR({})’)</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p>impute</p></td>
+<td><p><cite>from_sklearn(SimpleImputer(strategy=’constant’))</cite></p></td>
+</tr>
+<tr class="row-even"><td><p>sk_indicator</p></td>
+<td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.MissingIndicator.html#sklearn.impute.MissingIndicator" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.impute.MissingIndicator</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>sk_inputer</p></td>
+<td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html#sklearn.impute.SimpleImputer" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.impute.SimpleImputer</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>sk_onehot</p></td>
+<td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html#sklearn.preprocessing.OneHotEncoder" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.OneHotEncoder</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>sk_scale</p></td>
+<td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.StandardScaler</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>sk_binarizer</p></td>
+<td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.Binarizer.html#sklearn.preprocessing.Binarizer" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.Binarizer</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-recipipe.core">
+<span id="recipipe-core-module"></span><h2>recipipe.core module<a class="headerlink" href="#module-recipipe.core" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="recipipe.core.Recipipe">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.core.</code><code class="sig-name descname">Recipipe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">steps</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/core.html#Recipipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.core.Recipipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v0.23)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code></a></p>
+<p>Recipipe pipeline.</p>
+<p>A Recipipe pipeline is an extension of an SKLearn pipeline.
+It adds some functionality that make the creation of pipelines less
+painful.
+For example, the <cite>steps</cite> param is not required at the construction time.
+You can add your transformers to the pipeline anytime using
+<a class="reference internal" href="#recipipe.core.Recipipe.add" title="recipipe.core.Recipipe.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.core.Recipipe.add</span></code></a>.</p>
+<dl class="simple">
+<dt>Attr:</dt><dd><p>Same attributes as <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code></a>.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="recipipe.core.Recipipe.__abstractmethods__">
+<code class="sig-name descname">__abstractmethods__</code><em class="property"> = frozenset({})</em><a class="headerlink" href="#recipipe.core.Recipipe.__abstractmethods__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.core.Recipipe.__add__">
+<code class="sig-name descname">__add__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">transformer</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/core.html#Recipipe.__add__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.core.Recipipe.__add__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new step to the pipeline using the ‘+’ operator.</p>
+<p>Note that this is exactly the same as calling
+<a class="reference internal" href="#recipipe.core.Recipipe.add" title="recipipe.core.Recipipe.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.core.Recipipe.add</span></code></a>.
+The Recipipe object is going to be modified, that is <cite>p = p + t</cite> is
+the same as <cite>p + t</cite>, where <cite>p</cite> is any Recipipe pipeline and <cite>t</cite> is any
+transformer.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#recipipe.core.Recipipe.add" title="recipipe.core.Recipipe.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.core.Recipipe.add</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.core.Recipipe.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">steps</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/core.html#Recipipe.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.core.Recipipe.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Recipipe pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>steps</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) – Same as in <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code></a>.</p></li>
+<li><p><strong>kwargs</strong> – Same as in <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code></a>: <cite>memory</cite>
+and <cite>verbose</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.core.Recipipe.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.core'</em><a class="headerlink" href="#recipipe.core.Recipipe.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.core.Recipipe.add">
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">step</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/core.html#Recipipe.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.core.Recipipe.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new step to the pipeline.</p>
+<p>You can add steps even if the pipeline is already fitted, so be
+careful.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>step</strong> (Transformer or tuple(<cite>str</cite>, Transformer)) – The new step that
+you want to add to the pipeline.
+Any transformer is good (SKLearn transformer or
+<a class="reference internal" href="#recipipe.core.RecipipeTransformer" title="recipipe.core.RecipipeTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer</span></code></a>).
+If a tuple is given, the fist element of the tuple is going to
+be used as a name for the step in the pipeline.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The pipeline.
+You can chain <cite>add</cite> methods: <cite>pipe.add(…).add(…)…</cite>.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#recipipe.core.Recipipe.__add__" title="recipipe.core.Recipipe.__add__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.core.Recipipe.__add__</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.core.Recipipe.steps">
+<code class="sig-name descname">steps</code><em class="property"> = None</em><a class="headerlink" href="#recipipe.core.Recipipe.steps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.core.RecipipeTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.core.</code><code class="sig-name descname">RecipipeTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">cols_init</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_original</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">col_format</span><span class="o">=</span><span class="default_value">'{}'</span></em>, <em class="sig-param"><span class="n">cols_not_found_error</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/core.html#RecipipeTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.core.RecipipeTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="(in scikit-learn v0.23)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code></a>, <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.TransformerMixin.html#sklearn.base.TransformerMixin" title="(in scikit-learn v0.23)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.TransformerMixin</span></code></a></p>
+<p>Base class of all Recipipe transformers.</p>
+<dl class="py attribute">
+<dt id="recipipe.core.RecipipeTransformer.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#recipipe.core.RecipipeTransformer.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Human-friendly name of the transformer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.core.RecipipeTransformer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">cols_init</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_original</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">col_format</span><span class="o">=</span><span class="default_value">'{}'</span></em>, <em class="sig-param"><span class="n">cols_not_found_error</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/core.html#RecipipeTransformer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.core.RecipipeTransformer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new transformer.</p>
+<p>Columns names can be use Unix filename pattern matching (
+<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
+will work on.</p></li>
+<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
+transformer will work on. If <cite>*args</cite> are provided, this list
+of columns is going to be appended at the end.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+by this method (executed in the dataframe passed to the fit
+method) will be the columns that are going to be used in the
+transformation phase.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
+<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
+columns used in the transformer in the transformed DataFrame,
+<cite>False</cite> if not.
+Note that, if the output column has the same name as the input
+column, the output input column will not be included even if
+<cite>keep_original</cite> is set to <cite>True</cite>.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
+substitute that placeholder by the column name. For example, if
+you want to append the string “_new” at the end of all the
+generated columns you must set <cite>col_format=”{}_new”</cite>.
+Default: “{}”.</p></li>
+<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
+any match for any of the specified columns.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.core.RecipipeTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.core'</em><a class="headerlink" href="#recipipe.core.RecipipeTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.core.RecipipeTransformer.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/core.html#RecipipeTransformer.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.core.RecipipeTransformer.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the transformer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><em>pandas.DataFrame</em></a>) – Dataframe used to fit the transformation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.core.RecipipeTransformer.inverse_transform">
+<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df_in</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/core.html#RecipipeTransformer.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.core.RecipipeTransformer.inverse_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.core.RecipipeTransformer.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df_in</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/core.html#RecipipeTransformer.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.core.RecipipeTransformer.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed DataFrame.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Raise:</dt><dd><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a> if not <cite>cols</cite> fitted. Fit the transform to avoid
+this error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-recipipe.transformers">
+<span id="recipipe-transformers-module"></span><h2>recipipe.transformers module<a class="headerlink" href="#module-recipipe.transformers" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="recipipe.transformers.CategoryEncoder">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">CategoryEncoder</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">error_unknown</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">unknown_value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#CategoryEncoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.CategoryEncoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.transformers.ColumnTransformer" title="recipipe.transformers.ColumnTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.transformers.ColumnTransformer</span></code></a></p>
+<dl class="py method">
+<dt id="recipipe.transformers.CategoryEncoder.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">error_unknown</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">unknown_value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#CategoryEncoder.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.CategoryEncoder.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new transformer.</p>
+<p>Columns names can be use Unix filename pattern matching (
+<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
+will work on.</p></li>
+<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
+transformer will work on. If <cite>*args</cite> are provided, this list
+of columns is going to be appended at the end.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+by this method (executed in the dataframe passed to the fit
+method) will be the columns that are going to be used in the
+transformation phase.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
+<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
+columns used in the transformer in the transformed DataFrame,
+<cite>False</cite> if not.
+Note that, if the output column has the same name as the input
+column, the output input column will not be included even if
+<cite>keep_original</cite> is set to <cite>True</cite>.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
+substitute that placeholder by the column name. For example, if
+you want to append the string “_new” at the end of all the
+generated columns you must set <cite>col_format=”{}_new”</cite>.
+Default: “{}”.</p></li>
+<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
+any match for any of the specified columns.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.CategoryEncoder.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.CategoryEncoder.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.ColumnGroupsTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">ColumnGroupsTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ColumnGroupsTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ColumnGroupsTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.core.RecipipeTransformer" title="recipipe.core.RecipipeTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer</span></code></a></p>
+<p>Apply a N to 1 transformation to a group of columns.</p>
+<dl class="py method">
+<dt id="recipipe.transformers.ColumnGroupsTransformer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ColumnGroupsTransformer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ColumnGroupsTransformer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new transformer.</p>
+<p>Columns names can be use Unix filename pattern matching (
+<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
+will work on.</p></li>
+<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
+transformer will work on. If <cite>*args</cite> are provided, this list
+of columns is going to be appended at the end.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+by this method (executed in the dataframe passed to the fit
+method) will be the columns that are going to be used in the
+transformation phase.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
+<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
+columns used in the transformer in the transformed DataFrame,
+<cite>False</cite> if not.
+Note that, if the output column has the same name as the input
+column, the output input column will not be included even if
+<cite>keep_original</cite> is set to <cite>True</cite>.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
+substitute that placeholder by the column name. For example, if
+you want to append the string “_new” at the end of all the
+generated columns you must set <cite>col_format=”{}_new”</cite>.
+Default: “{}”.</p></li>
+<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
+any match for any of the specified columns.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.ColumnGroupsTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.ColumnGroupsTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.ColumnTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">ColumnTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">cols_init</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_original</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">col_format</span><span class="o">=</span><span class="default_value">'{}'</span></em>, <em class="sig-param"><span class="n">cols_not_found_error</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ColumnTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ColumnTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.core.RecipipeTransformer" title="recipipe.core.RecipipeTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer</span></code></a></p>
+<p>Apply an operation per each input column.</p>
+<p>This transformer only allows 1 to N relationships between input and output
+columns.
+If you want to create a column from two existing ones (like concatenate one
+column to another) this transformer is not for you.</p>
+<p>Note that the output number of rows of this transformer should be the same
+as in the input DataFrame. No deletes are supported here.</p>
+<dl class="py attribute">
+<dt id="recipipe.transformers.ColumnTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.ColumnTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.ColumnTransformer.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ColumnTransformer.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ColumnTransformer.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the transformer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><em>pandas.DataFrame</em></a>) – Dataframe used to fit the transformation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.ColumnsTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">ColumnsTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">cols_init</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_original</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">col_format</span><span class="o">=</span><span class="default_value">'{}'</span></em>, <em class="sig-param"><span class="n">cols_not_found_error</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ColumnsTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ColumnsTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.core.RecipipeTransformer" title="recipipe.core.RecipipeTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer</span></code></a></p>
+<p>Apply an operation at all the input columns at the same time.</p>
+<p>This class does not do that much… It’s only particular useful when
+working with transformers that return a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>, like the
+ones in SKLearn. This class deals with the creation of a DataFrame so
+yo do not need to create it by yourself.</p>
+<p>Note that the output number of rows of this transformer should be the same
+as in the input DataFrame. No deletes are supported here.</p>
+<dl class="py attribute">
+<dt id="recipipe.transformers.ColumnsTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.ColumnsTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.DropNARowsTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">DropNARowsTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">how</span><span class="o">=</span><span class="default_value">'any'</span></em>, <em class="sig-param"><span class="n">thresh</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#DropNARowsTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.DropNARowsTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.core.RecipipeTransformer" title="recipipe.core.RecipipeTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer</span></code></a></p>
+<dl class="py method">
+<dt id="recipipe.transformers.DropNARowsTransformer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">how</span><span class="o">=</span><span class="default_value">'any'</span></em>, <em class="sig-param"><span class="n">thresh</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#DropNARowsTransformer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.DropNARowsTransformer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new transformer.</p>
+<p>Columns names can be use Unix filename pattern matching (
+<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
+will work on.</p></li>
+<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
+transformer will work on. If <cite>*args</cite> are provided, this list
+of columns is going to be appended at the end.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+by this method (executed in the dataframe passed to the fit
+method) will be the columns that are going to be used in the
+transformation phase.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
+<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
+columns used in the transformer in the transformed DataFrame,
+<cite>False</cite> if not.
+Note that, if the output column has the same name as the input
+column, the output input column will not be included even if
+<cite>keep_original</cite> is set to <cite>True</cite>.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
+substitute that placeholder by the column name. For example, if
+you want to append the string “_new” at the end of all the
+generated columns you must set <cite>col_format=”{}_new”</cite>.
+Default: “{}”.</p></li>
+<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
+any match for any of the specified columns.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.DropNARowsTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.DropNARowsTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.DropNARowsTransformer.inverse_transform">
+<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#DropNARowsTransformer.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.DropNARowsTransformer.inverse_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.DropNARowsTransformer.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#DropNARowsTransformer.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.DropNARowsTransformer.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed DataFrame.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Raise:</dt><dd><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a> if not <cite>cols</cite> fitted. Fit the transform to avoid
+this error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.DropTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">DropTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">cols_init</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_original</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">col_format</span><span class="o">=</span><span class="default_value">'{}'</span></em>, <em class="sig-param"><span class="n">cols_not_found_error</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#DropTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.DropTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.core.RecipipeTransformer" title="recipipe.core.RecipipeTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer</span></code></a></p>
+<p>Drop the fitted columns and continue with the reminded ones.</p>
+<dl class="py attribute">
+<dt id="recipipe.transformers.DropTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.DropTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.DropTransformer.inverse_transform">
+<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#DropTransformer.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.DropTransformer.inverse_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>No inverse exists for a drop operation but…</p>
+<p>Obviously, there is no way to get back the dropped columns, but
+it’s useful to have this operation defined to avoid errors when using
+this transformer in a pipeline.
+For that reason, the inverse in defined as the identity function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame to inverse transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><cite>df</cite> without modifications.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Identity function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.DropTransformer.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#DropTransformer.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.DropTransformer.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drop the fitted columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame to drop columns from.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed DataFrame.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.GroupByTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">GroupByTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">groupby</span></em>, <em class="sig-param"><span class="n">transformer</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#GroupByTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.GroupByTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.core.RecipipeTransformer" title="recipipe.core.RecipipeTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer</span></code></a></p>
+<p>Apply a transformer on each group.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Normalize by group using the SKLearn StandardScaler.</span>
+<span class="n">scaler</span> <span class="o">=</span> <span class="n">SklearnCreator</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">())</span>
+<span class="n">Recipipe</span><span class="p">()</span> <span class="o">+</span> <span class="n">GroupByTransformer</span><span class="p">(</span><span class="s2">&quot;group_column&quot;</span><span class="p">,</span> <span class="n">scaler</span><span class="p">(</span><span class="s2">&quot;num_column&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="recipipe.transformers.GroupByTransformer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">groupby</span></em>, <em class="sig-param"><span class="n">transformer</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#GroupByTransformer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.GroupByTransformer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new transformer.</p>
+<p>Columns names can be use Unix filename pattern matching (
+<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
+will work on.</p></li>
+<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
+transformer will work on. If <cite>*args</cite> are provided, this list
+of columns is going to be appended at the end.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+by this method (executed in the dataframe passed to the fit
+method) will be the columns that are going to be used in the
+transformation phase.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
+<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
+columns used in the transformer in the transformed DataFrame,
+<cite>False</cite> if not.
+Note that, if the output column has the same name as the input
+column, the output input column will not be included even if
+<cite>keep_original</cite> is set to <cite>True</cite>.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
+substitute that placeholder by the column name. For example, if
+you want to append the string “_new” at the end of all the
+generated columns you must set <cite>col_format=”{}_new”</cite>.
+Default: “{}”.</p></li>
+<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
+any match for any of the specified columns.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.GroupByTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.GroupByTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.GroupByTransformer.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#GroupByTransformer.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.GroupByTransformer.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the transformer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><em>pandas.DataFrame</em></a>) – Dataframe used to fit the transformation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.GroupByTransformer.fit_group">
+<code class="sig-name descname">fit_group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#GroupByTransformer.fit_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.GroupByTransformer.fit_group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.GroupByTransformer.inverse_transform">
+<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df_in</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#GroupByTransformer.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.GroupByTransformer.inverse_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.GroupByTransformer.inverse_transform_group">
+<code class="sig-name descname">inverse_transform_group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#GroupByTransformer.inverse_transform_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.GroupByTransformer.inverse_transform_group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.GroupByTransformer.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df_in</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#GroupByTransformer.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.GroupByTransformer.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed DataFrame.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Raise:</dt><dd><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a> if not <cite>cols</cite> fitted. Fit the transform to avoid
+this error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.GroupByTransformer.transform_group">
+<code class="sig-name descname">transform_group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#GroupByTransformer.transform_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.GroupByTransformer.transform_group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.PandasScaler">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">PandasScaler</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">factor</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#PandasScaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.PandasScaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.transformers.ColumnTransformer" title="recipipe.transformers.ColumnTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.transformers.ColumnTransformer</span></code></a></p>
+<p>Standard scaler implemented with Pandas operations.</p>
+<dl class="py method">
+<dt id="recipipe.transformers.PandasScaler.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">factor</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#PandasScaler.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.PandasScaler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new transformer.</p>
+<p>Columns names can be use Unix filename pattern matching (
+<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
+will work on.</p></li>
+<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
+transformer will work on. If <cite>*args</cite> are provided, this list
+of columns is going to be appended at the end.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+by this method (executed in the dataframe passed to the fit
+method) will be the columns that are going to be used in the
+transformation phase.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
+<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
+columns used in the transformer in the transformed DataFrame,
+<cite>False</cite> if not.
+Note that, if the output column has the same name as the input
+column, the output input column will not be included even if
+<cite>keep_original</cite> is set to <cite>True</cite>.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
+substitute that placeholder by the column name. For example, if
+you want to append the string “_new” at the end of all the
+generated columns you must set <cite>col_format=”{}_new”</cite>.
+Default: “{}”.</p></li>
+<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
+any match for any of the specified columns.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.PandasScaler.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.PandasScaler.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.QueryTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">QueryTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#QueryTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.QueryTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.core.RecipipeTransformer" title="recipipe.core.RecipipeTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer</span></code></a></p>
+<dl class="py method">
+<dt id="recipipe.transformers.QueryTransformer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#QueryTransformer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.QueryTransformer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new transformer.</p>
+<p>Columns names can be use Unix filename pattern matching (
+<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
+will work on.</p></li>
+<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
+transformer will work on. If <cite>*args</cite> are provided, this list
+of columns is going to be appended at the end.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+by this method (executed in the dataframe passed to the fit
+method) will be the columns that are going to be used in the
+transformation phase.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
+<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
+columns used in the transformer in the transformed DataFrame,
+<cite>False</cite> if not.
+Note that, if the output column has the same name as the input
+column, the output input column will not be included even if
+<cite>keep_original</cite> is set to <cite>True</cite>.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
+substitute that placeholder by the column name. For example, if
+you want to append the string “_new” at the end of all the
+generated columns you must set <cite>col_format=”{}_new”</cite>.
+Default: “{}”.</p></li>
+<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
+any match for any of the specified columns.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.QueryTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.QueryTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.QueryTransformer.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df_in</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#QueryTransformer.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.QueryTransformer.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed DataFrame.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Raise:</dt><dd><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a> if not <cite>cols</cite> fitted. Fit the transform to avoid
+this error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.ReduceMemoryTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">ReduceMemoryTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">deep</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">object_to_category</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ReduceMemoryTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ReduceMemoryTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.core.RecipipeTransformer" title="recipipe.core.RecipipeTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer</span></code></a></p>
+<p>Change data types in order to reduce memory usage.</p>
+<p>This transformer iterates all the columns of the DataFrame and for numeric
+types checks if there is another datatype that occupies less memory and
+can store all the numbers of the column.</p>
+<p>Another way to reduce memory usage of Pandas DataFrame is creating
+categories (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Categorical.html#pandas.Categorical" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.Categorical</span></code></a>).
+It’s not always possible to save memory by converting to a category.
+The ideal columns to convert to category are those with few different
+values.
+Converting a column that has all unique values (like and ID column) will
+surely occupy more as a category, so consider to drop those columns first
+or not to apply the transformer on those columns.</p>
+<p>In a DataFrame there may also be numeric columns that can be converted to
+categorical (especially columns of integer types).
+You should make those transformations manually if you want to have a
+column of category dtype from the numeric column.
+Note that the <a class="reference internal" href="#recipipe.transformers.CategoryEncoder" title="recipipe.transformers.CategoryEncoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.CategoryEncoder</span></code></a> is not really
+returning a Pandas category, is encoding the values into integer values.</p>
+<p>You should also note that this transformation is done in place because
+that’s the objective of reducing memory.
+Keeping a copy in memory does not make too much sense if you want to save
+memory.</p>
+<dl class="py method">
+<dt id="recipipe.transformers.ReduceMemoryTransformer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">deep</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">object_to_category</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ReduceMemoryTransformer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ReduceMemoryTransformer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new reduce memory transformer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – When <cite>verbose=True</cite> the percentage of memory reduced
+by the conversion is shown on the screen.
+It’s computed using the <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.memory_usage.html#pandas.DataFrame.memory_usage" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.memory_usage</span></code></a>
+method.
+<cite>deep</cite> is the argument of this method.
+<cite>deep=True</cite> is more slow but it’s more accurate.
+Note that it’s really slow on big DataFrames.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Prints informative information about the process on
+the screen.
+Shows the percentage of memory saved after the conversion.</p></li>
+<li><p><strong>object_to_category</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – If <cite>True</cite> this method automatically
+converts objects to the Pandas category type.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.ReduceMemoryTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.ReduceMemoryTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.ReduceMemoryTransformer.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ReduceMemoryTransformer.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ReduceMemoryTransformer.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df_in</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – Input DataFrame.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed DataFrame.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Raise:</dt><dd><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a> if not <cite>cols</cite> fitted. Fit the transform to avoid
+this error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.ReplaceTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">ReplaceTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">values</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ReplaceTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ReplaceTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.core.RecipipeTransformer" title="recipipe.core.RecipipeTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer</span></code></a></p>
+<dl class="py method">
+<dt id="recipipe.transformers.ReplaceTransformer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">values</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ReplaceTransformer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ReplaceTransformer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new transformer.</p>
+<p>Columns names can be use Unix filename pattern matching (
+<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
+will work on.</p></li>
+<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
+transformer will work on. If <cite>*args</cite> are provided, this list
+of columns is going to be appended at the end.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+by this method (executed in the dataframe passed to the fit
+method) will be the columns that are going to be used in the
+transformation phase.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
+<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
+columns used in the transformer in the transformed DataFrame,
+<cite>False</cite> if not.
+Note that, if the output column has the same name as the input
+column, the output input column will not be included even if
+<cite>keep_original</cite> is set to <cite>True</cite>.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
+substitute that placeholder by the column name. For example, if
+you want to append the string “_new” at the end of all the
+generated columns you must set <cite>col_format=”{}_new”</cite>.
+Default: “{}”.</p></li>
+<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
+any match for any of the specified columns.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.ReplaceTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.ReplaceTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.SelectTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">SelectTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">cols_init</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keep_original</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">col_format</span><span class="o">=</span><span class="default_value">'{}'</span></em>, <em class="sig-param"><span class="n">cols_not_found_error</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SelectTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SelectTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.core.RecipipeTransformer" title="recipipe.core.RecipipeTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer</span></code></a></p>
+<p>Select the fitted columns and ignore the rest of them.</p>
+<dl class="py attribute">
+<dt id="recipipe.transformers.SelectTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.SelectTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.SelectTransformer.inverse_transform">
+<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SelectTransformer.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SelectTransformer.inverse_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>No inverse exists for a select operation but…</p>
+<p>Obviously, there is no way to get back the non-selected columns, but
+it’s useful to have this operation defined to avoid errors when using
+this transformer in a pipeline.
+For that reason, the inverse in defined as the identity function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame to inverse transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><cite>df</cite> without modifications.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Identity function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.SelectTransformer.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SelectTransformer.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SelectTransformer.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select the fitted columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame to select columns from.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed DataFrame.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.SklearnColumnWrapper">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">SklearnColumnWrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sk_transformer</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnColumnWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnColumnWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.transformers.ColumnTransformer" title="recipipe.transformers.ColumnTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.transformers.ColumnTransformer</span></code></a></p>
+<dl class="py method">
+<dt id="recipipe.transformers.SklearnColumnWrapper.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sk_transformer</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnColumnWrapper.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnColumnWrapper.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new transformer.</p>
+<p>Columns names can be use Unix filename pattern matching (
+<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
+will work on.</p></li>
+<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
+transformer will work on. If <cite>*args</cite> are provided, this list
+of columns is going to be appended at the end.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+by this method (executed in the dataframe passed to the fit
+method) will be the columns that are going to be used in the
+transformation phase.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
+<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
+columns used in the transformer in the transformed DataFrame,
+<cite>False</cite> if not.
+Note that, if the output column has the same name as the input
+column, the output input column will not be included even if
+<cite>keep_original</cite> is set to <cite>True</cite>.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
+substitute that placeholder by the column name. For example, if
+you want to append the string “_new” at the end of all the
+generated columns you must set <cite>col_format=”{}_new”</cite>.
+Default: “{}”.</p></li>
+<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
+any match for any of the specified columns.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.SklearnColumnWrapper.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.SklearnColumnWrapper.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.SklearnColumnsWrapper">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">SklearnColumnsWrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sk_transformer</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnColumnsWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnColumnsWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.transformers.ColumnsTransformer" title="recipipe.transformers.ColumnsTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.transformers.ColumnsTransformer</span></code></a></p>
+<dl class="py method">
+<dt id="recipipe.transformers.SklearnColumnsWrapper.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sk_transformer</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnColumnsWrapper.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnColumnsWrapper.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new transformer.</p>
+<p>Columns names can be use Unix filename pattern matching (
+<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
+will work on.</p></li>
+<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
+transformer will work on. If <cite>*args</cite> are provided, this list
+of columns is going to be appended at the end.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+by this method (executed in the dataframe passed to the fit
+method) will be the columns that are going to be used in the
+transformation phase.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
+<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
+columns used in the transformer in the transformed DataFrame,
+<cite>False</cite> if not.
+Note that, if the output column has the same name as the input
+column, the output input column will not be included even if
+<cite>keep_original</cite> is set to <cite>True</cite>.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
+substitute that placeholder by the column name. For example, if
+you want to append the string “_new” at the end of all the
+generated columns you must set <cite>col_format=”{}_new”</cite>.
+Default: “{}”.</p></li>
+<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
+any match for any of the specified columns.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.SklearnColumnsWrapper.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.SklearnColumnsWrapper.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.SklearnCreator">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">SklearnCreator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sk_transformer</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnCreator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnCreator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Utility class to generate SKLearn wrappers.</p>
+<p>Use this class to reuse any existing SKLearn transformer in your
+recipipe pipelines.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sk_transformer</strong> (<em>sklearn.TransformerMixin</em>) – Any instance of an
+SKLearn transformer you want to incorporate in the recipipes
+pipelines.</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a onehot encoder using the SKLearn OneHotEncoder class.</span>
+<span class="n">onehot</span> <span class="o">=</span> <span class="n">SklearnCreator</span><span class="p">(</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="c1"># Now you can use the onehot variable as a transformer in a recipipe.</span>
+<span class="n">recipipe</span><span class="p">()</span> <span class="o">+</span> <span class="n">onehot</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="recipipe.transformers.SklearnCreator.WRAPPERS">
+<code class="sig-name descname">WRAPPERS</code><em class="property"> = {'column': &lt;class 'recipipe.transformers.SklearnColumnWrapper'&gt;, 'columns': &lt;class 'recipipe.transformers.SklearnColumnsWrapper'&gt;, 'fit_one_col': &lt;class 'recipipe.transformers.SklearnFitOneWrapper'&gt;}</em><a class="headerlink" href="#recipipe.transformers.SklearnCreator.WRAPPERS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.SklearnCreator.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">wrapper</span><span class="o">=</span><span class="default_value">'columns'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnCreator.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnCreator.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate a SKLearn wrapper using a copy of the given transformer.</p>
+<p>It’s important to make this copy to avoid fitting several times the
+same transformer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.SklearnCreator.__dict__">
+<code class="sig-name descname">__dict__</code><em class="property"> = mappingproxy({'__module__': 'recipipe.transformers', '__doc__': 'Utility class to generate SKLearn wrappers.\n\n    Use this class to reuse any existing SKLearn transformer in your\n    recipipe pipelines.\n\n    Args:\n        sk_transformer (sklearn.TransformerMixin): Any instance of an\n            SKLearn transformer you want to incorporate in the recipipes\n            pipelines.\n\n    Example::\n\n        # Create a onehot encoder using the SKLearn OneHotEncoder class.\n        onehot = SklearnCreator(OneHotEncoder(sparse=False))\n        # Now you can use the onehot variable as a transformer in a recipipe.\n        recipipe() + onehot(dtype=&quot;string&quot;)\n    ', 'WRAPPERS': {'column': &lt;class 'recipipe.transformers.SklearnColumnWrapper'&gt;, 'columns': &lt;class 'recipipe.transformers.SklearnColumnsWrapper'&gt;, 'fit_one_col': &lt;class 'recipipe.transformers.SklearnFitOneWrapper'&gt;}, '__init__': &lt;function SklearnCreator.__init__&gt;, '__call__': &lt;function SklearnCreator.__call__&gt;, '__dict__': &lt;attribute '__dict__' of 'SklearnCreator' objects&gt;, '__weakref__': &lt;attribute '__weakref__' of 'SklearnCreator' objects&gt;})</em><a class="headerlink" href="#recipipe.transformers.SklearnCreator.__dict__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.SklearnCreator.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sk_transformer</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnCreator.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnCreator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.SklearnCreator.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.SklearnCreator.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.SklearnCreator.__weakref__">
+<code class="sig-name descname">__weakref__</code><a class="headerlink" href="#recipipe.transformers.SklearnCreator.__weakref__" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.SklearnFitOneWrapper">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">SklearnFitOneWrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnFitOneWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnFitOneWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.transformers.SklearnColumnWrapper" title="recipipe.transformers.SklearnColumnWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.transformers.SklearnColumnWrapper</span></code></a></p>
+<p>Fit in a concatenation of all the columns, apply one by one.</p>
+<p>This is useful when we have two or more columns that are very related.
+For example, if all those columns share the same category type.</p>
+<dl class="py method">
+<dt id="recipipe.transformers.SklearnFitOneWrapper.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnFitOneWrapper.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnFitOneWrapper.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new transformer.</p>
+<p>Columns names can be use Unix filename pattern matching (
+<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
+will work on.</p></li>
+<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
+transformer will work on. If <cite>*args</cite> are provided, this list
+of columns is going to be appended at the end.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><em>dtype</em><em>] or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – This value is passed
+to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>. The columns returned
+by this method (executed in the dataframe passed to the fit
+method) will be the columns that are going to be used in the
+transformation phase.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
+<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
+columns used in the transformer in the transformed DataFrame,
+<cite>False</cite> if not.
+Note that, if the output column has the same name as the input
+column, the output input column will not be included even if
+<cite>keep_original</cite> is set to <cite>True</cite>.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
+substitute that placeholder by the column name. For example, if
+you want to append the string “_new” at the end of all the
+generated columns you must set <cite>col_format=”{}_new”</cite>.
+Default: “{}”.</p></li>
+<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
+any match for any of the specified columns.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.SklearnFitOneWrapper.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.SklearnFitOneWrapper.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-recipipe.utils">
+<span id="recipipe-utils-module"></span><h2>recipipe.utils module<a class="headerlink" href="#module-recipipe.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="recipipe.utils.add_to_map_dict">
+<code class="sig-prename descclassname">recipipe.utils.</code><code class="sig-name descname">add_to_map_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">col_map</span></em>, <em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">v</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/utils.html#add_to_map_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.utils.add_to_map_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores <cite>k</cite> and <cite>v</cite> in the given <cite>col_map</cite>.</p>
+<p>If <cite>k</cite> is a string, <cite>col_map[k] += list(v)</cite>.
+If <cite>k</cite> is a tuple, <cite>for each i in k: col_map[k] += list(v)</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>col_map</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) – Dictionary in which the keys and values will
+be stored.</p></li>
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>) – Tuples will be split and <cite>col_map</cite>
+will contain a string key with a list of values taken from <cite>v</cite>.</p></li>
+<li><p><strong>v</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>) – Value appended to each of the keys
+in <cite>k</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="recipipe.utils.default_params">
+<code class="sig-prename descclassname">recipipe.utils.</code><code class="sig-name descname">default_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fun_kwargs</span></em>, <em class="sig-param"><span class="n">default_dict</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/utils.html#default_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.utils.default_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add to kwargs and/or default_dict the values of fun_kwargs.</p>
+<p>This function allows the user to overwrite default values of some
+parameters. For example, in the next example the user cannot give a value
+to the param <cite>a</cite> because you will be passing the param <cite>a</cite> twice to the
+function <cite>another_fun</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">fun</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">another_fun</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can solve this in two ways. The fist one:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">fun</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">another_fun</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or using default_params:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">fun</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>   <span class="n">kwargs</span> <span class="o">=</span> <span class="n">default_params</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="k">return</span> <span class="n">another_fun</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="recipipe.utils.fit_columns">
+<code class="sig-prename descclassname">recipipe.utils.</code><code class="sig-name descname">fit_columns</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">cols</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">raise_error</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">drop_duplicates</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/utils.html#fit_columns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.utils.fit_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit columns to a DataFrame.</p>
+<p>If no <cite>cols</cite> and not <cite>dtype</cite> are given, <cite>df.columns</cite> is returned.
+If both <cite>cols</cite> and <cite>dtype</cite> are given, first <cite>cols</cite> are applied and <cite>dtype</cite>
+is applied over the resulting columns.</p>
+<p>Note than an empty list can be returned if <cite>df</cite> does not contain columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – DataFrame that is been fitted.</p></li>
+<li><p><strong>cols</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) – List of columns to fit. The names may contain
+Unix filename pattern matching (<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>) symbols.</p></li>
+<li><p><strong>dtype</strong> – Any value suported by <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>.</p></li>
+<li><p><strong>raise_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – If <cite>True</cite> and not column in <cite>df</cite> match the
+given column in <cite>cols</cite>, an exception is raised.</p></li>
+<li><p><strong>drop_duplicates</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Remove duplicates keeping the order.
+Default: <cite>True</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of existing columns in df that satisfy the constrains of <cite>dtype</cite>
+and <cite>cols</cite>.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – </p></li>
+<li><p><strong>raise_error</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="recipipe.utils.flatten_list">
+<code class="sig-prename descclassname">recipipe.utils.</code><code class="sig-name descname">flatten_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cols_list</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/utils.html#flatten_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.utils.flatten_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a list of lists and return a flattened list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cols_list</strong> – an iterable of any quantity of str/tuple/list/set.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">flatten_list</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;c&quot;</span><span class="p">])),</span> <span class="p">[[</span><span class="s2">&quot;d&quot;</span><span class="p">]]])</span>
+<span class="go">[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="recipipe.utils.is_categorical">
+<code class="sig-prename descclassname">recipipe.utils.</code><code class="sig-name descname">is_categorical</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">column</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/utils.html#is_categorical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.utils.is_categorical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a pandas Series or a column in a DataFrame is categorical.</p>
+<dl class="simple">
+<dt>s (pandas.Series or pandas.DataFrame): Series to check or dataframe with</dt><dd><p>column to check.</p>
+</dd>
+<dt>column (str): Column name. If a column name is given it is assumed that</dt><dd><p><cite>s</cite> is a <cite>pandas.DataFrame</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="recipipe.utils.memory_usage_mb">
+<code class="sig-prename descclassname">recipipe.utils.</code><code class="sig-name descname">memory_usage_mb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/utils.html#memory_usage_mb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.utils.memory_usage_mb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataframe memory usage in MB.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="diagrams.html" class="btn btn-neutral float-right" title="Diagrams" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, guiferviz
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
