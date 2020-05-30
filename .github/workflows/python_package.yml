@@ -25,7 +25,6 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install -r requirements_dev.in
-        pip install https://github.com/bboe/coveralls-python/archive/github_actions.zip
     - name: Linter
       run: |
         # Stop the build if there are syntax errors or some basic mistakes.
@@ -42,13 +41,3 @@ jobs:
         COVERALLS_PARALLEL: true
       run: |
         coveralls
-
-  coveralls_finish:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.ACCESS_TOKEN }}
-        parallel-finished: true
