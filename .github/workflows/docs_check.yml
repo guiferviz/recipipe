@@ -18,6 +18,10 @@ jobs:
         sudo apt-get install graphviz
         pip install -r requirements_dev.in
     - name: Generate pre-build data
-      run: cd doc/ && make generate_data
+      run: |
+        cd doc/
+        make generate_data
     - name: Build docs
-      run: cd doc/ && make html
+      run: |
+        cd doc/
+        make html
