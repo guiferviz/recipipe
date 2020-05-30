@@ -46,15 +46,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v2
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@master
       with:
-        python-version: 3.7
-    - name: Install dependencies
-      run: |
-        pip install --upgrade pip
-        pip install -r requirements_dev.in
-    - name: Coveralls finished
-      run: |
-        coveralls
+        github-token: ${{ secrets.ACCESS_TOKEN }}
+        parallel-finished: true
