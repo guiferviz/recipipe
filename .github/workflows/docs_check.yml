@@ -21,8 +21,6 @@ jobs:
       run: |
         cd doc/
         make generate_data
-        whereis python
-        whereis pyreverse
     - name: Build docs
       run: |
         cd doc/
