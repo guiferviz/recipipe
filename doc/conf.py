@@ -29,7 +29,8 @@ __version__ = None  # declared here to avoid linter errors.
 with open("../recipipe/_version.py") as file:
     exec(file.read())
 # The short X.Y version
-version = ".".join(__version__.split(".")[:2])
+#version = ".".join(__version__.split(".")[:2])
+version = __version__
 # The full version, including alpha/beta/rc tags
 release = __version__
 
