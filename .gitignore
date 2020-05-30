@@ -3,6 +3,9 @@
 # Generic .gitignore for Python projects #
 ##########################################
 
+# GitHub pages.
+gh_pages/
+
 # IDE code files
 .vscode/
 .idea/
