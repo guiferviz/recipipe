@@ -25,6 +25,7 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install -r requirements_dev.in
+        pip install https://github.com/bboe/coveralls-python/archive/github_actions.zip
     - name: Linter
       run: |
         # Stop the build if there are syntax errors or some basic mistakes.
