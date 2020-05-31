@@ -6,6 +6,8 @@ SKLearn pipelines easy to declare and Pandas-compatible.
 from sklearn.impute import MissingIndicator
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import RobustScaler
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import Binarizer
 
@@ -54,7 +56,10 @@ reduce_memory = ReduceMemoryTransformer
 # SKLearn recipipe transformer.
 from_sklearn = SklearnCreator
 onehot = from_sklearn(OneHotEncoder(sparse=False, handle_unknown="ignore"))
-scale = from_sklearn(StandardScaler())
+standarize = from_sklearn(StandardScaler())
+scale = standarize
+robust_scale = from_sklearn(RobustScaler())
+minmax = from_sklearn(MinMaxScaler())
 binarizer = from_sklearn(Binarizer())
 indicator = from_sklearn(MissingIndicator(), col_format="INDICATOR({})")
 impute = from_sklearn(SimpleImputer(strategy="constant"))
