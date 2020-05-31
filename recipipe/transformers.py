@@ -269,7 +269,7 @@ class SklearnColumnWrapper(ColumnTransformer):
     def _transform_column(self, df, c):
         return self.transformers[c].transform(df[c].values.reshape(-1, 1))
 
-    def _get_column_mapping(self):
+    def get_column_mapping(self):
         # Check if SKLearn object has features index.
         # "features_" is common in transformers like MissingIndicator with
         # the parameter features="missing-only", that is, transformers that do
@@ -283,7 +283,7 @@ class SklearnColumnWrapper(ColumnTransformer):
                 cols.append(c)
         self.cols = cols
 
-        col_map = super()._get_column_mapping()
+        col_map = super().get_column_mapping()
         for c, t in self.transformers.items():
             if hasattr(t, "get_feature_names"):
                 col_format = self.col_format
@@ -312,7 +312,7 @@ class SklearnColumnsWrapper(ColumnsTransformer):
     def _transform_columns(self, df, cols):
         return self.sk_transformer.transform(df[cols].values)
 
-    def _get_column_mapping(self):
+    def get_column_mapping(self):
         # Check if SKLearn object has features index.
         # "features_" is common in transformers like MissingIndicator with
         # the parameter features="missing-only", that is, transformers that do
@@ -337,7 +337,7 @@ class SklearnColumnsWrapper(ColumnsTransformer):
                 col_map[col].append(full_name)
             col_map = {k: tuple(v) for k, v in col_map.items()}
         else:
-            col_map = super()._get_column_mapping()
+            col_map = super().get_column_mapping()
         """
         else:
             name = "_".join(c)
@@ -527,7 +527,7 @@ class ColumnGroupsTransformer(RecipipeTransformer):
         if not self.cols_groups:
             self.cols_groups = self.cols
 
-    def _get_column_mapping(self):
+    def get_column_mapping(self):
         col_map = {}
         for c in zip(*self.cols_groups):
             new_col = self._get_column_name(c)

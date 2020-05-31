@@ -190,7 +190,7 @@ class RecipipeTransformerTest(TestCase):
     # column mapping?
     def _test_fit_check_column_mapping(self):
         t = r.RecipipeTransformer()
-        t._get_column_mapping = MagicMock(return_value={
+        t.get_column_mapping = MagicMock(return_value={
             "c1": ["c1", "c2"], "c2": []})
         with self.assertRaises(ValueError):
             t.fit(create_df_3dtypes())
@@ -200,14 +200,14 @@ class RecipipeTransformerTest(TestCase):
 
         t = RecipipeTransformerMock()
         with self.assertRaises(ValueError):
-            t._get_column_mapping()
+            t.get_column_mapping()
 
     def test_get_column_map(self):
         """Default column mapping, 1:1 mapping. """
 
         t = RecipipeTransformerMock()
         t.cols = ["c2", "c1"]
-        cols_map = t._get_column_mapping()
+        cols_map = t.get_column_mapping()
         self.assertDictEqual(cols_map, {"c2": "c2", "c1": "c1"})
 
     def test_get_column_map_format(self):
@@ -215,7 +215,7 @@ class RecipipeTransformerTest(TestCase):
 
         t = RecipipeTransformerMock(col_format="{}_new")
         t.cols = ["c2", "c1"]
-        cols_map = t._get_column_mapping()
+        cols_map = t.get_column_mapping()
         self.assertDictEqual(cols_map, {"c2": "c2_new", "c1": "c1_new"})
 
     def test_transform_all_columns(self):
@@ -275,7 +275,7 @@ class RecipipeTransformerTest(TestCase):
         class C(r.RecipipeTransformer):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
-            def _get_column_mapping(self):
+            def get_column_mapping(self):
                 return {"c1": ("c1_1", "c1_2"), ("c1", "t1"): "c1t1"}
             def _transform(self, df):
                 df = df[["c1", "c1", "t1"]]
@@ -294,7 +294,7 @@ class RecipipeTransformerTest(TestCase):
         class C(r.RecipipeTransformer):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
-            def _get_column_mapping(self):
+            def get_column_mapping(self):
                 return {"c1": "c1", ("c1", "t1"): "c1t1"}
             def _transform(self, df):
                 df = df[["c1", "t1"]]
@@ -311,7 +311,7 @@ class RecipipeTransformerTest(TestCase):
         """If no cols are given, the col_map should be used to obtain them. """
 
         class C(r.RecipipeTransformer):
-            def _get_column_mapping(self):
+            def get_column_mapping(self):
                 return {"c1": ["hi", "bye"]}
 
         t = C()
@@ -323,7 +323,7 @@ class RecipipeTransformerTest(TestCase):
         class C(r.RecipipeTransformer):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
-            def _get_column_mapping(self):
+            def get_column_mapping(self):
                 return {"c1": ("c1_1", "c1_2"), ("c1", "t1"): "c1t1"}
             def _transform(self, df):
                 df = df[["c1", "c1", "t1"]]
@@ -347,7 +347,7 @@ class RecipipeTransformerTest(TestCase):
         class C(r.RecipipeTransformer):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
-            def _get_column_mapping(self):
+            def get_column_mapping(self):
                 return {"c1": "c1", ("c1", "t1"): "c1t1"}
             def _transform(self, df):
                 df = df[["c1", "t1"]]

@@ -112,14 +112,14 @@ class ColumnTransformerTest(TestCase):
 
     def test_allow_1_to_N_relationship(self):
         class C(r.ColumnTransformer):
-            def _get_column_mapping(self):
+            def get_column_mapping(self):
                 return {"color": ["color1", "color2"], "price": "price"}
         t = C("color", "price")
         t.fit(create_df_all())
 
     def test_not_N_to_1_relationship(self):
         class C(r.ColumnTransformer):
-            def _get_column_mapping(self):
+            def get_column_mapping(self):
                 # 2 input cols and 3 output cols, but still N to N.
                 return {
                         tuple(["color", "price"]): "color_price",
@@ -131,7 +131,7 @@ class ColumnTransformerTest(TestCase):
 
     def test_transform_column_1_N(self):
         t = r.ColumnTransformer("color")
-        t._get_column_mapping = MagicMock(return_value={
+        t.get_column_mapping = MagicMock(return_value={
             "color": ["color1", "color2"]})
         t._transform_column = MagicMock(return_value=[[1,2],[1,2],[1,2]])
         df = create_df_all()
@@ -213,7 +213,7 @@ class ColumnTransformerTest(TestCase):
 
     def test_inverse_transform_column_1_N(self):
         t = r.ColumnTransformer("color")
-        t._get_column_mapping = MagicMock(return_value={
+        t.get_column_mapping = MagicMock(return_value={
             "color": ["color1", "color2"]})
         t._inverse_transform_column = MagicMock(return_value=[1,1,1])
         df = create_df_all()
@@ -363,7 +363,7 @@ class SklearnColumnWrapperTest(TestCase):
         t = r.SklearnColumnWrapper(None)
         t.transformers = {"amount": sk1, "color": sk2}
         t.cols = ["amount", "color"]
-        t._get_column_mapping()
+        t.get_column_mapping()
         cols_expected = ["amount", "color"] if selected else ["color"]
         self.assertListEqual(t.cols, cols_expected)
 
@@ -392,7 +392,7 @@ class SklearnColumnWrapperTest(TestCase):
         t = r.SklearnColumnWrapper(None)
         t.transformers = {"color": sk1, "amount": sk2}
         t.cols = ["color", "amount"]
-        d = t._get_column_mapping()
+        d = t.get_column_mapping()
         d_expected = {
                 "color": tuple(["color=blue", "color=red"]),
                 "amount": "amount"}
@@ -416,7 +416,7 @@ class SklearnColumnsWrapperTest(TestCase):
         sk.features_ = [1]
         t = r.SklearnColumnsWrapper(sk)
         t.cols = ["amount", "color"]
-        t._get_column_mapping()
+        t.get_column_mapping()
         self.assertListEqual(t.cols, ["color"])
 
     def test_get_column_map_features(self):
@@ -424,7 +424,7 @@ class SklearnColumnsWrapperTest(TestCase):
         sk.features_ = [1]
         t = r.SklearnColumnsWrapper(sk)
         t.cols = ["amount", "color"]
-        d = t._get_column_mapping()
+        d = t.get_column_mapping()
         d_expected = {"color": "color"}
         self.assertDictEqual(d, d_expected)
 
@@ -436,7 +436,7 @@ class SklearnColumnsWrapperTest(TestCase):
         else:
             t = r.SklearnColumnsWrapper(sk)
         t.cols = ["color"]
-        d = t._get_column_mapping()
+        d = t.get_column_mapping()
         d_expected = {"color": tuple(expected)}
         self.assertDictEqual(d, d_expected)
 

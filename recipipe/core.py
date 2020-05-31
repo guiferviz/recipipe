@@ -238,7 +238,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
         Abstract method that you should overwrite in your classes.
         Remember that any transformation done here should be consistent with
         the column mapping returned by
-        :obj:`recipipe.core.RecipipeTransformer._get_column_mapping`.
+        :obj:`recipipe.core.RecipipeTransformer.get_column_mapping`.
         Ex: if your column mapping is `{"c1": "c1"}` do not return in this
         method a DataFrame with columns `c1` and `c2`.
 
@@ -265,8 +265,8 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
                 self.cols_not_found_error)
         self._fit(df)
         # Save column maps and lists.
-        self.col_map = self._get_column_mapping()
-        # Recreate cols, just in case you overwrite the _get_column_mapping
+        self.col_map = self.get_column_mapping()
+        # Recreate cols, just in case you overwrite the get_column_mapping
         # but you didn't specify any cols_init.
         self.cols = list(collections.OrderedDict.fromkeys(
             flatten_list(self.col_map.keys())))
@@ -362,7 +362,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
 
         return df_joined[cols_out]
 
-    def _get_column_mapping(self):
+    def get_column_mapping(self):
         """Get the column mapping between the input and transformed DataFrame.
 
         By default it returns a 1:1 map between the input and output columns.
