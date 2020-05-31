@@ -854,16 +854,14 @@ class DropNARowsTransformerTest(TestCase):
 class ColumnGroupsTransformerTest(TestCase):
 
     def test_get_column_name(self):
-        c = r.ColumnGroupsTransformer._get_column_name(
-                None,  # self is not needed to test this function.
+        c = r.ColumnGroupsTransformer()._get_column_name(
                 ["Type 1", "Type 2"])
         self.assertEqual(c, "Type")
 
     def test_get_column_name_no_match(self):
         """When no numbers in names, the first column is used. """
 
-        c = r.ColumnGroupsTransformer._get_column_name(
-                None,  # self is not needed to test this function.
+        c = r.ColumnGroupsTransformer()._get_column_name(
                 ["Type", "ExtraType"])
         self.assertEqual(c, "Type")
 

@@ -2,6 +2,7 @@
 import collections
 import copy
 import inspect
+import re
 
 import pandas as pd
 
@@ -535,8 +536,7 @@ class ColumnGroupsTransformer(RecipipeTransformer):
         return col_map
 
     def _get_column_name(self, c):
-        import re
-        return re.sub(r"\s*\d\s*", "", c[0])
+        return self.col_format.format(re.sub(r"\s*\d\s*", "", c[0]))
 
     def _transform(self, df):
         df_out = pd.DataFrame(index=df.index, columns=self.cols_out)
