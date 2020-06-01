@@ -36,6 +36,7 @@ jobs:
         KAGGLE_KEY: ${{ env.KAGGLE_KEY }}
       run: |
         coverage run --source=recipipe -m pytest
+        ls
     - name: Test coverage
       run: |
         # Never coverage under 100%!
