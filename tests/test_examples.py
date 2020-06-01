@@ -58,10 +58,8 @@ def test_notebook(notebook):
             i += 1
             co = clean_output(co.outputs)
             c = clean_output(c.outputs)
-            if i == 2 and "titanic" in notebook:
-                print(co)
-                print(c)
-                0/0
+            print(co)
+            print(c)
             t = unittest.TestCase()
             t.maxDiff = None
             t.assertEqual(co, c)
