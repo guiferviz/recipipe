@@ -344,11 +344,18 @@
 <span class="sd">            exclude (:obj:`list` of :obj:`str`): List of columns to exclude.</span>
 <span class="sd">                The exclusion is applied after fitting the columns, so it can</span>
 <span class="sd">                be used at the same time as `*args` and `col_init`.</span>
-<span class="sd">            dtype (dtype, str, list[dtype] or list[str]): This value is passed</span>
-<span class="sd">                to :obj:`pandas.DataFrame.select_dtypes`. The columns returned</span>
-<span class="sd">                by this method (executed in the dataframe passed to the fit</span>
-<span class="sd">                method) will be the columns that are going to be used in the</span>
-<span class="sd">                transformation phase.</span>
+<span class="sd">            dtype (:obj:`numpy.dtype`, :obj:`str`, :obj:`list` of</span>
+<span class="sd">                :obj:`numpy.dtype` or with :obj:`str` or :obj:`dict`): This</span>
+<span class="sd">                value is passed to :obj:`pandas.DataFrame.select_dtypes`.</span>
+<span class="sd">                If a :obj:`dict` is given, the Pandas function is going to be</span>
+<span class="sd">                called with dictionary unpacking: `select_dtypes(**dtype)`.</span>
+<span class="sd">                In this way you can exclude, for example, int dtypes using:</span>
+<span class="sd">                `dtype=dict(exclude=int)`.</span>
+<span class="sd">                The columns returned by this method (executed in the DataFrame</span>
+<span class="sd">                passed to the fit method) will be the columns that are going</span>
+<span class="sd">                to be used in the transformation phase.</span>
+<span class="sd">                When used in combination with `*args` or `cols_init`, the dtype</span>
+<span class="sd">                filter is applied later.</span>
 <span class="sd">            name (:obj:`str`): Human-friendly name of the transformer.</span>
 <span class="sd">            keep_original (:obj:`bool`): `True` if you want to keep the input</span>
 <span class="sd">                columns used in the transformer in the transformed DataFrame,</span>

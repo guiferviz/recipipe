@@ -279,7 +279,9 @@
         <span class="k">if</span> <span class="n">cols_fitted</span><span class="p">:</span>
             <span class="c1"># dtype is applied after cols.</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">cols_fitted</span><span class="p">]</span>
-        <span class="n">cols_fitted</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">cols_fitted</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="o">**</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">drop_duplicates</span><span class="p">:</span>
         <span class="n">cols_fitted</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">cols_fitted</span><span class="p">))</span>
