@@ -122,7 +122,9 @@ def fit_columns(df, cols=None, dtype=None, raise_error=True,
         if cols_fitted:
             # dtype is applied after cols.
             df = df[cols_fitted]
-        cols_fitted = list(df.select_dtypes(dtype).columns)
+        if type(dtype) != dict:
+            dtype = dict(include=dtype)
+        cols_fitted = list(df.select_dtypes(**dtype).columns)
 
     if drop_duplicates:
         cols_fitted = list(collections.OrderedDict.fromkeys(cols_fitted))

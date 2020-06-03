@@ -187,11 +187,18 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
             exclude (:obj:`list` of :obj:`str`): List of columns to exclude.
                 The exclusion is applied after fitting the columns, so it can
                 be used at the same time as `*args` and `col_init`.
-            dtype (dtype, str, list[dtype] or list[str]): This value is passed
-                to :obj:`pandas.DataFrame.select_dtypes`. The columns returned
-                by this method (executed in the dataframe passed to the fit
-                method) will be the columns that are going to be used in the
-                transformation phase.
+            dtype (:obj:`numpy.dtype`, :obj:`str`, :obj:`list` of
+                :obj:`numpy.dtype` or with :obj:`str` or :obj:`dict`): This
+                value is passed to :obj:`pandas.DataFrame.select_dtypes`.
+                If a :obj:`dict` is given, the Pandas function is going to be
+                called with dictionary unpacking: `select_dtypes(**dtype)`.
+                In this way you can exclude, for example, int dtypes using:
+                `dtype=dict(exclude=int)`.
+                The columns returned by this method (executed in the DataFrame
+                passed to the fit method) will be the columns that are going
+                to be used in the transformation phase.
+                When used in combination with `*args` or `cols_init`, the dtype
+                filter is applied later.
             name (:obj:`str`): Human-friendly name of the transformer.
             keep_original (:obj:`bool`): `True` if you want to keep the input
                 columns used in the transformer in the transformed DataFrame,

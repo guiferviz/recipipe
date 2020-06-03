@@ -163,12 +163,16 @@ class RecipipeTransformerTest(TestCase):
         t = RecipipeTransformerMock("c1", cols_init=["c2"])
         self.assertListEqual(t.cols_init, ["c1", "c2"])
 
-    def test_fit_cols(self):
-        """Cols should have a value after fit. """
-
+    def test_fit_cols_and_dtype(self):
         t = RecipipeTransformerMock("c*", dtype=int)
         t.fit(create_df_3dtypes())
         self.assertListEqual(t.cols, ["c1"])
+        self.assertEqual(t.n_fit, 1)
+
+    def test_fit_cols_and_dtype_exclude(self):
+        t = RecipipeTransformerMock("c*", dtype=dict(exclude=int))
+        t.fit(create_df_3dtypes())
+        self.assertListEqual(t.cols, ["c2"])
         self.assertEqual(t.n_fit, 1)
 
     def test_fit_cols_all(self):
