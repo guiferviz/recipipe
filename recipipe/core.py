@@ -170,8 +170,8 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
         # Extract and sort argument names excluding 'self'
         return sorted(parameters)
 
-    def __init__(self, *args, cols_init=None, dtype=None, name=None,
-                 keep_original=False, col_format="{}",
+    def __init__(self, *args, cols_init=None, exclude=None, dtype=None,
+                 name=None, keep_original=False, col_format="{}",
                  cols_not_found_error=False):
         """Create a new transformer.
 
@@ -184,6 +184,9 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
             cols_init (:obj:`list` of :obj:`str`): List of columns the
                 transformer will work on. If `*args` are provided, this list
                 of columns is going to be appended at the end.
+            exclude (:obj:`list` of :obj:`str`): List of columns to exclude.
+                The exclusion is applied after fitting the columns, so it can
+                be used at the same time as `*args` and `col_init`.
             dtype (dtype, str, list[dtype] or list[str]): This value is passed
                 to :obj:`pandas.DataFrame.select_dtypes`. The columns returned
                 by this method (executed in the dataframe passed to the fit
@@ -213,6 +216,7 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
 
         # Set values.
         self.cols_init = cols_init
+        self.exclude = flatten_list(exclude or [])
         self.dtype = dtype
         self.keep_original = keep_original
         self.name = name
@@ -261,8 +265,11 @@ class RecipipeTransformer(BaseEstimator, TransformerMixin):
             df (pandas.DataFrame): Dataframe used to fit the transformation.
         """
 
-        self.cols = fit_columns(df, self.cols_init, self.dtype,
+        cols = fit_columns(df, self.cols_init, self.dtype,
                 self.cols_not_found_error)
+        exclude = fit_columns(df, self.exclude, None,
+                self.cols_not_found_error) if self.exclude else []
+        self.cols = [i for i in cols if i not in exclude]
         self._fit(df)
         # Save column maps and lists.
         self.col_map = self.get_column_mapping()

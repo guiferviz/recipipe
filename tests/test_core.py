@@ -143,7 +143,7 @@ class RecipipeTransformerTest(TestCase):
         params = T2(1, 2, param1=3, param2=4, name="The Dude").get_params()
         params_expected = dict(param1=3, param2=4, name="The Dude",
                 col_format='{}', cols_init=[1, 2], cols_not_found_error=False,
-		dtype=None, keep_original=False)
+		exclude=[], dtype=None, keep_original=False)
         self.assertDictEqual(params, params_expected)
 
     def test_init_cols_mix(self):
@@ -185,6 +185,12 @@ class RecipipeTransformerTest(TestCase):
         t = RecipipeTransformerMock(keep_original=True)
         with self.assertRaises(ValueError):
             t.fit(create_df_3dtypes())
+
+    def test_fit_exclude(self):
+        t = RecipipeTransformerMock(exclude=["c1", ["c*"]])
+        t.fit(create_df_3dtypes())
+        self.assertListEqual(t.cols, ["t1"])
+        self.assertEqual(t.n_fit, 1)
 
     # TODO: this test is not working, do we really need to check the returned
     # column mapping?
