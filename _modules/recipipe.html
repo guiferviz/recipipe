@@ -161,6 +161,8 @@
 <span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">MissingIndicator</span>
 <span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">RobustScaler</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">Binarizer</span>
 
@@ -209,7 +211,10 @@
 <span class="c1"># SKLearn recipipe transformer.</span>
 <span class="n">from_sklearn</span> <span class="o">=</span> <span class="n">SklearnCreator</span>
 <span class="n">onehot</span> <span class="o">=</span> <span class="n">from_sklearn</span><span class="p">(</span><span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">handle_unknown</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">))</span>
-<span class="n">scale</span> <span class="o">=</span> <span class="n">from_sklearn</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">())</span>
+<span class="n">standarize</span> <span class="o">=</span> <span class="n">from_sklearn</span><span class="p">(</span><span class="n">StandardScaler</span><span class="p">())</span>
+<span class="n">scale</span> <span class="o">=</span> <span class="n">standarize</span>
+<span class="n">robust_scale</span> <span class="o">=</span> <span class="n">from_sklearn</span><span class="p">(</span><span class="n">RobustScaler</span><span class="p">())</span>
+<span class="n">minmax</span> <span class="o">=</span> <span class="n">from_sklearn</span><span class="p">(</span><span class="n">MinMaxScaler</span><span class="p">())</span>
 <span class="n">binarizer</span> <span class="o">=</span> <span class="n">from_sklearn</span><span class="p">(</span><span class="n">Binarizer</span><span class="p">())</span>
 <span class="n">indicator</span> <span class="o">=</span> <span class="n">from_sklearn</span><span class="p">(</span><span class="n">MissingIndicator</span><span class="p">(),</span> <span class="n">col_format</span><span class="o">=</span><span class="s2">&quot;INDICATOR(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="p">)</span>
 <span class="n">impute</span> <span class="o">=</span> <span class="n">from_sklearn</span><span class="p">(</span><span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">))</span>

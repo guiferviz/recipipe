@@ -395,7 +395,7 @@
 <span class="sd">        Abstract method that you should overwrite in your classes.</span>
 <span class="sd">        Remember that any transformation done here should be consistent with</span>
 <span class="sd">        the column mapping returned by</span>
-<span class="sd">        :obj:`recipipe.core.RecipipeTransformer._get_column_mapping`.</span>
+<span class="sd">        :obj:`recipipe.core.RecipipeTransformer.get_column_mapping`.</span>
 <span class="sd">        Ex: if your column mapping is `{&quot;c1&quot;: &quot;c1&quot;}` do not return in this</span>
 <span class="sd">        method a DataFrame with columns `c1` and `c2`.</span>
 
@@ -422,8 +422,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">cols_not_found_error</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="c1"># Save column maps and lists.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">col_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_column_mapping</span><span class="p">()</span>
-        <span class="c1"># Recreate cols, just in case you overwrite the _get_column_mapping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">col_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_column_mapping</span><span class="p">()</span>
+        <span class="c1"># Recreate cols, just in case you overwrite the get_column_mapping</span>
         <span class="c1"># but you didn&#39;t specify any cols_init.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span>
             <span class="n">flatten_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
@@ -519,7 +519,7 @@
 
         <span class="k">return</span> <span class="n">df_joined</span><span class="p">[</span><span class="n">cols_out</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RecipipeTransformer.get_column_mapping"><a class="viewcode-back" href="../../recipipe.html#recipipe.core.RecipipeTransformer.get_column_mapping">[docs]</a>    <span class="k">def</span> <span class="nf">get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the column mapping between the input and transformed DataFrame.</span>
 
 <span class="sd">        By default it returns a 1:1 map between the input and output columns.</span>
@@ -545,7 +545,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No columns. Transformer not fitted?&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">}</span></div>
+        <span class="k">return</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">}</span></div></div>
 
 </pre></div>
 

@@ -159,6 +159,7 @@
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
@@ -426,7 +427,7 @@
     <span class="k">def</span> <span class="nf">_transform_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SklearnColumnWrapper.get_column_mapping"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnColumnWrapper.get_column_mapping">[docs]</a>    <span class="k">def</span> <span class="nf">get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Check if SKLearn object has features index.</span>
         <span class="c1"># &quot;features_&quot; is common in transformers like MissingIndicator with</span>
         <span class="c1"># the parameter features=&quot;missing-only&quot;, that is, transformers that do</span>
@@ -440,7 +441,7 @@
                 <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">=</span> <span class="n">cols</span>
 
-        <span class="n">col_map</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_column_mapping</span><span class="p">()</span>
+        <span class="n">col_map</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_column_mapping</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;get_feature_names&quot;</span><span class="p">):</span>
                 <span class="n">col_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_format</span>
@@ -454,7 +455,7 @@
                     <span class="n">col_map</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_cols</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">col_map</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">col_map</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">col_map</span></div>
+        <span class="k">return</span> <span class="n">col_map</span></div></div>
 
 
 <div class="viewcode-block" id="SklearnColumnsWrapper"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnColumnsWrapper">[docs]</a><span class="k">class</span> <span class="nc">SklearnColumnsWrapper</span><span class="p">(</span><span class="n">ColumnsTransformer</span><span class="p">):</span>
@@ -469,7 +470,7 @@
     <span class="k">def</span> <span class="nf">_transform_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">cols</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SklearnColumnsWrapper.get_column_mapping"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnColumnsWrapper.get_column_mapping">[docs]</a>    <span class="k">def</span> <span class="nf">get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Check if SKLearn object has features index.</span>
         <span class="c1"># &quot;features_&quot; is common in transformers like MissingIndicator with</span>
         <span class="c1"># the parameter features=&quot;missing-only&quot;, that is, transformers that do</span>
@@ -494,14 +495,14 @@
                 <span class="n">col_map</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_name</span><span class="p">)</span>
             <span class="n">col_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">col_map</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">col_map</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_column_mapping</span><span class="p">()</span>
+            <span class="n">col_map</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_column_mapping</span><span class="p">()</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        else:</span>
 <span class="sd">            name = &quot;_&quot;.join(c)</span>
 <span class="sd">            self.cols_out = [f&quot;{name}_{i}&quot; for i in range(output_size)]</span>
 <span class="sd">            col_map = {tuple(c): tuple(self.new_cols_list)}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">col_map</span></div>
+        <span class="k">return</span> <span class="n">col_map</span></div></div>
 
 
 <div class="viewcode-block" id="SklearnFitOneWrapper"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnFitOneWrapper">[docs]</a><span class="k">class</span> <span class="nc">SklearnFitOneWrapper</span><span class="p">(</span><span class="n">SklearnColumnWrapper</span><span class="p">):</span>
@@ -684,16 +685,15 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols_groups</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cols_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span>
 
-    <span class="k">def</span> <span class="nf">_get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ColumnGroupsTransformer.get_column_mapping"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ColumnGroupsTransformer.get_column_mapping">[docs]</a>    <span class="k">def</span> <span class="nf">get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">col_map</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_groups</span><span class="p">):</span>
             <span class="n">new_col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_column_name</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
             <span class="n">col_map</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">c</span><span class="p">)]</span> <span class="o">=</span> <span class="n">new_col</span>
-        <span class="k">return</span> <span class="n">col_map</span>
+        <span class="k">return</span> <span class="n">col_map</span></div>
 
     <span class="k">def</span> <span class="nf">_get_column_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">re</span>
-        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*\d\s*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*\d\s*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
     <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
         <span class="n">df_out</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cols_out</span><span class="p">)</span>

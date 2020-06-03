@@ -221,31 +221,40 @@ Here is a complete table with all the aliases.</p>
 <tr class="row-odd"><td><p>onehot</p></td>
 <td><p><cite>from_sklearn(OneHotEncoder(sparse=False,handle_unknown=’ignore’))</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>scale</p></td>
+<tr class="row-even"><td><p>standarize</p></td>
 <td><p><cite>from_sklearn(StandardScaler())</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>binarizer</p></td>
+<tr class="row-odd"><td><p>scale</p></td>
+<td><p><cite>standarize</cite></p></td>
+</tr>
+<tr class="row-even"><td><p>robust_scale</p></td>
+<td><p><cite>from_sklearn(RobustScaler())</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p>minmax</p></td>
+<td><p><cite>from_sklearn(MinMaxScaler())</cite></p></td>
+</tr>
+<tr class="row-even"><td><p>binarizer</p></td>
 <td><p><cite>from_sklearn(Binarizer())</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>indicator</p></td>
+<tr class="row-odd"><td><p>indicator</p></td>
 <td><p><cite>from_sklearn(MissingIndicator(),col_format=’INDICATOR({})’)</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>impute</p></td>
+<tr class="row-even"><td><p>impute</p></td>
 <td><p><cite>from_sklearn(SimpleImputer(strategy=’constant’))</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>sk_indicator</p></td>
+<tr class="row-odd"><td><p>sk_indicator</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.MissingIndicator.html#sklearn.impute.MissingIndicator" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.impute.MissingIndicator</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>sk_inputer</p></td>
+<tr class="row-even"><td><p>sk_inputer</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html#sklearn.impute.SimpleImputer" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.impute.SimpleImputer</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>sk_onehot</p></td>
+<tr class="row-odd"><td><p>sk_onehot</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html#sklearn.preprocessing.OneHotEncoder" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.OneHotEncoder</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>sk_scale</p></td>
+<tr class="row-even"><td><p>sk_scale</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.StandardScaler</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>sk_binarizer</p></td>
+<tr class="row-odd"><td><p>sk_binarizer</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.Binarizer.html#sklearn.preprocessing.Binarizer" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.Binarizer</span></code></a></p></td>
 </tr>
 </tbody>
@@ -414,6 +423,34 @@ Default: <cite>False</cite>.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="recipipe.core.RecipipeTransformer.get_column_mapping">
+<code class="sig-name descname">get_column_mapping</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/core.html#RecipipeTransformer.get_column_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.core.RecipipeTransformer.get_column_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the column mapping between the input and transformed DataFrame.</p>
+<p>By default it returns a 1:1 map between the input and output columns.
+Make sure your transformer is fitted before calling this function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dict in which the keys are the input DataFrame column names and
+the value is the output DataFrame column names.
+Both key and values can be tuples, tuple:1 useful to indicate that
+one output column has been created from a list of columns from the
+input DataFrame, 1:tuple useful to indicate that a list of output
+columns come from one specific column of the input DataFrame.
+We use tuples and not lists because lists are not hashable, so they
+cannot be keys in a dict.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer.col_format</span></code></p>
+</div>
+<dl class="simple">
+<dt>Raise:</dt><dd><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a> if <cite>self.cols</cite> is <cite>None</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="recipipe.core.RecipipeTransformer.inverse_transform">
 <code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df_in</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/core.html#RecipipeTransformer.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.core.RecipipeTransformer.inverse_transform" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -542,6 +579,34 @@ Default: <cite>False</cite>.</p></li>
 <dt id="recipipe.transformers.ColumnGroupsTransformer.__module__">
 <code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.ColumnGroupsTransformer.__module__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.ColumnGroupsTransformer.get_column_mapping">
+<code class="sig-name descname">get_column_mapping</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ColumnGroupsTransformer.get_column_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ColumnGroupsTransformer.get_column_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the column mapping between the input and transformed DataFrame.</p>
+<p>By default it returns a 1:1 map between the input and output columns.
+Make sure your transformer is fitted before calling this function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dict in which the keys are the input DataFrame column names and
+the value is the output DataFrame column names.
+Both key and values can be tuples, tuple:1 useful to indicate that
+one output column has been created from a list of columns from the
+input DataFrame, 1:tuple useful to indicate that a list of output
+columns come from one specific column of the input DataFrame.
+We use tuples and not lists because lists are not hashable, so they
+cannot be keys in a dict.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer.col_format</span></code></p>
+</div>
+<dl class="simple">
+<dt>Raise:</dt><dd><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a> if <cite>self.cols</cite> is <cite>None</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -1167,6 +1232,34 @@ Default: <cite>False</cite>.</p></li>
 <code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.SklearnColumnWrapper.__module__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt id="recipipe.transformers.SklearnColumnWrapper.get_column_mapping">
+<code class="sig-name descname">get_column_mapping</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnColumnWrapper.get_column_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnColumnWrapper.get_column_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the column mapping between the input and transformed DataFrame.</p>
+<p>By default it returns a 1:1 map between the input and output columns.
+Make sure your transformer is fitted before calling this function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dict in which the keys are the input DataFrame column names and
+the value is the output DataFrame column names.
+Both key and values can be tuples, tuple:1 useful to indicate that
+one output column has been created from a list of columns from the
+input DataFrame, 1:tuple useful to indicate that a list of output
+columns come from one specific column of the input DataFrame.
+We use tuples and not lists because lists are not hashable, so they
+cannot be keys in a dict.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer.col_format</span></code></p>
+</div>
+<dl class="simple">
+<dt>Raise:</dt><dd><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a> if <cite>self.cols</cite> is <cite>None</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -1217,6 +1310,34 @@ Default: <cite>False</cite>.</p></li>
 <dt id="recipipe.transformers.SklearnColumnsWrapper.__module__">
 <code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.SklearnColumnsWrapper.__module__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.SklearnColumnsWrapper.get_column_mapping">
+<code class="sig-name descname">get_column_mapping</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnColumnsWrapper.get_column_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnColumnsWrapper.get_column_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the column mapping between the input and transformed DataFrame.</p>
+<p>By default it returns a 1:1 map between the input and output columns.
+Make sure your transformer is fitted before calling this function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dict in which the keys are the input DataFrame column names and
+the value is the output DataFrame column names.
+Both key and values can be tuples, tuple:1 useful to indicate that
+one output column has been created from a list of columns from the
+input DataFrame, 1:tuple useful to indicate that a list of output
+columns come from one specific column of the input DataFrame.
+We use tuples and not lists because lists are not hashable, so they
+cannot be keys in a dict.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer.col_format</span></code></p>
+</div>
+<dl class="simple">
+<dt>Raise:</dt><dd><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a> if <cite>self.cols</cite> is <cite>None</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
