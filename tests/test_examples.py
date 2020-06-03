@@ -58,5 +58,9 @@ def test_notebook(notebook):
             i += 1
             co = clean_output(co.outputs)
             c = clean_output(c.outputs)
-            unittest.TestCase().assertEqual(co, c)
+            print(co)
+            print(c)
+            t = unittest.TestCase()
+            t.maxDiff = None
+            t.assertEqual(co, c)
 

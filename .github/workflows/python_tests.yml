@@ -30,6 +30,10 @@ jobs:
         # Stop the build if there are syntax errors or some basic mistakes.
         pylint recipipe tests
     - name: Run tests
+      env:
+        # Needed for downloading test data in the example notebooks.
+        KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+        KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
       run: |
         coverage run --source=recipipe -m pytest
     - name: Test coverage

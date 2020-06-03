@@ -15,3 +15,4 @@ sphinx_rtd_theme
 # Others.
 pip-tools  # pip-compile *.in requirements files.
 notebook  # For running examples.
+kaggle  # For downloading datasets used in the notebook examples.
