@@ -327,8 +327,8 @@
         <span class="c1"># Extract and sort argument names excluding &#39;self&#39;</span>
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
 
-<div class="viewcode-block" id="RecipipeTransformer.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.core.RecipipeTransformer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">cols_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">keep_original</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">col_format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="RecipipeTransformer.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.core.RecipipeTransformer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">cols_init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_original</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">col_format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span>
                  <span class="n">cols_not_found_error</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a new transformer.</span>
 
@@ -341,6 +341,9 @@
 <span class="sd">            cols_init (:obj:`list` of :obj:`str`): List of columns the</span>
 <span class="sd">                transformer will work on. If `*args` are provided, this list</span>
 <span class="sd">                of columns is going to be appended at the end.</span>
+<span class="sd">            exclude (:obj:`list` of :obj:`str`): List of columns to exclude.</span>
+<span class="sd">                The exclusion is applied after fitting the columns, so it can</span>
+<span class="sd">                be used at the same time as `*args` and `col_init`.</span>
 <span class="sd">            dtype (dtype, str, list[dtype] or list[str]): This value is passed</span>
 <span class="sd">                to :obj:`pandas.DataFrame.select_dtypes`. The columns returned</span>
 <span class="sd">                by this method (executed in the dataframe passed to the fit</span>
@@ -370,6 +373,7 @@
 
         <span class="c1"># Set values.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cols_init</span> <span class="o">=</span> <span class="n">cols_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="n">flatten_list</span><span class="p">(</span><span class="n">exclude</span> <span class="ow">or</span> <span class="p">[])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">keep_original</span> <span class="o">=</span> <span class="n">keep_original</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -418,8 +422,11 @@
 <span class="sd">            df (pandas.DataFrame): Dataframe used to fit the transformation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">=</span> <span class="n">fit_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="n">fit_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cols_not_found_error</span><span class="p">)</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="n">fit_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cols_not_found_error</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cols</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="c1"># Save column maps and lists.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">col_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_column_mapping</span><span class="p">()</span>
