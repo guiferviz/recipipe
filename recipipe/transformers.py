@@ -527,7 +527,7 @@ class ColumnGroupsTransformer(RecipipeTransformer):
     def __init__(self, *args, **kwargs):
         col_groups = [flatten_list([c]) for c in args]
         if len(col_groups) == 1:
-            col_groups = col_groups[0]
+            col_groups = [[i] for i in col_groups[0]]
         self.col_groups_init = col_groups
         super().__init__(*args, **kwargs)
 
