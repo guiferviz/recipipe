@@ -525,17 +525,20 @@ class ColumnGroupsTransformer(RecipipeTransformer):
     """Apply a N to 1 transformation to a group of columns. """
 
     def __init__(self, *args, **kwargs):
-        self.cols_groups_init = [flatten_list([c]) for c in args]
+        col_groups = [flatten_list([c]) for c in args]
+        if len(col_groups) == 1:
+            col_groups = col_groups[0]
+        self.col_groups_init = col_groups
         super().__init__(*args, **kwargs)
 
     def _fit(self, df):
-        self.cols_groups = [fit_columns(df, c) for c in self.cols_groups_init]
-        if not self.cols_groups:
-            self.cols_groups = self.cols
+        self.col_groups = [fit_columns(df, c) for c in self.col_groups_init]
+        if not self.col_groups:
+            self.col_groups = self.cols
 
     def get_column_mapping(self):
         col_map = {}
-        for c in zip(*self.cols_groups):
+        for c in zip(*self.col_groups):
             new_col = self._get_column_name(c)
             col_map[tuple(c)] = new_col
         return col_map
@@ -545,7 +548,7 @@ class ColumnGroupsTransformer(RecipipeTransformer):
 
     def _transform(self, df):
         df_out = pd.DataFrame(index=df.index, columns=self.cols_out)
-        for c in zip(*self.cols_groups):
+        for c in zip(*self.col_groups):
             col_out = self.col_map[tuple(c)]
             df_out[col_out] = self._transform_group(df, list(c))
         return df_out
@@ -555,7 +558,7 @@ class ColumnGroupsTransformer(RecipipeTransformer):
 
     def _inverse_transform(self, df):
         df_out = pd.DataFrame(index=df.index, columns=self.cols_out)
-        for c in zip(*self.cols_groups):
+        for c in zip(*self.col_groups):
             col_out = self.col_map[tuple(c)]
             col_out_value = self._inverse_transform_group(df, col_out)
             for i in c:
