@@ -520,32 +520,32 @@ class SklearnCreatorTest(TestCase):
         t = tt(keep_original=False)
         self.assertFalse(t.keep_original)
 
-    def test_method_default(self):
+    def test_wrapper_default(self):
 
         tt = r.SklearnCreator(SklearnCreatorTest.T())
         t = tt()
         self.assertTrue(isinstance(t, r.SklearnColumnsWrapper))
 
-    def test_method_column(self):
+    def test_wrapper_column(self):
 
         tt = r.SklearnCreator(SklearnCreatorTest.T())
         t = tt(wrapper="column")
         self.assertTrue(isinstance(t, r.SklearnColumnWrapper))
 
-    def test_method_error(self):
+    def test_wrapper_error(self):
 
         tt = r.SklearnCreator(SklearnCreatorTest.T())
         with self.assertRaisesRegex(ValueError, "Wrapper method not in.*"):
             t = tt(wrapper="daisy")
 
     def test_param_collision(self):
-        """Use recipipe_params when an Sklearn object has the same attr. """
+        """Use sk_params when an Sklearn object has the same attr. """
 
         class T(SklearnTransformerMock):
             def __init__(self, keep_original=0):
                 self.keep_original = keep_original
         tt = r.SklearnCreator(T())
-        t = tt(keep_original=2, recipipe_params=dict(keep_original=3))
+        t = tt(keep_original=3, sk_params=dict(keep_original=2))
         self.assertEqual(t.sk_transformer.keep_original, 2)
         self.assertEqual(t.keep_original, 3)
 
