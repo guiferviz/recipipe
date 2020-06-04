@@ -875,6 +875,16 @@ class ColumnGroupsTransformerTest(TestCase):
         df_expected = pd.DataFrame({"a": [4,5,6]})
         self.assertTrue(df_out.equals(df_expected))
 
+    def test_fit_transform_group_cols_array(self):
+        """If no cols are specify, all the columns are in one group. """
+
+        t = r.ColumnGroupsTransformer(["a", "b"])
+        t._transform_group = MagicMock(return_value=np.array([4,5,6]))
+        df = pd.DataFrame({"a": [1,2,3], "b": [3,2,1], "c": [0,0,0]})
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({"a": [4,5,6], "c": [0,0,0]})
+        self.assertTrue(df_out.equals(df_expected))
+
     def test_inverse_transform(self):
         """By default inverse copy the output per each input col. """
 
