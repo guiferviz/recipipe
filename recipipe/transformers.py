@@ -668,3 +668,79 @@ class ReduceMemoryTransformer(RecipipeTransformer):
                   f" ({diff_mem:.2f}MB, {percent_mem:.2f}% reduction)")
         return df
 
+
+class ExtractTransformer(ColumnTransformer):
+    """Extract regex from string columns. """
+
+    def __init__(self, *args, pattern=None, flags=0, indicator=False,
+                 col_values=None, **kwargs):
+        """Create a ExtractTransformer.
+
+        Args:
+            pattern (:obj:`list` or :obj:`str`): Regex or list of regex
+                to extract. If a list is provided, only one extraction group
+                per element is allowed.
+            flags (:obj:`int`): Flags from the :obj:`re` module.
+                Default: 0, no flags.
+            col_values (:obj:`list` of :obj:`str`): Values of the output
+                columns. If you are extracting more than one column, from an
+                input column `a` and with `col_values=["b", "c"]` you will get
+                two output columns named `a=b` and `a=c`.
+            indicator (:obj:`bool`): Instead of capturing the string, return
+                an indicator with 1 if there is a match and a 0 otherwise.
+        """
+
+        super().__init__(*args, **kwargs)
+
+        col_values_none = col_values is None
+        if type(pattern) == str:
+            r = re.compile(pattern)
+            if r.groups == 0:
+                # Add a group that captures everything.
+                pattern = f"({pattern})"
+            if col_values_none:
+                col_values = list(map(str, range(max(1, r.groups))))
+        elif type(pattern) == list:
+            if col_values_none:
+                col_values = []
+            for i in range(len(pattern)):
+                r = re.compile(pattern[i])
+                if r.groups > 1:
+                    raise ValueError("Only one extraction group per element"
+                                     " in the pattern list")
+                elif r.groups == 0:
+                    # Add a group that captures everything.
+                    pattern[i] = f"({pattern[i]})"
+                if col_values_none:
+                    # Use only alpha-num characters of the expression as name.
+                    col_value = re.sub(r"\W+", "", pattern[i])
+                    col_values.append(col_value)
+            pattern = "|".join(pattern)
+
+        self.re = re.compile(pattern, flags)
+        self.pattern = pattern
+        self.flags = flags
+        self.indicator = indicator
+        self.col_values = col_values
+
+        if self.re.groups != len(col_values):
+            raise ValueError("The number of extraction groups should be equal"
+                             " to the number of column names")
+
+    def get_column_mapping(self):
+        col_format = self.col_format
+        if len(self.col_values) > 1:
+            if col_format == "{}":
+                col_format = "{column}={value}"
+        return {
+            i: [col_format.format(i, j, column=i, value=j)
+                for j in self.col_values]
+                    for i in self.cols
+        }
+
+    def _transform_column(self, df, c):
+        df_out = df[c].str.extract(self.re)
+        if self.indicator:
+            df_out = df_out.notna().astype("int8")
+        return df_out.values
+

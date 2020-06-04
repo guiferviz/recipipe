@@ -911,3 +911,67 @@ class ReduceMemoryTransformerTest(TestCase):
         # This transformer modifies df in place!
         self.assertDictEqual(df.dtypes.to_dict(), dtypes_expected)
 
+
+class ExtractTransformerTest(TestCase):
+
+    def test_one_extract_group(self):
+        t = r.ExtractTransformer(pattern="(one)")
+        self.assertEqual(t.re.pattern, "(one)")
+
+    def test_one_extract_group_implicit(self):
+        """If an extraction group is not specified, one is added for you. """
+
+        t = r.ExtractTransformer(pattern="one")
+        self.assertEqual(t.re.pattern, "(one)")
+
+    def test_list_extract_group(self):
+        """When using a pattern list, an extraction group is also added. """
+
+        t = r.ExtractTransformer(pattern=["one", "(two)"])
+        self.assertEqual(t.re.pattern, "(one)|(two)")
+
+    def test_multiple_extract_groups_error(self):
+        with self.assertRaisesRegex(ValueError,
+                                    "Only one extraction group per.*"):
+            r.ExtractTransformer(pattern=["one", "(two)(three)"])
+
+    def test_col_values_not_equal_number_groups(self):
+        with self.assertRaisesRegex(ValueError,
+                                    ".*number of extraction groups.*"):
+            r.ExtractTransformer(pattern="one(two)", col_values=["1", "2"])
+
+    def test_one_output_col(self):
+        df = pd.DataFrame(dict(c=["tone", "one", "none", "all"]))
+        t = r.ExtractTransformer(pattern="(on)e")
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame(dict(c=["on", "on", "on", None]))
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_one_output_col_output_flag(self):
+        df = pd.DataFrame(dict(c=["tone", "one", "none", "all"]))
+        t = r.ExtractTransformer(pattern="(on)e", indicator=True)
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame(dict(c=[1, 1, 1, 0]))
+        df_expected.c = df_expected.c.astype("int8")
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_two_output_col(self):
+        df = pd.DataFrame(dict(c=["tone", "one", "none", "all"]))
+        t = r.ExtractTransformer(pattern=["t", "a"])
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({
+            "c=t":["t", None, None, None], "c=a":[None, None, None, "a"]})
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_two_output_col_format(self):
+        df = pd.DataFrame(dict(c=["tone", "one", "none", "all"]))
+        t = r.ExtractTransformer(pattern=["t", "a"], col_format="{value}")
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({
+            "t":["t", None, None, None], "a":[None, None, None, "a"]})
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_col_value_alphanum(self):
+        t = r.ExtractTransformer(pattern=[r"Mr\.", r"Mrs\."])
+        self.assertListEqual(t.col_values, ["Mr", "Mrs"])
+
