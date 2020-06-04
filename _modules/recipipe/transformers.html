@@ -825,6 +825,82 @@
                   <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">diff_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">MB, </span><span class="si">{</span><span class="n">percent_mem</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">% reduction)&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">df</span></div></div>
 
+
+<div class="viewcode-block" id="ExtractTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ExtractTransformer">[docs]</a><span class="k">class</span> <span class="nc">ExtractTransformer</span><span class="p">(</span><span class="n">ColumnTransformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extract regex from string columns. &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ExtractTransformer.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ExtractTransformer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">indicator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">col_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a ExtractTransformer.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pattern (:obj:`list` or :obj:`str`): Regex or list of regex</span>
+<span class="sd">                to extract. If a list is provided, only one extraction group</span>
+<span class="sd">                per element is allowed.</span>
+<span class="sd">            flags (:obj:`int`): Flags from the :obj:`re` module.</span>
+<span class="sd">                Default: 0, no flags.</span>
+<span class="sd">            col_values (:obj:`list` of :obj:`str`): Values of the output</span>
+<span class="sd">                columns. If you are extracting more than one column, from an</span>
+<span class="sd">                input column `a` and with `col_values=[&quot;b&quot;, &quot;c&quot;]` you will get</span>
+<span class="sd">                two output columns named `a=b` and `a=c`.</span>
+<span class="sd">            indicator (:obj:`bool`): Instead of capturing the string, return</span>
+<span class="sd">                an indicator with 1 if there is a match and a 0 otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">col_values_none</span> <span class="o">=</span> <span class="n">col_values</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">groups</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Add a group that captures everything.</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="k">if</span> <span class="n">col_values_none</span><span class="p">:</span>
+                <span class="n">col_values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">groups</span><span class="p">))))</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">col_values_none</span><span class="p">:</span>
+                <span class="n">col_values</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pattern</span><span class="p">)):</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">groups</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only one extraction group per element&quot;</span>
+                                     <span class="s2">&quot; in the pattern list&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">groups</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># Add a group that captures everything.</span>
+                    <span class="n">pattern</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">pattern</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="k">if</span> <span class="n">col_values_none</span><span class="p">:</span>
+                    <span class="c1"># Use only alpha-num characters of the expression as name.</span>
+                    <span class="n">col_value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\W+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="n">col_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col_value</span><span class="p">)</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="n">flags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indicator</span> <span class="o">=</span> <span class="n">indicator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">col_values</span> <span class="o">=</span> <span class="n">col_values</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">re</span><span class="o">.</span><span class="n">groups</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_values</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of extraction groups should be equal&quot;</span>
+                             <span class="s2">&quot; to the number of column names&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExtractTransformer.get_column_mapping"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ExtractTransformer.get_column_mapping">[docs]</a>    <span class="k">def</span> <span class="nf">get_column_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">col_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_format</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">col_format</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">:</span>
+                <span class="n">col_format</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{column}</span><span class="s2">=</span><span class="si">{value}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">i</span><span class="p">:</span> <span class="p">[</span><span class="n">col_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">j</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_values</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span>
+        <span class="p">}</span></div>
+
+    <span class="k">def</span> <span class="nf">_transform_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="n">df_out</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">re</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indicator</span><span class="p">:</span>
+            <span class="n">df_out</span> <span class="o">=</span> <span class="n">df_out</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;int8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df_out</span><span class="o">.</span><span class="n">values</span></div>
+
 </pre></div>
 
            </div>

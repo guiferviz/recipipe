@@ -191,6 +191,12 @@ Here is a complete table with all the aliases.</p>
 <tr class="row-odd"><td><p>category</p></td>
 <td><p><a class="reference internal" href="#recipipe.transformers.CategoryEncoder" title="recipipe.transformers.CategoryEncoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.CategoryEncoder</span></code></a></p></td>
 </tr>
+<tr class="row-even"><td><p>extract</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.ExtractTransformer" title="recipipe.transformers.ExtractTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.ExtractTransformer</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>groupby</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.GroupByTransformer" title="recipipe.transformers.GroupByTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.GroupByTransformer</span></code></a></p></td>
+</tr>
 <tr class="row-even"><td><p>select</p></td>
 <td><p><a class="reference internal" href="#recipipe.transformers.SelectTransformer" title="recipipe.transformers.SelectTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.SelectTransformer</span></code></a></p></td>
 </tr>
@@ -209,38 +215,38 @@ Here is a complete table with all the aliases.</p>
 <tr class="row-odd"><td><p>replace</p></td>
 <td><p><a class="reference internal" href="#recipipe.transformers.ReplaceTransformer" title="recipipe.transformers.ReplaceTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.ReplaceTransformer</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>groupby</p></td>
-<td><p><a class="reference internal" href="#recipipe.transformers.GroupByTransformer" title="recipipe.transformers.GroupByTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.GroupByTransformer</span></code></a></p></td>
-</tr>
-<tr class="row-odd"><td><p>reduce_memory</p></td>
+<tr class="row-even"><td><p>reduce_memory</p></td>
 <td><p><a class="reference internal" href="#recipipe.transformers.ReduceMemoryTransformer" title="recipipe.transformers.ReduceMemoryTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.ReduceMemoryTransformer</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>from_sklearn</p></td>
+<tr class="row-odd"><td><p>from_sklearn</p></td>
 <td><p><a class="reference internal" href="#recipipe.transformers.SklearnCreator" title="recipipe.transformers.SklearnCreator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.SklearnCreator</span></code></a></p></td>
-</tr>
-<tr class="row-odd"><td><p>onehot</p></td>
-<td><p><cite>from_sklearn(OneHotEncoder(sparse=False,handle_unknown=’ignore’))</cite></p></td>
-</tr>
-<tr class="row-even"><td><p>standarize</p></td>
-<td><p><cite>from_sklearn(StandardScaler())</cite></p></td>
-</tr>
-<tr class="row-odd"><td><p>scale</p></td>
-<td><p><cite>standarize</cite></p></td>
-</tr>
-<tr class="row-even"><td><p>robust_scale</p></td>
-<td><p><cite>from_sklearn(RobustScaler())</cite></p></td>
-</tr>
-<tr class="row-odd"><td><p>minmax</p></td>
-<td><p><cite>from_sklearn(MinMaxScaler())</cite></p></td>
 </tr>
 <tr class="row-even"><td><p>binarizer</p></td>
 <td><p><cite>from_sklearn(Binarizer())</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>indicator</p></td>
+<tr class="row-odd"><td><p>impute</p></td>
+<td><p><cite>from_sklearn(SimpleImputer(strategy=’constant’))</cite></p></td>
+</tr>
+<tr class="row-even"><td><p>indicator</p></td>
 <td><p><cite>from_sklearn(MissingIndicator(),col_format=’INDICATOR({})’)</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>impute</p></td>
-<td><p><cite>from_sklearn(SimpleImputer(strategy=’constant’))</cite></p></td>
+<tr class="row-odd"><td><p>minmax</p></td>
+<td><p><cite>from_sklearn(MinMaxScaler())</cite></p></td>
+</tr>
+<tr class="row-even"><td><p>onehot</p></td>
+<td><p><cite>from_sklearn(OneHotEncoder(sparse=False,handle_unknown=’ignore’))</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p>robust_scale</p></td>
+<td><p><cite>from_sklearn(RobustScaler())</cite></p></td>
+</tr>
+<tr class="row-even"><td><p>scale</p></td>
+<td><p><cite>from_sklearn(StandardScaler())</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p>standarize</p></td>
+<td><p><cite>from_sklearn(StandardScaler())</cite></p></td>
+</tr>
+<tr class="row-even"><td><p>sk_binarizer</p></td>
+<td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.Binarizer.html#sklearn.preprocessing.Binarizer" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.Binarizer</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p>sk_indicator</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.MissingIndicator.html#sklearn.impute.MissingIndicator" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.impute.MissingIndicator</span></code></a></p></td>
@@ -253,9 +259,6 @@ Here is a complete table with all the aliases.</p>
 </tr>
 <tr class="row-even"><td><p>sk_scale</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.StandardScaler</span></code></a></p></td>
-</tr>
-<tr class="row-odd"><td><p>sk_binarizer</p></td>
-<td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.Binarizer.html#sklearn.preprocessing.Binarizer" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.Binarizer</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -841,6 +844,69 @@ For that reason, the inverse in defined as the identity function.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Transformed DataFrame.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.ExtractTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">ExtractTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">pattern</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flags</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">indicator</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">col_values</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ExtractTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ExtractTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.transformers.ColumnTransformer" title="recipipe.transformers.ColumnTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.transformers.ColumnTransformer</span></code></a></p>
+<p>Extract regex from string columns.</p>
+<dl class="py method">
+<dt id="recipipe.transformers.ExtractTransformer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">pattern</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flags</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">indicator</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">col_values</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ExtractTransformer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ExtractTransformer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a ExtractTransformer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pattern</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Regex or list of regex
+to extract. If a list is provided, only one extraction group
+per element is allowed.</p></li>
+<li><p><strong>flags</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – Flags from the <a class="reference external" href="https://docs.python.org/3/library/re.html#module-re" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">re</span></code></a> module.
+Default: 0, no flags.</p></li>
+<li><p><strong>col_values</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Values of the output
+columns. If you are extracting more than one column, from an
+input column <cite>a</cite> and with <cite>col_values=[“b”, “c”]</cite> you will get
+two output columns named <cite>a=b</cite> and <cite>a=c</cite>.</p></li>
+<li><p><strong>indicator</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Instead of capturing the string, return
+an indicator with 1 if there is a match and a 0 otherwise.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.ExtractTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.ExtractTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="recipipe.transformers.ExtractTransformer.get_column_mapping">
+<code class="sig-name descname">get_column_mapping</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ExtractTransformer.get_column_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ExtractTransformer.get_column_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the column mapping between the input and transformed DataFrame.</p>
+<p>By default it returns a 1:1 map between the input and output columns.
+Make sure your transformer is fitted before calling this function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dict in which the keys are the input DataFrame column names and
+the value is the output DataFrame column names.
+Both key and values can be tuples, tuple:1 useful to indicate that
+one output column has been created from a list of columns from the
+input DataFrame, 1:tuple useful to indicate that a list of output
+columns come from one specific column of the input DataFrame.
+We use tuples and not lists because lists are not hashable, so they
+cannot be keys in a dict.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.core.RecipipeTransformer.col_format</span></code></p>
+</div>
+<dl class="simple">
+<dt>Raise:</dt><dd><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a> if <cite>self.cols</cite> is <cite>None</cite>.</p>
 </dd>
 </dl>
 </dd></dl>
