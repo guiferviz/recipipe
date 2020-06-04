@@ -512,9 +512,6 @@
 <span class="sd">    For example, if all those columns share the same category type.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SklearnFitOneWrapper.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnFitOneWrapper.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
     <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
         <span class="n">one_col</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">]</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">one_col</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
@@ -548,7 +545,7 @@
 
 <div class="viewcode-block" id="SklearnCreator.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnCreator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sk_transformer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span> <span class="o">=</span> <span class="n">sk_transformer</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_params</span> <span class="o">=</span> <span class="n">kwargs</span></div>
 
 <div class="viewcode-block" id="SklearnCreator.__call__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SklearnCreator.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">wrapper</span><span class="o">=</span><span class="s2">&quot;columns&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Instantiate a SKLearn wrapper using a copy of the given transformer.</span>
@@ -561,7 +558,19 @@
         <span class="k">if</span> <span class="n">wrapper</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">wrapping_methods</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrapper method not in </span><span class="si">{wrapping_methods}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+        <span class="c1"># Recipipe transformer params.</span>
+        <span class="n">signature</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">signature</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">r_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">r_params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
         <span class="c1"># SKLearn transformer params.</span>
+        <span class="k">if</span> <span class="s2">&quot;sk_params&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="n">default_params</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;sk_params&quot;</span><span class="p">])</span>
+            <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;sk_params&quot;</span><span class="p">]</span>
         <span class="n">signature</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">signature</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
         <span class="n">sk_params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -569,16 +578,12 @@
             <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                 <span class="n">sk_params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># Create a copy of the sk transformer with the given params.</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sk_transformer</span><span class="p">)</span>
         <span class="n">t</span><span class="o">.</span><span class="n">set_params</span><span class="p">(</span><span class="o">**</span><span class="n">sk_params</span><span class="p">)</span>
 
-        <span class="c1"># Recipipe transformer params.</span>
-        <span class="k">if</span> <span class="s2">&quot;recipipe_params&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">kwargs</span> <span class="o">=</span> <span class="n">default_params</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;recipipe_params&quot;</span><span class="p">])</span>
-            <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;recipipe_params&quot;</span><span class="p">]</span>
-        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">default_params</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">SklearnCreator</span><span class="o">.</span><span class="n">WRAPPERS</span><span class="p">[</span><span class="n">wrapper</span><span class="p">](</span><span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">SklearnCreator</span><span class="o">.</span><span class="n">WRAPPERS</span><span class="p">[</span><span class="n">wrapper</span><span class="p">](</span><span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">r_params</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="ReplaceTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ReplaceTransformer">[docs]</a><span class="k">class</span> <span class="nc">ReplaceTransformer</span><span class="p">(</span><span class="n">RecipipeTransformer</span><span class="p">):</span>

@@ -1571,68 +1571,11 @@ same transformer.</p>
 
 <dl class="py class">
 <dt id="recipipe.transformers.SklearnFitOneWrapper">
-<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">SklearnFitOneWrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnFitOneWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnFitOneWrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">SklearnFitOneWrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sk_transformer</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnFitOneWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnFitOneWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#recipipe.transformers.SklearnColumnWrapper" title="recipipe.transformers.SklearnColumnWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.transformers.SklearnColumnWrapper</span></code></a></p>
 <p>Fit in a concatenation of all the columns, apply one by one.</p>
 <p>This is useful when we have two or more columns that are very related.
 For example, if all those columns share the same category type.</p>
-<dl class="py method">
-<dt id="recipipe.transformers.SklearnFitOneWrapper.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SklearnFitOneWrapper.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SklearnFitOneWrapper.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new transformer.</p>
-<p>Columns names can be use Unix filename pattern matching (
-<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
-will work on.</p></li>
-<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
-transformer will work on. If <cite>*args</cite> are provided, this list
-of columns is going to be appended at the end.</p></li>
-<li><p><strong>exclude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns to exclude.
-The exclusion is applied after fitting the columns, so it can
-be used at the same time as <cite>*args</cite> and <cite>col_init</cite>.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="simple">
-<dt>:param dtype (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of: <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> or with <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>): This</dt><dd><p>value is passed to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>.
-If a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> is given, the Pandas function is going to be
-called with dictionary unpacking: <cite>select_dtypes(**dtype)</cite>.
-In this way you can exclude, for example, int dtypes using:
-<cite>dtype=dict(exclude=int)</cite>.
-The columns returned by this method (executed in the DataFrame
-passed to the fit method) will be the columns that are going
-to be used in the transformation phase.
-When used in combination with <cite>*args</cite> or <cite>cols_init</cite>, the dtype
-filter is applied later.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
-<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
-columns used in the transformer in the transformed DataFrame,
-<cite>False</cite> if not.
-Note that, if the output column has the same name as the input
-column, the output input column will not be included even if
-<cite>keep_original</cite> is set to <cite>True</cite>.
-Default: <cite>False</cite>.</p></li>
-<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
-substitute that placeholder by the column name. For example, if
-you want to append the string “_new” at the end of all the
-generated columns you must set <cite>col_format=”{}_new”</cite>.
-Default: “{}”.</p></li>
-<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
-any match for any of the specified columns.
-Default: <cite>False</cite>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt id="recipipe.transformers.SklearnFitOneWrapper.__module__">
 <code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.SklearnFitOneWrapper.__module__" title="Permalink to this definition">¶</a></dt>
