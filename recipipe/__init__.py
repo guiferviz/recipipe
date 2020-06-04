@@ -59,11 +59,12 @@ reduce_memory = ReduceMemoryTransformer
 from_sklearn = SklearnCreator
 binarizer = from_sklearn(Binarizer())
 impute = from_sklearn(SimpleImputer(strategy="constant"))
-indicator = from_sklearn(MissingIndicator(), col_format="INDICATOR({})")
+indicator = from_sklearn(MissingIndicator(), keep_original=True,
+        col_format="INDICATOR({})")
 minmax = from_sklearn(MinMaxScaler())
 onehot = from_sklearn(OneHotEncoder(sparse=False, handle_unknown="ignore"))
 robust_scale = from_sklearn(RobustScaler())
-scale = standarize
+scale = from_sklearn(StandardScaler())
 standarize = from_sklearn(StandardScaler())
 # Alias for SKLearn transformers.
 sk_binarizer = Binarizer
