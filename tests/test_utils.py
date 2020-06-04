@@ -4,6 +4,7 @@ from unittest import TestCase
 import pandas as pd
 
 from recipipe.utils import add_to_map_dict
+from recipipe.utils import default_params
 from recipipe.utils import flatten_list
 from recipipe.utils import fit_columns
 from tests.fixtures import create_df_3dtypes
@@ -111,4 +112,17 @@ class UtilsTest(TestCase):
         d = {}
         add_to_map_dict(d, ("a", "b"), ("c", "d"))
         self.assertDictEqual(d, {"a": ["c", "d"], "b": ["c", "d"]})
+
+    def test_default_params_all_params(self):
+        params = dict(a=1)
+        default = dict(a=0, b=1, c=3)
+        result = default_params(params, default, c=2)
+        expected = dict(a=1, b=1, c=2)
+        self.assertDictEqual(result, expected)
+
+    def test_default_params_no_params(self):
+        params = dict(a=1)
+        result = default_params(params)
+        expected = dict(a=1)
+        self.assertDictEqual(result, expected)
 

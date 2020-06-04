@@ -355,9 +355,6 @@ class SklearnFitOneWrapper(SklearnColumnWrapper):
     For example, if all those columns share the same category type.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def _fit(self, df):
         one_col = df[self.cols].stack()
         self.sk_transformer.fit(one_col.values.reshape(-1, 1))
@@ -391,7 +388,7 @@ class SklearnCreator(object):
 
     def __init__(self, sk_transformer, **kwargs):
         self.sk_transformer = sk_transformer
-        self.kwargs = kwargs
+        self.r_params = kwargs
 
     def __call__(self, *args, wrapper="columns", **kwargs):
         """Instantiate a SKLearn wrapper using a copy of the given transformer.
@@ -404,7 +401,19 @@ class SklearnCreator(object):
         if wrapper not in wrapping_methods:
             raise ValueError("Wrapper method not in {wrapping_methods}")
 
+        # Recipipe transformer params.
+        signature = inspect.signature(RecipipeTransformer.__init__)
+        params = [i.name for i in signature.parameters.values()]
+        r_params = self.r_params.copy()
+        for i in params:
+            if i in kwargs:
+                r_params[i] = kwargs[i]
+                del kwargs[i]
+
         # SKLearn transformer params.
+        if "sk_params" in kwargs:
+            kwargs = default_params(kwargs, kwargs["sk_params"])
+            del kwargs["sk_params"]
         signature = inspect.signature(self.sk_transformer.__init__)
         params = [i.name for i in signature.parameters.values()]
         sk_params = {}
@@ -412,16 +421,12 @@ class SklearnCreator(object):
             if i in kwargs:
                 sk_params[i] = kwargs[i]
                 del kwargs[i]
+
+        # Create a copy of the sk transformer with the given params.
         t = clone(self.sk_transformer)
         t.set_params(**sk_params)
 
-        # Recipipe transformer params.
-        if "recipipe_params" in kwargs:
-            kwargs = default_params(kwargs, kwargs["recipipe_params"])
-            del kwargs["recipipe_params"]
-        kwargs = default_params(kwargs, **self.kwargs)
-
-        return SklearnCreator.WRAPPERS[wrapper](t, *args, **kwargs)
+        return SklearnCreator.WRAPPERS[wrapper](t, *args, **r_params)
 
 
 class ReplaceTransformer(RecipipeTransformer):
