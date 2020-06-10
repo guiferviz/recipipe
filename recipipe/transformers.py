@@ -524,16 +524,18 @@ class DropNARowsTransformer(RecipipeTransformer):
 class ColumnGroupsTransformer(RecipipeTransformer):
     """Apply a N to 1 transformation to a group of columns. """
 
-    def __init__(self, *args, **kwargs):
-        col_groups = [flatten_list([c]) for c in args]
-        if len(col_groups) == 1:
-            col_groups = [[i] for i in col_groups[0]]
-        self.col_groups_init = col_groups
+    def __init__(self, *args, groups=False, cols_init=None, **kwargs):
+        if cols_init:
+            args = flatten_list([args, cols_init], recursive=False)
+        if groups:
+            args = [flatten_list([c]) for c in args]
+        self.col_groups_init = args
+        self.groups = groups
         super().__init__(*args, **kwargs)
 
     def _fit(self, df):
         self.col_groups = [fit_columns(df, c) for c in self.col_groups_init]
-        if not self.col_groups:
+        if not self.col_groups or not self.groups:
             self.col_groups = self.cols
 
     def get_column_mapping(self):

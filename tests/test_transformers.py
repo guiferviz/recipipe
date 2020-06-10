@@ -865,7 +865,7 @@ class ColumnGroupsTransformerTest(TestCase):
                 ["Type", "ExtraType"])
         self.assertEqual(c, "Type")
 
-    def test_fit_transform_group_cols_none(self):
+    def test_fit_transform_cols_none(self):
         """If no cols are specify, all the columns are in one group. """
 
         t = r.ColumnGroupsTransformer()
@@ -875,7 +875,7 @@ class ColumnGroupsTransformerTest(TestCase):
         df_expected = pd.DataFrame({"a": [4,5,6]})
         self.assertTrue(df_out.equals(df_expected))
 
-    def test_fit_transform_group_cols_array(self):
+    def test_fit_transform_no_groups(self):
         """If no cols are specify, all the columns are in one group. """
 
         t = r.ColumnGroupsTransformer(["a", "b"])
@@ -884,6 +884,30 @@ class ColumnGroupsTransformerTest(TestCase):
         df_out = t.fit_transform(df)
         df_expected = pd.DataFrame({"a": [4,5,6], "c": [0,0,0]})
         self.assertTrue(df_out.equals(df_expected))
+
+    def test_fit_transform_groups(self):
+        """If no cols are specify, all the columns are in one group. """
+
+        t = r.ColumnGroupsTransformer("*1", "*2", groups=True)
+        t._transform_group = MagicMock(return_value=np.array([0,0,0]))
+        df = pd.DataFrame({"a1": [1,2,3], "a2": [3,2,1],
+                           "b1": [4,5,6], "b2": [6,5,4]})
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame({"a": [0,0,0], "b": [0,0,0]})
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_init_cols_init_groups(self):
+        t = r.ColumnGroupsTransformer("a", cols_init=["b"], groups=True)
+        expected = [["a"], ["b"]]
+        self.assertListEqual(t.col_groups_init, expected)
+        expected = ["a", "b"]
+        self.assertListEqual(t.cols_init, expected)
+
+    def test_init_cols_init_no_groups(self):
+        t = r.ColumnGroupsTransformer("a", cols_init=["b"], groups=False)
+        expected = ["a", "b"]
+        self.assertListEqual(t.col_groups_init, expected)
+        self.assertListEqual(t.cols_init, expected)
 
     def test_inverse_transform(self):
         """By default inverse copy the output per each input col. """
