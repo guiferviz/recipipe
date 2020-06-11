@@ -1056,3 +1056,26 @@ class TargetEncoderTest(TestCase):
                 label=[0,0,1,1,1]))
         self.assertTrue(df_out.equals(df_expected))
 
+
+class AsTypeTransformerTest(TestCase):
+
+    def test_init_no_dtypes(self):
+        with self.assertRaises(ValueError):
+            r.AsTypeTransformer()
+
+    def test_fit_transform(self):
+        df = pd.DataFrame(dict(year=["2012", "2013"]))
+        t = r.AsTypeTransformer(dtypes="int")
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame(dict(year=[2012, 2013]))
+        print(df_out.dtypes, df_out)
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_fit_transform_inverse(self):
+        df = pd.DataFrame(dict(year=["2012", "2013"]))
+        t = r.AsTypeTransformer(dtypes="int")
+        df_out = t.fit_transform(df)
+        df_out = t.inverse_transform(df_out)
+        df_expected = pd.DataFrame(dict(year=["2012", "2013"]))
+        self.assertListEqual(list(df_out.dtypes), list(df_expected.dtypes))
+

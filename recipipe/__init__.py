@@ -14,6 +14,7 @@ from sklearn.preprocessing import Binarizer
 from recipipe.core import Recipipe
 from recipipe.core import RecipipeTransformer
 
+from recipipe.transformers import AsTypeTransformer
 from recipipe.transformers import CategoryEncoder
 from recipipe.transformers import ColumnTransformer
 from recipipe.transformers import ColumnGroupsTransformer
@@ -48,6 +49,7 @@ __author__ = "guiferviz"
 #  Define aliases to make it easier to use.  #
 ##############################################
 recipipe = Recipipe
+astype = AsTypeTransformer
 category = CategoryEncoder
 concat = ConcatTransformer
 extract = ExtractTransformer

@@ -817,3 +817,22 @@ class TargetEncoderTransformer(ColumnTransformer):
         col_in = self.col_map_1_n[col_out][0]
         return df[col_out].replace(self.inverse_replace_dicts[col_in])
 
+
+class AsTypeTransformer(RecipipeTransformer):
+
+    def __init__(self, *args, dtypes=None, **kwargs):
+        if dtypes is None:
+            raise ValueError("dtype cannot be None")
+        self.dtypes = dtypes
+        self.original_dtypes = None
+        super().__init__(*args, **kwargs)
+
+    def _fit(self, df):
+        self.original_dtypes = df[self.cols].dtypes
+
+    def _transform(self, df):
+        return df[self.cols].astype(self.dtypes)
+
+    def _inverse_transform(self, df):
+        return df[self.cols].astype(self.original_dtypes)
+
