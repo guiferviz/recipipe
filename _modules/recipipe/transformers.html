@@ -907,6 +907,7 @@
 
 
 <div class="viewcode-block" id="ConcatTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ConcatTransformer">[docs]</a><span class="k">class</span> <span class="nc">ConcatTransformer</span><span class="p">(</span><span class="n">ColumnGroupsTransformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Concatenate string or non-string columns into a new string column. &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ConcatTransformer.__init__"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.ConcatTransformer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -914,6 +915,13 @@
 
     <span class="k">def</span> <span class="nf">_transform_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">group_cols</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">group_cols</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">separator</span><span class="o">.</span><span class="n">join</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SumTransformer"><a class="viewcode-back" href="../../recipipe.html#recipipe.transformers.SumTransformer">[docs]</a><span class="k">class</span> <span class="nc">SumTransformer</span><span class="p">(</span><span class="n">ColumnGroupsTransformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sum columns. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_transform_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">group_cols</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">group_cols</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 </pre></div>
 

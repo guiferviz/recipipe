@@ -221,46 +221,49 @@ Here is a complete table with all the aliases.</p>
 <tr class="row-odd"><td><p>reduce_memory</p></td>
 <td><p><a class="reference internal" href="#recipipe.transformers.ReduceMemoryTransformer" title="recipipe.transformers.ReduceMemoryTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.ReduceMemoryTransformer</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>from_sklearn</p></td>
+<tr class="row-even"><td><p>sum</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.SumTransformer" title="recipipe.transformers.SumTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.SumTransformer</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>from_sklearn</p></td>
 <td><p><a class="reference internal" href="#recipipe.transformers.SklearnCreator" title="recipipe.transformers.SklearnCreator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.SklearnCreator</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>binarizer</p></td>
+<tr class="row-even"><td><p>binarizer</p></td>
 <td><p><cite>from_sklearn(Binarizer())</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>impute</p></td>
+<tr class="row-odd"><td><p>impute</p></td>
 <td><p><cite>from_sklearn(SimpleImputer(strategy=’constant’))</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>indicator</p></td>
+<tr class="row-even"><td><p>indicator</p></td>
 <td><p><cite>from_sklearn(MissingIndicator(),col_format=’INDICATOR({})’)</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>minmax</p></td>
+<tr class="row-odd"><td><p>minmax</p></td>
 <td><p><cite>from_sklearn(MinMaxScaler())</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>onehot</p></td>
+<tr class="row-even"><td><p>onehot</p></td>
 <td><p><cite>from_sklearn(OneHotEncoder(sparse=False,handle_unknown=’ignore’))</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>robust_scale</p></td>
+<tr class="row-odd"><td><p>robust_scale</p></td>
 <td><p><cite>from_sklearn(RobustScaler())</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>scale</p></td>
+<tr class="row-even"><td><p>scale</p></td>
 <td><p><cite>from_sklearn(StandardScaler())</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>standarize</p></td>
+<tr class="row-odd"><td><p>standarize</p></td>
 <td><p><cite>from_sklearn(StandardScaler())</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>sk_binarizer</p></td>
+<tr class="row-even"><td><p>sk_binarizer</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.Binarizer.html#sklearn.preprocessing.Binarizer" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.Binarizer</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>sk_indicator</p></td>
+<tr class="row-odd"><td><p>sk_indicator</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.MissingIndicator.html#sklearn.impute.MissingIndicator" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.impute.MissingIndicator</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>sk_inputer</p></td>
+<tr class="row-even"><td><p>sk_inputer</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html#sklearn.impute.SimpleImputer" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.impute.SimpleImputer</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>sk_onehot</p></td>
+<tr class="row-odd"><td><p>sk_onehot</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html#sklearn.preprocessing.OneHotEncoder" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.OneHotEncoder</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>sk_scale</p></td>
+<tr class="row-even"><td><p>sk_scale</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.StandardScaler</span></code></a></p></td>
 </tr>
 </tbody>
@@ -718,6 +721,7 @@ as in the input DataFrame. No deletes are supported here.</p>
 <dt id="recipipe.transformers.ConcatTransformer">
 <em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">ConcatTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">separator</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ConcatTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ConcatTransformer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#recipipe.transformers.ColumnGroupsTransformer" title="recipipe.transformers.ColumnGroupsTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.transformers.ColumnGroupsTransformer</span></code></a></p>
+<p>Concatenate string or non-string columns into a new string column.</p>
 <dl class="py method">
 <dt id="recipipe.transformers.ConcatTransformer.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">separator</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#ConcatTransformer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.ConcatTransformer.__init__" title="Permalink to this definition">¶</a></dt>
@@ -1716,6 +1720,18 @@ For example, if all those columns share the same category type.</p>
 <dl class="py attribute">
 <dt id="recipipe.transformers.SklearnFitOneWrapper.__module__">
 <code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.SklearnFitOneWrapper.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.SumTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">SumTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">groups</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cols_init</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#SumTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.SumTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.transformers.ColumnGroupsTransformer" title="recipipe.transformers.ColumnGroupsTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.transformers.ColumnGroupsTransformer</span></code></a></p>
+<p>Sum columns.</p>
+<dl class="py attribute">
+<dt id="recipipe.transformers.SumTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.SumTransformer.__module__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
