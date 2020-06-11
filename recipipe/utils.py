@@ -55,7 +55,7 @@ def is_categorical(s, column=None):
     return s.dtype.name == "category"
 
 
-def flatten_list(cols_list):
+def flatten_list(cols_list, recursive=True):
     """Take a list of lists and return a flattened list.
 
     Args:
@@ -70,7 +70,7 @@ def flatten_list(cols_list):
     cols = []
     for i in cols_list:
         if isinstance(i, (set, list, tuple)):
-            cols.extend(flatten_list(i))  # Flatten all the levels recursively.
+            cols.extend(flatten_list(i) if recursive else i)
         else:
             cols.append(i)
     return cols

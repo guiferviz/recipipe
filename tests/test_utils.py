@@ -12,7 +12,7 @@ from tests.fixtures import create_df_3dtypes
 
 class UtilsTest(TestCase):
 
-    def test_flatten_one_level(self):
+    def test_flatten_one_nested_level(self):
         """One level of nested iterators. """
 
         a = ["c1", ["c2"], set(["c3"]), ("c4", "c5")]
@@ -25,6 +25,13 @@ class UtilsTest(TestCase):
         a = ["c1", ["c2", (["c3", ("c4", [[set(["c5"])], "c6"])])]]
         b = ["c1", "c2", "c3", "c4", "c5", "c6"]
         self.assertEqual(flatten_list(a), b)
+
+    def test_flatten_no_recursion(self):
+        """One level of nested iterators. """
+
+        a = ["c1", ["c2", set(["c3"])]]
+        b = ["c1", "c2", set(["c3"])]
+        self.assertEqual(flatten_list(a, recursive=False), b)
 
     def test_fit_columns_cols(self):
 
