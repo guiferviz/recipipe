@@ -61,8 +61,8 @@ All the dependencies will be installed automatically.
 
 ## Tutorials and examples
 
-* Explore a notebook with a [list of things you can do with Recipipe]
-(examples/features.ipynb).
+* Explore a notebook with a
+[list of things you can do with Recipipe](examples/features.ipynb).
 * Learn how to [transform Titanic data](examples/titanic.ipynb).
 * Learn how to use Recipipe analyzing data from weird creatures from another
 planet: [Recipipe getting started tutorial](examples/paranoids.ipynb).
