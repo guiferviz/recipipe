@@ -28,7 +28,7 @@ It has cool features, like selecting columns using Unix patterns:
 
 or getting beautiful output column names instead of numeric indexed outputs:
 
-<img src="https://raw.githubusercontent.com/guiferviz/recipipe/master/doc/_static/fnmatch.png"
+<img src="https://raw.githubusercontent.com/guiferviz/recipipe/master/doc/_static/output_names.png"
      alt="OneHot encoder returns named output columns." />
 
 or fitting a different transformer per group:
