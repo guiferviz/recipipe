@@ -1025,3 +1025,34 @@ class SumTransformerTest(TestCase):
         df_expected = pd.DataFrame(dict(num=[4,4,4]))
         self.assertTrue(df_out.equals(df_expected))
 
+
+class TargetEncoderTest(TestCase):
+
+    def test_init_no_target(self):
+        with self.assertRaisesRegex(ValueError, ".*target must be specified.*"):
+            r.TargetEncoderTransformer()
+
+    def test_init_no_target_in_df(self):
+        t = r.TargetEncoderTransformer(target="label")
+        with self.assertRaisesRegex(ValueError,
+                "Target must be in the fitted DataFrame"):
+            t.fit(create_df_all())
+
+    def test_fit_transform(self):
+        df = pd.DataFrame(dict(cat="a a a b b".split(), label=[0,0,1,1,1]))
+        t = r.TargetEncoderTransformer(min_samples_leaf=-100, target="label")
+        df_out = t.fit_transform(df)
+        val_a, val_b = 1/3, 1
+        df_expected = pd.DataFrame(dict(cat=[val_a]*3+[val_b]*2,
+                label=[0,0,1,1,1]))
+        self.assertTrue(df_out.equals(df_expected))
+
+    def test_fit_transform_inverse(self):
+        df = pd.DataFrame(dict(cat="a a a b b".split(), label=[0,0,1,1,1]))
+        t = r.TargetEncoderTransformer(target="label")
+        df_out = t.fit_transform(df)
+        df_out = t.inverse_transform(df_out)
+        df_expected = pd.DataFrame(dict(cat="a a a b b".split(),
+                label=[0,0,1,1,1]))
+        self.assertTrue(df_out.equals(df_expected))
+

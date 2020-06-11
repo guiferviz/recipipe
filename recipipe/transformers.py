@@ -4,6 +4,8 @@ import copy
 import inspect
 import re
 
+import numpy as np
+
 import pandas as pd
 
 from sklearn.base import clone
@@ -765,4 +767,53 @@ class SumTransformer(ColumnGroupsTransformer):
 
     def _transform_group(self, df, group_cols):
         return df[group_cols].sum(axis=1)
+
+
+class TargetEncoderTransformer(ColumnTransformer):
+    """Target encoder.
+
+    Computed as described in:
+    *A Preprocessing Scheme for High-Cardinality Categorical Attributes in
+    Classification and Prediction Problems*, by Daniele Micci-Barreca.
+
+    Code partially taken from:
+    https://www.kaggle.com/ogrellier/xgb-classifier-upsampling-lb-0-283
+    """
+
+    def __init__(self, *args, target=None, min_samples_leaf=1, smoothing=1,
+                **kwargs):
+        super().__init__(*args, **kwargs)
+        if target is None:
+            raise ValueError("A target must be specified")
+        self.target = target
+        self.replace_dicts = {}
+        self.min_samples_leaf = min_samples_leaf
+        self.smoothing = smoothing
+
+    def _fit(self, df):
+        if self.target not in df:
+            raise ValueError("Target must be in the fitted DataFrame")
+        if self.target in self.cols:
+            self.cols.remove(self.target)
+        super()._fit(df)
+        self.inverse_replace_dicts = {k: {v1: k1 for k1, v1 in v.items()}
+                for k, v in self.replace_dicts.items()}
+
+    def _fit_column(self, df, col):
+        averages = df.groupby(col)[self.target].agg(["mean", "count"])
+        smoothing = 1 / (1 + np.exp(-(averages["count"] -
+                self.min_samples_leaf) / self.smoothing))
+        # Apply average function to all target data
+        prior = df[self.target].mean()
+        # The bigger the count the less full_avg is taken into account
+        output = prior * (1 - smoothing) + averages["mean"] * smoothing
+        self.replace_dicts[col] = output.to_dict()
+
+    def _transform_column(self, df, col):
+        return df[col].replace(self.replace_dicts[col])
+
+    def _inverse_transform_column(self, df, column_names):
+        col_out = column_names[0]
+        col_in = self.col_map_1_n[col_out][0]
+        return df[col_out].replace(self.inverse_replace_dicts[col_in])
 
