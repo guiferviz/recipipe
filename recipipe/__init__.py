@@ -18,6 +18,7 @@ from recipipe.transformers import CategoryEncoder
 from recipipe.transformers import ColumnTransformer
 from recipipe.transformers import ColumnGroupsTransformer
 from recipipe.transformers import ColumnsTransformer
+from recipipe.transformers import ConcatTransformer
 from recipipe.transformers import DropTransformer
 from recipipe.transformers import DropNARowsTransformer
 from recipipe.transformers import ExtractTransformer
@@ -46,6 +47,7 @@ __author__ = "guiferviz"
 ##############################################
 recipipe = Recipipe
 category = CategoryEncoder
+concat = ConcatTransformer
 extract = ExtractTransformer
 groupby = GroupByTransformer
 select = SelectTransformer
