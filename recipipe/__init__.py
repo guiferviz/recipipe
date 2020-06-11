@@ -33,6 +33,7 @@ from recipipe.transformers import SklearnColumnsWrapper
 from recipipe.transformers import SklearnColumnWrapper
 from recipipe.transformers import SklearnFitOneWrapper
 from recipipe.transformers import SumTransformer
+from recipipe.transformers import TargetEncoderTransformer
 
 from recipipe.utils import fit_columns
 from recipipe.utils import flatten_list
@@ -59,6 +60,7 @@ query = QueryTransformer
 replace = ReplaceTransformer
 reduce_memory = ReduceMemoryTransformer
 sum = SumTransformer
+target_encoder = TargetEncoderTransformer
 # SKLearn recipipe transformer.
 from_sklearn = SklearnCreator
 binarizer = from_sklearn(Binarizer())
