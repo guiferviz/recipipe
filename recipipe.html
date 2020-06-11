@@ -224,46 +224,49 @@ Here is a complete table with all the aliases.</p>
 <tr class="row-even"><td><p>sum</p></td>
 <td><p><a class="reference internal" href="#recipipe.transformers.SumTransformer" title="recipipe.transformers.SumTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.SumTransformer</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>from_sklearn</p></td>
+<tr class="row-odd"><td><p>target_encoder</p></td>
+<td><p><a class="reference internal" href="#recipipe.transformers.TargetEncoderTransformer" title="recipipe.transformers.TargetEncoderTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.TargetEncoderTransformer</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>from_sklearn</p></td>
 <td><p><a class="reference internal" href="#recipipe.transformers.SklearnCreator" title="recipipe.transformers.SklearnCreator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">recipipe.transformers.SklearnCreator</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>binarizer</p></td>
+<tr class="row-odd"><td><p>binarizer</p></td>
 <td><p><cite>from_sklearn(Binarizer())</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>impute</p></td>
+<tr class="row-even"><td><p>impute</p></td>
 <td><p><cite>from_sklearn(SimpleImputer(strategy=’constant’))</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>indicator</p></td>
+<tr class="row-odd"><td><p>indicator</p></td>
 <td><p><cite>from_sklearn(MissingIndicator(),col_format=’INDICATOR({})’)</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>minmax</p></td>
+<tr class="row-even"><td><p>minmax</p></td>
 <td><p><cite>from_sklearn(MinMaxScaler())</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>onehot</p></td>
+<tr class="row-odd"><td><p>onehot</p></td>
 <td><p><cite>from_sklearn(OneHotEncoder(sparse=False,handle_unknown=’ignore’))</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>robust_scale</p></td>
+<tr class="row-even"><td><p>robust_scale</p></td>
 <td><p><cite>from_sklearn(RobustScaler())</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>scale</p></td>
+<tr class="row-odd"><td><p>scale</p></td>
 <td><p><cite>from_sklearn(StandardScaler())</cite></p></td>
 </tr>
-<tr class="row-odd"><td><p>standarize</p></td>
+<tr class="row-even"><td><p>standarize</p></td>
 <td><p><cite>from_sklearn(StandardScaler())</cite></p></td>
 </tr>
-<tr class="row-even"><td><p>sk_binarizer</p></td>
+<tr class="row-odd"><td><p>sk_binarizer</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.Binarizer.html#sklearn.preprocessing.Binarizer" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.Binarizer</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>sk_indicator</p></td>
+<tr class="row-even"><td><p>sk_indicator</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.MissingIndicator.html#sklearn.impute.MissingIndicator" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.impute.MissingIndicator</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>sk_inputer</p></td>
+<tr class="row-odd"><td><p>sk_inputer</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html#sklearn.impute.SimpleImputer" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.impute.SimpleImputer</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p>sk_onehot</p></td>
+<tr class="row-even"><td><p>sk_onehot</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html#sklearn.preprocessing.OneHotEncoder" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.OneHotEncoder</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p>sk_scale</p></td>
+<tr class="row-odd"><td><p>sk_scale</p></td>
 <td><p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler" title="(in scikit-learn v0.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.preprocessing.StandardScaler</span></code></a></p></td>
 </tr>
 </tbody>
@@ -1732,6 +1735,80 @@ For example, if all those columns share the same category type.</p>
 <dl class="py attribute">
 <dt id="recipipe.transformers.SumTransformer.__module__">
 <code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.SumTransformer.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="recipipe.transformers.TargetEncoderTransformer">
+<em class="property">class </em><code class="sig-prename descclassname">recipipe.transformers.</code><code class="sig-name descname">TargetEncoderTransformer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">min_samples_leaf</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">smoothing</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#TargetEncoderTransformer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.TargetEncoderTransformer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#recipipe.transformers.ColumnTransformer" title="recipipe.transformers.ColumnTransformer"><code class="xref py py-class docutils literal notranslate"><span class="pre">recipipe.transformers.ColumnTransformer</span></code></a></p>
+<p>Target encoder.</p>
+<p>Computed as described in:
+<em>A Preprocessing Scheme for High-Cardinality Categorical Attributes in
+Classification and Prediction Problems</em>, by Daniele Micci-Barreca.</p>
+<p>Code partially taken from:
+<a class="reference external" href="https://www.kaggle.com/ogrellier/xgb-classifier-upsampling-lb-0-283">https://www.kaggle.com/ogrellier/xgb-classifier-upsampling-lb-0-283</a></p>
+<dl class="py method">
+<dt id="recipipe.transformers.TargetEncoderTransformer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">min_samples_leaf</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">smoothing</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/recipipe/transformers.html#TargetEncoderTransformer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#recipipe.transformers.TargetEncoderTransformer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new transformer.</p>
+<p>Columns names can be use Unix filename pattern matching (
+<a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fnmatch</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the transformer
+will work on.</p></li>
+<li><p><strong>cols_init</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns the
+transformer will work on. If <cite>*args</cite> are provided, this list
+of columns is going to be appended at the end.</p></li>
+<li><p><strong>exclude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – List of columns to exclude.
+The exclusion is applied after fitting the columns, so it can
+be used at the same time as <cite>*args</cite> and <cite>col_init</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>:param dtype (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of: <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> or with <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>): This</dt><dd><p>value is passed to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.select_dtypes.html#pandas.DataFrame.select_dtypes" title="(in pandas v1.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame.select_dtypes</span></code></a>.
+If a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> is given, the Pandas function is going to be
+called with dictionary unpacking: <cite>select_dtypes(**dtype)</cite>.
+In this way you can exclude, for example, int dtypes using:
+<cite>dtype=dict(exclude=int)</cite>.
+The columns returned by this method (executed in the DataFrame
+passed to the fit method) will be the columns that are going
+to be used in the transformation phase.
+When used in combination with <cite>*args</cite> or <cite>cols_init</cite>, the dtype
+filter is applied later.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Human-friendly name of the transformer.</p></li>
+<li><p><strong>keep_original</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – <cite>True</cite> if you want to keep the input
+columns used in the transformer in the transformed DataFrame,
+<cite>False</cite> if not.
+Note that, if the output column has the same name as the input
+column, the output input column will not be included even if
+<cite>keep_original</cite> is set to <cite>True</cite>.
+Default: <cite>False</cite>.</p></li>
+<li><p><strong>col_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – New name of the columns. Use “{}” in to
+substitute that placeholder by the column name. For example, if
+you want to append the string “_new” at the end of all the
+generated columns you must set <cite>col_format=”{}_new”</cite>.
+Default: “{}”.</p></li>
+<li><p><strong>cols_not_found_error</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Raise an error if the isn’t
+any match for any of the specified columns.
+Default: <cite>False</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="recipipe.transformers.TargetEncoderTransformer.__module__">
+<code class="sig-name descname">__module__</code><em class="property"> = 'recipipe.transformers'</em><a class="headerlink" href="#recipipe.transformers.TargetEncoderTransformer.__module__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

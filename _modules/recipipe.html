@@ -188,6 +188,7 @@
 <span class="kn">from</span> <span class="nn">recipipe.transformers</span> <span class="kn">import</span> <span class="n">SklearnColumnWrapper</span>
 <span class="kn">from</span> <span class="nn">recipipe.transformers</span> <span class="kn">import</span> <span class="n">SklearnFitOneWrapper</span>
 <span class="kn">from</span> <span class="nn">recipipe.transformers</span> <span class="kn">import</span> <span class="n">SumTransformer</span>
+<span class="kn">from</span> <span class="nn">recipipe.transformers</span> <span class="kn">import</span> <span class="n">TargetEncoderTransformer</span>
 
 <span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">fit_columns</span>
 <span class="kn">from</span> <span class="nn">recipipe.utils</span> <span class="kn">import</span> <span class="n">flatten_list</span>
@@ -214,6 +215,7 @@
 <span class="n">replace</span> <span class="o">=</span> <span class="n">ReplaceTransformer</span>
 <span class="n">reduce_memory</span> <span class="o">=</span> <span class="n">ReduceMemoryTransformer</span>
 <span class="nb">sum</span> <span class="o">=</span> <span class="n">SumTransformer</span>
+<span class="n">target_encoder</span> <span class="o">=</span> <span class="n">TargetEncoderTransformer</span>
 <span class="c1"># SKLearn recipipe transformer.</span>
 <span class="n">from_sklearn</span> <span class="o">=</span> <span class="n">SklearnCreator</span>
 <span class="n">binarizer</span> <span class="o">=</span> <span class="n">from_sklearn</span><span class="p">(</span><span class="n">Binarizer</span><span class="p">())</span>
