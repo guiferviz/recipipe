@@ -822,7 +822,7 @@ class AsTypeTransformer(RecipipeTransformer):
 
     def __init__(self, *args, dtypes=None, **kwargs):
         if dtypes is None:
-            raise ValueError("dtype cannot be None")
+            raise ValueError("dtypes cannot be None")
         self.dtypes = dtypes
         self.original_dtypes = None
         super().__init__(*args, **kwargs)
