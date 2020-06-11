@@ -32,6 +32,7 @@ from recipipe.transformers import SklearnCreator
 from recipipe.transformers import SklearnColumnsWrapper
 from recipipe.transformers import SklearnColumnWrapper
 from recipipe.transformers import SklearnFitOneWrapper
+from recipipe.transformers import SumTransformer
 
 from recipipe.utils import fit_columns
 from recipipe.utils import flatten_list
@@ -57,6 +58,7 @@ dropna_rows = DropNARowsTransformer
 query = QueryTransformer
 replace = ReplaceTransformer
 reduce_memory = ReduceMemoryTransformer
+sum = SumTransformer
 # SKLearn recipipe transformer.
 from_sklearn = SklearnCreator
 binarizer = from_sklearn(Binarizer())

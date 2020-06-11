@@ -1015,3 +1015,13 @@ class ConcatTransformerTest(TestCase):
         df_expected = pd.DataFrame(dict(num_name=["1a", "2b", "3c"]))
         self.assertTrue(df_out.equals(df_expected))
 
+
+class SumTransformerTest(TestCase):
+
+    def test_fit_transform(self):
+        df = pd.DataFrame(dict(num1=[1,2,3], num2=[3,2,1]))
+        t = r.SumTransformer()
+        df_out = t.fit_transform(df)
+        df_expected = pd.DataFrame(dict(num=[4,4,4]))
+        self.assertTrue(df_out.equals(df_expected))
+
