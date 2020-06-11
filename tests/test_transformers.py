@@ -1034,7 +1034,8 @@ class TargetEncoderTest(TestCase):
 
     def test_init_no_target_in_df(self):
         t = r.TargetEncoderTransformer(target="label")
-        with self.assertRaisesRegex(ValueError, "Target must be in the fitted DataFrame"):
+        with self.assertRaisesRegex(ValueError,
+                "Target must be in the fitted DataFrame"):
             t.fit(create_df_all())
 
     def test_fit_transform(self):
