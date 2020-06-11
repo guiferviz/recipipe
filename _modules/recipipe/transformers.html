@@ -878,6 +878,7 @@
                     <span class="c1"># Use only alpha-num characters of the expression as name.</span>
                     <span class="n">col_value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\W+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
                     <span class="n">col_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col_value</span><span class="p">)</span>
+                    <span class="c1"># TODO: check if duplicate names.</span>
             <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
