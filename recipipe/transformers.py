@@ -721,6 +721,7 @@ class ExtractTransformer(ColumnTransformer):
                     # Use only alpha-num characters of the expression as name.
                     col_value = re.sub(r"\W+", "", pattern[i])
                     col_values.append(col_value)
+                    # TODO: check if duplicate names.
             pattern = "|".join(pattern)
 
         self.re = re.compile(pattern, flags)
