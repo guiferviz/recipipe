@@ -748,3 +748,13 @@ class ExtractTransformer(ColumnTransformer):
             df_out = df_out.notna().astype("int8")
         return df_out.values
 
+
+class ConcatTransformer(ColumnGroupsTransformer):
+
+    def __init__(self, *args, separator="", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.separator = separator
+
+    def _transform_group(self, df, group_cols):
+        return df[group_cols].astype(str).agg(self.separator.join, axis=1)
+
