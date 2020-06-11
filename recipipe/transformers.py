@@ -750,6 +750,7 @@ class ExtractTransformer(ColumnTransformer):
 
 
 class ConcatTransformer(ColumnGroupsTransformer):
+    """Concatenate string or non-string columns into a new string column. """
 
     def __init__(self, *args, separator="", **kwargs):
         super().__init__(*args, **kwargs)
@@ -757,4 +758,11 @@ class ConcatTransformer(ColumnGroupsTransformer):
 
     def _transform_group(self, df, group_cols):
         return df[group_cols].astype(str).agg(self.separator.join, axis=1)
+
+
+class SumTransformer(ColumnGroupsTransformer):
+    """Sum columns. """
+
+    def _transform_group(self, df, group_cols):
+        return df[group_cols].sum(axis=1)
 
