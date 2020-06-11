@@ -876,14 +876,17 @@ class ColumnGroupsTransformerTest(TestCase):
         self.assertTrue(df_out.equals(df_expected))
 
     def test_fit_transform_no_groups(self):
-        """If no cols are specify, all the columns are in one group. """
+        """If groups=False, all the columns are in one group. """
 
-        t = r.ColumnGroupsTransformer(["a", "b"])
+        t = r.ColumnGroupsTransformer(["aa", "bb"])
         t._transform_group = MagicMock(return_value=np.array([4,5,6]))
-        df = pd.DataFrame({"a": [1,2,3], "b": [3,2,1], "c": [0,0,0]})
+        df = pd.DataFrame({"aa": [1,2,3], "bb": [3,2,1], "cc": [0,0,0]})
         df_out = t.fit_transform(df)
-        df_expected = pd.DataFrame({"a": [4,5,6], "c": [0,0,0]})
+        df_expected = pd.DataFrame({"aa": [4,5,6], "cc": [0,0,0]})
         self.assertTrue(df_out.equals(df_expected))
+        cols_call = [i[0][1] for i in t._transform_group.call_args_list]
+        expected = [["aa", "bb"]]
+        self.assertListEqual(cols_call, expected)
 
     def test_fit_transform_groups(self):
         """If no cols are specify, all the columns are in one group. """
@@ -895,6 +898,9 @@ class ColumnGroupsTransformerTest(TestCase):
         df_out = t.fit_transform(df)
         df_expected = pd.DataFrame({"a": [0,0,0], "b": [0,0,0]})
         self.assertTrue(df_out.equals(df_expected))
+        cols_call = [i[0][1] for i in t._transform_group.call_args_list]
+        expected = [["a1", "a2"], ["b1", "b2"]]
+        self.assertListEqual(cols_call, expected)
 
     def test_init_cols_init_groups(self):
         t = r.ColumnGroupsTransformer("a", cols_init=["b"], groups=True)

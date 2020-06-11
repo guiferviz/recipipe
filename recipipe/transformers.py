@@ -534,9 +534,11 @@ class ColumnGroupsTransformer(RecipipeTransformer):
         super().__init__(*args, **kwargs)
 
     def _fit(self, df):
-        self.col_groups = [fit_columns(df, c) for c in self.col_groups_init]
-        if not self.col_groups or not self.groups:
-            self.col_groups = self.cols
+        self.col_groups = None
+        if self.groups:
+            self.col_groups = [fit_columns(df, c) for c in self.col_groups_init]
+        if not self.col_groups:
+            self.col_groups = [[i] for i in self.cols]
 
     def get_column_mapping(self):
         col_map = {}
